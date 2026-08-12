@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corporate Mazdoor™ — Office Life, Unfiltered</title>
+<meta name="description" content="Corporate Mazdoor — a cinematic, funny archive of Indian corporate life with a developer portfolio hidden inside.">
+<style>
+:root{
+ --bg:#070808;--paper:#eeeae0;--muted:#9b9d96;--acid:#caff39;--red:#ff5b4d;
+ --line:rgba(255,255,255,.12);--glass:rgba(9,10,10,.68);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--paper);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;overflow-x:hidden}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:999;background:linear-gradient(rgba(255,255,255,.018) 50%,transparent 50%);background-size:100% 4px;mix-blend-mode:soft-light}
+a{color:inherit;text-decoration:none} button{font:inherit}
+#intro{position:fixed;inset:0;z-index:1000;background:#050606;display:grid;place-items:center;transition:opacity .8s,visibility .8s}
+#intro.hide{opacity:0;visibility:hidden}
+.introbox{width:min(680px,90%);text-align:center}
+.introbrand{font-size:clamp(54px,10vw,120px);line-height:.78;letter-spacing:-.09em;font-weight:950}
+.introbrand span{color:var(--acid)}
+.terminal{margin-top:35px;text-align:left;border:1px solid var(--line);border-radius:18px;padding:24px;background:#0d0f0e;font:13px/1.8 ui-monospace,monospace;color:#aab0aa;box-shadow:0 30px 100px #000}
+.green{color:var(--acid)}
+.cursor{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--paper);border-radius:10px;padding:13px 17px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:.25s}
+.btn:hover{transform:translateY(-3px);border-color:var(--acid)}
+.btn.primary{background:var(--acid);color:#111;border-color:var(--acid)}
+nav{position:fixed;z-index:500;top:16px;left:50%;transform:translateX(-50%);width:min(1180px,calc(100% - 24px));padding:13px 16px;border:1px solid var(--line);border-radius:16px;background:rgba(5,6,6,.58);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:950;letter-spacing:-.04em}.logo span{color:var(--acid)}
+.navlinks{display:flex;gap:23px;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#aaa}
+.navlinks a:hover{color:var(--acid)}
+.avail{font-size:10px;color:var(--acid);border:1px solid rgba(202,255,57,.25);padding:8px 10px;border-radius:99px}
+.hero{min-height:100vh;position:relative;display:flex;align-items:end;overflow:hidden}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.29) saturate(.72)}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.95),rgba(0,0,0,.62) 48%,rgba(0,0,0,.15)),linear-gradient(0deg,#070808,transparent 35%);z-index:1}
+.rain{position:absolute;inset:-20%;z-index:2;opacity:.22;pointer-events:none;background-image:linear-gradient(112deg,transparent 0 47%,rgba(215,235,255,.55) 48%,transparent 49%);background-size:18px 45px;animation:rain .45s linear infinite}
+@keyframes rain{to{transform:translate(-18px,45px)}}
+.hero-content{position:relative;z-index:3;width:min(1180px,calc(100% - 40px));margin:0 auto;padding:150px 0 90px}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.22em;color:var(--acid);font-weight:800}
+h1{font-size:clamp(65px,11vw,160px);letter-spacing:-.095em;line-height:.76;margin-top:20px;max-width:950px}
+h1 span{color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.55)}
+.hero p{max-width:590px;color:#c3c5bf;line-height:1.7;font-size:16px;margin-top:30px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.metrics{display:flex;gap:9px;flex-wrap:wrap;margin-top:45px}.metric{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:rgba(8,9,9,.65);backdrop-filter:blur(10px);min-width:130px}.metric b{display:block;font-size:24px}.metric small{color:#858781;text-transform:uppercase;font-size:9px;letter-spacing:.1em}
+section{padding:120px max(20px,calc((100vw - 1180px)/2));position:relative}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:45px}
+h2{font-size:clamp(50px,8vw,100px);letter-spacing:-.085em;line-height:.78}.desc{max-width:440px;color:var(--muted);line-height:1.65}
+.scrolly{height:220vh;position:relative;padding:0}
+.sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;place-items:center}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(1.04);transition:opacity .6s,transform .8s}
+.scene.active{opacity:1;transform:scale(1)}
+.scene img,.scene video{position:absolute;width:100%;height:100%;object-fit:cover;filter:brightness(.38) saturate(.8)}
+.scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.25) 70%),linear-gradient(0deg,#070808,transparent 35%)}
+.scenecopy{position:relative;z-index:2;width:min(1180px,calc(100% - 40px));margin:auto;padding-top:80px}.scene-num{font:11px ui-monospace;color:var(--acid)}.scene h3{font-size:clamp(55px,8vw,120px);letter-spacing:-.09em;line-height:.8;max-width:800px;margin-top:15px}.scene p{max-width:500px;color:#bbb;line-height:1.7;margin-top:25px;font-size:16px}
+.timeline{border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:100px 1fr 100px;gap:25px;padding:25px 0;border-bottom:1px solid var(--line);align-items:center}.row .time{font:12px ui-monospace;color:var(--acid)}.row strong{font-size:21px}.row small{color:#777;text-align:right}
+.gallery{display:grid;grid-template-columns:1.25fr .75fr;gap:15px}.photo{border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;min-height:400px}.photo img{width:100%;height:100%;object-fit:cover}.caption{position:absolute;bottom:14px;left:14px;right:14px;padding:15px;border-radius:12px;background:rgba(0,0,0,.58);backdrop-filter:blur(12px)}.caption b{font-size:20px}.caption small{display:block;color:#aaa;margin-top:4px}
+.radio{border:1px solid var(--line);border-radius:20px;padding:22px;background:linear-gradient(135deg,#111312,#0a0b0b)}.radio-top{display:flex;justify-content:space-between;gap:20px;align-items:center}.radio-title{font-size:28px;font-weight:950}.radio-sub{color:#777;font-size:12px;margin-top:5px}.tracks{display:grid;gap:7px;margin-top:25px}.track{display:grid;grid-template-columns:40px 1fr 110px;align-items:center;padding:14px;border:1px solid transparent;border-radius:10px;cursor:pointer}.track:hover,.track.active{background:rgba(202,255,57,.05);border-color:rgba(202,255,57,.24)}.trackno{color:#666;font:12px ui-monospace}.track small{text-align:right;color:#777}
+.dashboard{display:grid;grid-template-columns:1fr 1fr;gap:20px}.dash{border:1px solid var(--line);border-radius:20px;padding:25px;background:#0e1010}.dash h3{font-size:28px}.meterrow{margin:20px 0}.meterrow header{display:flex;justify-content:space-between;color:#aaa;font-size:12px}.bar{height:8px;border-radius:99px;background:#252725;margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acid)}
+.portfolio{background:#0c0e0d}.projects{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.project{border:1px solid var(--line);border-radius:17px;padding:20px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;background:#111312;transition:.3s}.project:hover{transform:translateY(-6px);border-color:rgba(202,255,57,.35)}.project .num{color:#666;font:11px ui-monospace}.project h3{font-size:29px;letter-spacing:-.05em}.project p{color:#858883;font-size:13px;line-height:1.55}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{border:1px solid var(--line);padding:6px 8px;border-radius:99px;color:#aaa;font-size:9px}
+.player{position:fixed;z-index:600;bottom:15px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 22px));display:grid;grid-template-columns:50px 1fr auto;gap:13px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:15px;background:rgba(9,10,10,.88);backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.5)}.cover{width:50px;height:50px;border-radius:9px;object-fit:cover}.now{font-size:12px;font-weight:800}.now small{display:block;color:#777;margin-top:4px;font-weight:500}.controls{display:flex;gap:5px}.controls button{width:37px;height:37px;border-radius:50%;border:1px solid var(--line);background:#171918;color:white;cursor:pointer}.controls .main{background:var(--acid);color:#111}
+footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--line)}footer h2{font-size:clamp(60px,10vw,140px)}footer p{color:#777;max-width:500px;margin:20px auto 30px;line-height:1.6}
+@media(max-width:800px){.navlinks{display:none}.avail{display:none}.hero-content{padding-top:130px}.hero p{font-size:14px}.sectionhead{display:block}.sectionhead .desc{margin-top:20px}.row{grid-template-columns:70px 1fr}.row small{display:none}.gallery,.dashboard{grid-template-columns:1fr}.photo{min-height:300px}.projects{grid-template-columns:1fr}.scene h3{font-size:60px}.player{grid-template-columns:45px 1fr auto}.cover{width:45px;height:45px}.controls button{width:34px;height:34px}}
+
+/* Corporate Mazdoor audio player */
+.audio-stage{margin-top:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a0d0d;position:relative;padding:14px}
+.audio-stage audio{width:100%;display:block;border-radius:12px;background:#000}
+.radio-current{display:flex;align-items:center;gap:13px;margin-top:20px;padding:13px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.025)}
+.radio-current-art{width:54px;height:54px;border-radius:10px;display:grid;place-items:center;background:#171918;font-size:24px;overflow:hidden;flex:none}
+.radio-current-art img{width:100%;height:100%;object-fit:cover}
+.radio-current-copy{min-width:0;flex:1}
+.radio-current-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.radio-current-copy span{display:block;color:#777;font-size:11px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.radio-live{font:10px ui-monospace;color:#777;border:1px solid var(--line);padding:7px 9px;border-radius:99px}
+.radio-live.playing{color:#111;background:var(--acid);border-color:var(--acid)}
+.radio-controls{display:flex;justify-content:center;gap:10px;margin-top:15px}
+.radio-control{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#151716;color:#fff;cursor:pointer}
+.radio-control:hover{border-color:var(--acid);transform:translateY(-2px)}
+.radio-control.radio-play{background:var(--acid);color:#111;border-color:var(--acid);font-size:16px}
+.radio-link-input{display:flex;gap:10px;margin-top:16px}
+.radio-link-input input{flex:1;min-width:0;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0b0d0d;color:#eee;outline:none}
+.radio-link-input input::placeholder{color:#666}
+.radio-link-note{margin-top:10px;color:#8f9a8c;font-size:12px}
+.radio-progress{height:5px;border-radius:99px;background:#242625;overflow:hidden;margin-top:14px}
+.radio-progress i{display:block;width:0;height:100%;background:var(--acid)}
+.radio .tracks{margin-top:17px;display:none}
+.radio.expanded .tracks{display:grid}
+.radio .track{grid-template-columns:40px 1fr 90px}
+.radio .track small{font-size:10px}
+@media(max-width:800px){
+ .radio-current-art{width:45px;height:45px}.radio-live{display:none}
+}
+
+</style>
+</head>
+<body>
+
+<div id="intro">
+ <div class="introbox">
+  <div class="introbrand">CORPORATE<br><span>MAZDOOR™</span></div>
+  <div class="terminal">
+   <div>&gt; scanning employee... <span class="green">FOUND</span></div>
+   <div>&gt; coffee... <span class="green">CRITICAL</span></div>
+   <div>&gt; work/life balance... <span class="green">404</span></div>
+   <div>&gt; motivation... <span class="green">MONDAY.EXE</span></div>
+   <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
+  </div>
+  <button class="btn primary" style="margin-top:25px;width:100%" onclick="enterSite()">PUNCH IN →</button>
+ </div>
+</div>
+
+<nav>
+ <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
+ <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#portfolio">Portfolio</a></div>
+ <div class="avail">● AVAILABLE FOR CHAI</div>
+</nav>
+
+<section class="hero" id="home">
+ <video autoplay muted loop playsinline poster="assets/corporate-collage.png"><source src="assets/corporate-life-01.mp4" type="video/mp4"></video>
+ <div class="rain"></div>
+ <div class="hero-content">
+  <div class="eyebrow">An Indian corporate survival archive</div>
+  <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
+  <p>Office. Chai. Meetings. Bugs. “One small change.” Repeat. A cinematic, slightly unhinged archive of corporate life — with a developer portfolio hiding inside.</p>
+  <div class="actions"><a class="btn primary" href="#life">ENTER THE LIFE ↓</a><a class="btn" href="#portfolio">WHO IS THE MAZDOOR?</a></div>
+  <div class="metrics">
+   <div class="metric"><b>09:00</b><small>Login Time</small></div><div class="metric"><b>∞</b><small>Meetings</small></div><div class="metric"><b>☕</b><small>Chai Required</small></div><div class="metric"><b>404</b><small>Work-Life Balance</small></div>
+  </div>
+ </div>
+</section>
+
+<section id="life">
+ <div class="sectionhead"><div><div class="eyebrow">01 / Corporate Life</div><h2>THE DAILY<br>MAZDOORI.</h2></div></div>
+ <div class="gallery">
+  <div class="photo"><video autoplay muted loop playsinline preload="auto"><source src="assets/corporate-life-01.mp4" type="video/mp4"></video></div>
+  <div class="photo"><img src="assets/corporate-collage.png" alt="Corporate Mazdoor visual archive"><div class="caption"><b>Corporate Lore</b><small>Chai. Bugs. Metro. Repeat.</small></div></div>
+ </div>
+</section>
+
+<div class="scrolly" id="story">
+ <div class="sticky">
+  <div class="scene active"><img src="assets/corporate-collage.png"><div class="scenecopy"><div class="scene-num">SCENE 01 / COMMUTE</div><h3>WAKE UP.<br>REGRET IT.</h3><p>The day begins with a commute, one earbud and the comforting thought that maybe today will be different.</p></div></div>
+  <div class="scene"><img src="assets/corporate-collage.png"><div class="scenecopy"><div class="scene-num">SCENE 02 / OFFICE</div><h3>LOGIN.<br>LOOK BUSY.</h3><p>Open the IDE. Open Slack. Open email. Open a tab to search “how to survive Monday”.</p></div></div>
+  <div class="scene"><img src="assets/corporate-collage.png"><div class="scenecopy"><div class="scene-num">SCENE 03 / BUG</div><h3>ONE SMALL<br>CHANGE.</h3><p>It was supposed to take five minutes. Production has other plans.</p></div></div>
+  <div class="scene"><img src="assets/corporate-collage.png"><div class="scenecopy"><div class="scene-num">SCENE 04 / NIGHT SHIFT</div><h3>DEPLOY.<br>PRAY.</h3><p>Rain outside. RGB keyboard inside. One final build. Then sleep. Probably.</p></div></div>
+ </div>
+</div>
+
+<section id="timeline">
+ <div class="sectionhead"><div><div class="eyebrow">02 / A Typical Day</div><h2>FROM LOGIN<br>TO LOGOUT.</h2></div><p class="desc">The official unofficial timeline of an Indian corporate employee.</p></div>
+ <div class="timeline">
+  <div class="row"><div class="time">08:30</div><div><strong>🚇 Commute mode activated.</strong></div><small>ENERGY 61%</small></div>
+  <div class="row"><div class="time">09:00</div><div><strong>💻 “Good morning team.”</strong></div><small>ONLINE</small></div>
+  <div class="row"><div class="time">11:30</div><div><strong>☕ Chai break becomes a meeting.</strong></div><small>+10 HP</small></div>
+  <div class="row"><div class="time">14:00</div><div><strong>📧 “Quick call?”</strong></div><small>DANGER</small></div>
+  <div class="row"><div class="time">18:30</div><div><strong>🐛 Production bug enters the chat.</strong></div><small>PANIC</small></div>
+  <div class="row"><div class="time">21:30</div><div><strong>🚀 “Just deploy it once.”</strong></div><small>BOSS FIGHT</small></div>
+ </div>
+</section>
+
+
+<section id="radio">
+ <div class="sectionhead">
+   <div><div class="eyebrow">03 / Corporate Radio</div><h2>9–9<br>RADIO.</h2></div>
+ </div>
+
+ <div class="radio">
+   <div class="radio-top">
+     <div>
+       <div class="radio-title">CORPORATE MAZDOOR RADIO 🎧</div>
+       <div class="radio-sub" id="radioStatus">Ready · Audio player</div>
+     </div>
+     <button class="btn" id="expandRadio" type="button">EXPAND RADIO ⤢</button>
+   </div>
+
+   <div class="radio-link-input" style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+     <button class="btn" id="loadChillMode" type="button">GO LIVE</button>
+     <button class="btn" id="loadSmoothProduction" type="button">SMOOTH PRODUCTION</button>
+     <button class="btn" id="loadCodePhatGaya" type="button">CODE PHAT GAYA</button>
+     <button class="btn" id="loadQaPassed" type="button">QA PASSED</button>
+   </div>
+   <div class="radio-link-note" id="radioLinkNotice">Tap a playlist button to load the local songs. Click any song to play it.</div>
+
+   <div class="audio-stage" id="audioStage">
+     <audio id="radioAudio" controls preload="auto"></audio>
+   </div>
+
+   <div class="radio-current">
+     <div class="radio-current-art" id="radioArt">🎧</div>
+     <div class="radio-current-copy">
+       <strong id="radioTitle">Corporate Radio</strong>
+       <span id="radioArtist">Waiting for music URL…</span>
+     </div>
+     <div class="radio-live" id="radioLive">READY</div>
+   </div>
+
+   <div class="radio-controls">
+     <button type="button" class="radio-control" id="prevRadio" aria-label="Previous">⏮</button>
+     <button type="button" class="radio-control radio-play" id="playRadio" aria-label="Play">▶</button>
+     <button type="button" class="radio-control" id="nextRadio" aria-label="Next">⏭</button>
+   </div>
+
+   <div class="radio-progress"><i id="radioProgress"></i></div>
+
+   <div class="tracks" id="trackList"></div>
+ </div>
+</section>
+
+
+<section>
+ <div class="sectionhead"><div><div class="eyebrow">04 / Corporate Survival</div><h2>SYSTEM<br>HEALTH.</h2></div><p class="desc">A completely fictional dashboard that is emotionally accurate.</p></div>
+ <div class="dashboard">
+  <div class="dash"><h3>EMPLOYEE STATUS</h3><p style="color:#777;margin-top:10px;line-height:1.6">No employees were harmed in the making of this dashboard. Productivity remains under investigation.</p><div style="margin-top:30px;font:13px ui-monospace;color:var(--acid)">STATUS: STILL ONLINE_</div></div>
+  <div class="dash">
+   <div class="meterrow"><header><span>☕ Chai Dependency</span><b>94%</b></header><div class="bar"><i style="width:94%"></i></div></div>
+   <div class="meterrow"><header><span>😴 Sleep Debt</span><b>81%</b></header><div class="bar"><i style="width:81%"></i></div></div>
+   <div class="meterrow"><header><span>🧠 Mental RAM</span><b>28%</b></header><div class="bar"><i style="width:28%"></i></div></div>
+   <div class="meterrow"><header><span>😂 Sarcasm</span><b>100%</b></header><div class="bar"><i style="width:100%"></i></div></div>
+  </div>
+ </div>
+</section>
+
+<section class="portfolio" id="portfolio">
+ <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
+ <p style="max-width:750px;font-size:20px;line-height:1.65;color:#c8cbc5">Hi, I'm <b>Shubham Diwakar</b> — an Android developer working with Kotlin, Android and Flutter. Corporate Mazdoor is the fun side. Engineering is the serious side.</p>
+ <div class="actions" style="margin-bottom:40px"><a class="btn primary" href="portfolio/index.html" target="_blank" rel="noopener">OPEN MY PORTFOLIO ↗</a><a class="btn" href="assets/resume_shubham_diwakar.pdf" download="resume_shubham_diwakar.pdf" onclick="event.preventDefault(); downloadResume();">DOWNLOAD CV</a></div><div class="actions" style="margin-top:-24px;margin-bottom:40px"><a class="btn" href="https://www.linkedin.com/in/shubham-android-developer" target="_blank" rel="noopener">LINKEDIN ↗</a><a class="btn" href="https://github.com/ShubhamDiwa" target="_blank" rel="noopener">GITHUB ↗</a></div>
+ <div class="projects" id="projects">
+  <article class="project" style="grid-column:1/-1;min-height:220px">
+    <span class="num">PORTFOLIO ACCESS</span>
+    <div><h3>The serious stuff lives here.</h3>
+    <p>Corporate Mazdoor is the life. Your complete developer portfolio opens separately.</p></div>
+    <div class="actions"><a class="btn primary" href="portfolio/index.html" target="_blank" rel="noopener">OPEN MY PORTFOLIO ↗</a></div>
+  </article>
+ </div>
+</section>
+
+<footer>
+ <div class="eyebrow">06 / Logout</div>
+<h2>SEE YOU<br>MONDAY.</h2><p>Corporate life ends here. The developer portfolio doesn't.</p><a class="btn primary" href="#home">BACK TO TOP ↑</a>
+</footer>
+
+<div class="player">
+ <img class="cover" id="compactCover" src="assets/corporate-collage.png" alt="Corporate Radio">
+ <div class="now"><span id="nowTitle">Corporate Radio</span><small id="nowSub">YouTube · loading track…</small></div>
+ <div class="controls"><button onclick="prevRadio()" aria-label="Previous track">◀</button><button class="main" id="playBtn" onclick="toggleRadio()" aria-label="Play">▶</button><button onclick="nextRadio()" aria-label="Next track">▶</button></div>
+</div>
+
+<script>
+function downloadResume(){
+  const fileUrl = 'assets/resume_shubham_diwakar.pdf';
+  const link = document.createElement('a');
+  link.href = fileUrl;
+  link.download = 'resume_shubham_diwakar.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function enterSite(){
+  document.getElementById('intro').classList.add('hide');
+  document.body.style.overflow='auto';
+}
+document.body.style.overflow='hidden';
+
+const scenes=[...document.querySelectorAll('.scene')];
+const scrolly=document.querySelector('.scrolly');
+function updateScenes(){
+ const rect=scrolly.getBoundingClientRect();
+ const progress=Math.min(0.999,Math.max(0,(window.innerHeight-rect.top)/(rect.height+window.innerHeight)));
+ const index=Math.min(scenes.length-1,Math.floor(progress*scenes.length));
+ scenes.forEach((s,i)=>s.classList.toggle('active',i===index));
+}
+window.addEventListener('scroll',updateScenes,{passive:true}); updateScenes();
+
+const goLivePlaylist = [
+  { title: 'Baby Baby', author: 'Go Live', source: 'assets/music/go-live/baby_baby.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Danza Kuduro', author: 'Go Live', source: 'assets/music/go-live/danzakudoro.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Despacito', author: 'Go Live', source: 'assets/music/go-live/despacito.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Gam Gam Style', author: 'Go Live', source: 'assets/music/go-live/gamgamstyle.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Nolie', author: 'Go Live', source: 'assets/music/go-live/nolie.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'On the Floor', author: 'Go Live', source: 'assets/music/go-live/onthefloor.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Sapphire', author: 'Go Live', source: 'assets/music/go-live/sapphire.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Senorita', author: 'Go Live', source: 'assets/music/go-live/senorita.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Waka Waka', author: 'Go Live', source: 'assets/music/go-live/wakawaka.mp3', thumb: 'assets/corporate-collage.png' }
+];
+
+const smoothProductionPlaylist = [
+  { title: 'Bamulaiza', author: 'Smooth Production', source: 'assets/music/smooth-production/bamulaiza.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Boom Boom', author: 'Smooth Production', source: 'assets/music/smooth-production/boom_boom.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Chor Bazari', author: 'Smooth Production', source: 'assets/music/smooth-production/chor_bazari.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Navrai Mazi', author: 'Smooth Production', source: 'assets/music/smooth-production/navrai_mazi.mp3', thumb: 'assets/corporate-collage.png' }
+];
+
+const codePhatGayaPlaylist = [
+  { title: 'Dhokha Dhaadi', author: 'Code Phat Gaya', source: 'assets/music/code_phat_gaya/dhokha_dhaadi.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Launga Da Laskara', author: 'Code Phat Gaya', source: 'assets/music/code_phat_gaya/launga_da_laskara.mp3', thumb: 'assets/corporate-collage.png' }
+];
+
+const qaPassedPlaylist = [
+  { title: 'Challa', author: 'QA Passed', source: 'assets/music/qa_passed/challa.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Rishte Nate', author: 'QA Passed', source: 'assets/music/qa_passed/rishte_nate.mp3', thumb: 'assets/corporate-collage.png' },
+  { title: 'Salaam Aaya', author: 'QA Passed', source: 'assets/music/qa_passed/salaam_aaya.mp3', thumb: 'assets/corporate-collage.png' }
+];
+
+let radioTracks = goLivePlaylist.map(track => ({ ...track }));
+let radioIndex = 0;
+let radioTimer = null;
+
+const radio = document.querySelector('#radio .radio');
+const radioTitle = document.getElementById('radioTitle');
+const radioArtist = document.getElementById('radioArtist');
+const radioStatus = document.getElementById('radioStatus');
+const radioLive = document.getElementById('radioLive');
+const radioPlay = document.getElementById('playRadio');
+const radioProgress = document.getElementById('radioProgress');
+const radioArt = document.getElementById('radioArt');
+const radioAudio = document.getElementById('radioAudio');
+const trackList = document.getElementById('trackList');
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  })[m]);
+}
+
+function renderRadioTracks(){
+  const current = radioTracks[radioIndex] || radioTracks[0];
+  trackList.innerHTML = radioTracks.map((v,i)=>`
+    <div class="track ${i===radioIndex?'active':''}" onclick="selectRadio(${i})">
+      <span class="trackno">${String(i+1).padStart(2,'0')}</span>
+      <b>${escapeHtml(v.title || 'Untitled track')}</b>
+      <small>${i===radioIndex ? 'NOW' : 'LOCAL'}</small>
+    </div>
+  `).join('');
+  document.getElementById('nowTitle').textContent = current.title || 'Corporate Radio';
+  document.getElementById('nowSub').textContent = `${current.author || 'Go Live'} · local`;
+  document.getElementById('compactCover').src = current.thumb || 'assets/corporate-collage.png';
+}
+
+function updateRadioMeta(){
+  const v = radioTracks[radioIndex] || radioTracks[0];
+  radioTitle.textContent = v.title || 'Corporate Radio';
+  radioArtist.textContent = v.author || 'Go Live';
+  radioArt.innerHTML = `<img src="${v.thumb || 'assets/corporate-collage.png'}" alt="${escapeHtml(v.title || 'Corporate Radio')}">`;
+  renderRadioTracks();
+}
+
+function selectRadio(index){
+  if (!radioTracks.length) return;
+  radioIndex = (index + radioTracks.length) % radioTracks.length;
+  const track = radioTracks[radioIndex];
+  if (track && track.source) {
+    radioAudio.pause();
+    radioAudio.currentTime = 0;
+    radioAudio.src = track.source;
+    radioAudio.load();
+    const playlistName = track.author || 'Local playlist';
+    radioStatus.textContent = `Loading ${playlistName}…`;
+    radioLive.textContent = 'LOADING';
+    radioLive.classList.remove('playing');
+    radioPlay.textContent = 'Ⅱ';
+    document.getElementById('playBtn').textContent = 'Ⅱ';
+    updateRadioMeta();
+    radioAudio.play().catch(()=>{});
+  }
+}
+
+function nextRadio(){
+  selectRadio(radioIndex + 1);
+}
+
+function prevRadio(){
+  selectRadio(radioIndex - 1);
+}
+
+function toggleRadio(){
+  if (!radioTracks.length || !radioAudio.src) {
+    radioStatus.textContent = 'Load a playlist first';
+    return;
+  }
+  if (radioAudio.paused) {
+    radioAudio.play().catch(()=>{
+      radioStatus.textContent = 'Press play again after allowing audio';
+    });
+  } else {
+    radioAudio.pause();
+  }
+}
+
+function loadPlaylist(playlist, label){
+  radioTracks = playlist.map(track => ({ ...track }));
+  radioIndex = 0;
+  const firstTrack = radioTracks[0];
+  if (!firstTrack) return;
+
+  radioAudio.pause();
+  radioAudio.currentTime = 0;
+  radioAudio.src = firstTrack.source;
+  radioAudio.load();
+  radioStatus.textContent = `● Playing · ${label}`;
+  radioLive.textContent = 'PLAYING';
+  radioLive.classList.add('playing');
+  radioPlay.textContent = 'Ⅱ';
+  document.getElementById('playBtn').textContent = 'Ⅱ';
+  updateRadioMeta();
+  radioAudio.play().catch(()=>{});
+}
+
+function loadGoLivePlaylist(){
+  loadPlaylist(goLivePlaylist, 'Go Live');
+}
+
+function loadSmoothProductionPlaylist(){
+  loadPlaylist(smoothProductionPlaylist, 'Smooth Production');
+}
+
+function loadCodePhatGayaPlaylist(){
+  loadPlaylist(codePhatGayaPlaylist, 'Code Phat Gaya');
+}
+
+function loadQaPassedPlaylist(){
+  loadPlaylist(qaPassedPlaylist, 'QA Passed');
+}
+
+function onAudioLoaded(){
+  const current = radioTracks[radioIndex] || radioTracks[0];
+  const playlistName = current?.author || 'Local playlist';
+  radioStatus.textContent = `Ready · ${playlistName}`;
+  radioLive.textContent = 'READY';
+  radioLive.classList.remove('playing');
+  updateRadioMeta();
+}
+
+function startRadioProgress(){
+  stopRadioProgress();
+  radioTimer = setInterval(()=>{
+    if (!radioAudio.duration || Number.isNaN(radioAudio.duration)) {
+      radioProgress.style.width = '0%';
+      return;
+    }
+    const percent = (radioAudio.currentTime / radioAudio.duration) * 100;
+    radioProgress.style.width = `${Math.min(100, percent)}%`;
+  }, 400);
+}
+
+function stopRadioProgress(){
+  if (radioTimer) clearInterval(radioTimer);
+  radioTimer = null;
+}
+
+radioAudio.addEventListener('play', ()=>{
+  radioPlay.textContent = 'Ⅱ';
+  document.getElementById('playBtn').textContent = 'Ⅱ';
+  radioLive.textContent = 'PLAYING';
+  radioLive.classList.add('playing');
+  const current = radioTracks[radioIndex] || radioTracks[0];
+  radioStatus.textContent = `● Playing · ${current?.author || 'Local playlist'}`;
+  startRadioProgress();
+});
+
+radioAudio.addEventListener('pause', ()=>{
+  radioPlay.textContent = '▶';
+  document.getElementById('playBtn').textContent = '▶';
+  radioLive.textContent = 'PAUSED';
+  radioLive.classList.remove('playing');
+  const current = radioTracks[radioIndex] || radioTracks[0];
+  radioStatus.textContent = `Paused · ${current?.author || 'Local playlist'}`;
+  stopRadioProgress();
+});
+
+radioAudio.addEventListener('ended', ()=>{
+  radioLive.textContent = 'READY';
+  radioLive.classList.remove('playing');
+  radioStatus.textContent = 'Finished · load another track';
+  stopRadioProgress();
+  radioProgress.style.width = '0%';
+});
+
+radioAudio.addEventListener('canplay', onAudioLoaded);
+radioAudio.addEventListener('error', ()=>{
+  radioStatus.textContent = 'This audio URL could not be loaded';
+  radioLive.textContent = 'ERROR';
+  radioLive.classList.remove('playing');
+  stopRadioProgress();
+  radioProgress.style.width = '0%';
+});
+
+document.getElementById('playRadio').addEventListener('click', toggleRadio);
+document.getElementById('nextRadio').addEventListener('click', nextRadio);
+document.getElementById('prevRadio').addEventListener('click', prevRadio);
+document.getElementById('loadChillMode').addEventListener('click', ()=>{
+  radio.classList.add('expanded');
+  document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
+  loadGoLivePlaylist();
+});
+
+document.getElementById('loadSmoothProduction').addEventListener('click', ()=>{
+  radio.classList.add('expanded');
+  document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
+  loadSmoothProductionPlaylist();
+});
+
+document.getElementById('loadCodePhatGaya').addEventListener('click', ()=>{
+  radio.classList.add('expanded');
+  document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
+  loadCodePhatGayaPlaylist();
+});
+
+document.getElementById('loadQaPassed').addEventListener('click', ()=>{
+  radio.classList.add('expanded');
+  document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
+  loadQaPassedPlaylist();
+});
+
+document.getElementById('expandRadio').addEventListener('click', ()=>{
+  radio.classList.toggle('expanded');
+  document.getElementById('expandRadio').textContent =
+    radio.classList.contains('expanded') ? 'CLOSE PLAYLIST ↙' : 'OPEN PLAYLIST ⤢';
+});
+
+radio.classList.add('expanded');
+document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
+loadGoLivePlaylist();
+
+</script>
+</body>
+</html>

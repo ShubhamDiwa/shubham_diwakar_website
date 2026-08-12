@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shubham Diwakar — Android & Flutter Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C12;
+    --surface:#14151F;
+    --surface-2:#1B1D29;
+    --purple:#7F52FF;
+    --purple-soft:#A78BFF;
+    --orange:#FF6B4A;
+    --text:#F2F1F7;
+    --text-muted:#8B8D9E;
+    --border:#262838;
+    --grad: linear-gradient(120deg, var(--orange), var(--purple));
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    line-height:1.6;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-0.02em;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  ::selection{background:var(--purple);color:#fff;}
+
+  /* background code-grid texture */
+  .bg-grid{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.14;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 10%, transparent 75%);
+    animation:gridDrift 24s linear infinite;
+  }
+  @keyframes gridDrift{0%{background-position:0 0,0 0;}100%{background-position:64px 64px,64px 64px;}}
+
+  .cursor-glow{
+    position:fixed;top:0;left:0;width:520px;height:520px;z-index:0;pointer-events:none;
+    background:radial-gradient(circle, rgba(127,82,255,0.14), rgba(255,107,74,0.06) 40%, transparent 70%);
+    border-radius:50%;transform:translate(-50%,-50%);
+    transition:opacity .3s ease;opacity:0;filter:blur(10px);
+  }
+
+  .scan-overlay{
+    position:fixed;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(to bottom, transparent 0%, rgba(167,139,255,0.05) 50%, transparent 100%);
+    background-size:100% 6px;
+    opacity:0.5;
+    animation:scanMove 9s linear infinite;
+  }
+  @keyframes scanMove{0%{background-position:0 -100vh;}100%{background-position:0 100vh;}}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    backdrop-filter:blur(14px);
+    background:rgba(11,12,18,0.7);
+    border-bottom:1px solid var(--border);
+  }
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:600;font-size:18px;}
+  .logo-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:var(--grad);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono';font-size:13px;font-weight:600;color:#0B0C12;
+  }
+  .nav-links{display:flex;gap:36px;align-items:center;}
+  .nav-links a{font-size:14px;color:var(--text-muted);transition:color .2s;position:relative;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    padding:9px 18px;border-radius:8px;background:var(--surface-2);
+    border:1px solid var(--border);font-size:13px;font-family:'JetBrains Mono';
+    transition:all .2s;
+  }
+  .nav-cta:hover{border-color:var(--purple-soft);background:var(--surface);}
+  .nav-toggle{display:none;}
+
+  /* HERO */
+  header.hero{
+    position:relative;z-index:1;
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding-top:96px;padding-bottom:60px;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.05fr 0.95fr;gap:40px;align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono';font-size:12px;color:var(--orange);
+    padding:6px 12px;border:1px solid rgba(255,107,74,0.35);border-radius:20px;
+    background:rgba(255,107,74,0.06);margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .cursor-blink{display:inline-block;width:7px;height:13px;background:var(--orange);margin-left:6px;animation:blink 1s steps(1) infinite;vertical-align:-2px;}
+  @keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+  .hero h1{font-size:56px;line-height:1.05;margin-bottom:20px;}
+  .hero h1 span{
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lede{font-size:17px;color:var(--text-muted);max-width:480px;margin-bottom:32px;}
+  .hero-ctas{display:flex;gap:14px;margin-bottom:44px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 22px;border-radius:9px;font-size:14px;font-weight:500;
+    cursor:pointer;border:1px solid transparent;transition:all .2s;
+    font-family:'Inter';position:relative;
+  }
+  .btn-primary{background:var(--grad);color:#0B0C12;font-weight:600;box-shadow:0 0 0 0 rgba(127,82,255,0.5);animation:btnGlow 2.4s ease-in-out infinite;}
+  .btn-primary:hover{transform:translateY(-2px);filter:brightness(1.08);}
+  @keyframes btnGlow{0%,100%{box-shadow:0 0 0 0 rgba(127,82,255,0.35);}50%{box-shadow:0 0 22px 2px rgba(127,82,255,0.45);}}
+  .btn-ghost{border-color:var(--border);color:var(--text);background:var(--surface);}
+  .btn-ghost:hover{border-color:var(--purple-soft);transform:translateY(-2px);box-shadow:0 0 16px -2px rgba(167,139,255,0.4);}
+  .hero-stats{display:flex;gap:36px;}
+  .hero-stats div{display:flex;flex-direction:column;}
+  .hero-stats .num{font-family:'Space Grotesk';font-size:26px;font-weight:600;}
+  .hero-stats .lbl{font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono';margin-top:2px;}
+
+  /* 3D PHONE */
+  .phone-stage{
+    position:relative;height:560px;
+    display:flex;align-items:center;justify-content:center;
+    perspective:1400px;
+  }
+  .orbit-badge{
+    position:absolute;font-family:'JetBrains Mono';font-size:12px;
+    padding:7px 12px;border-radius:20px;background:var(--surface-2);
+    border:1px solid var(--border);color:var(--text-muted);
+    animation:float 6s ease-in-out infinite;white-space:nowrap;
+  }
+  .orbit-badge b{color:var(--text);font-weight:500;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+  .ob1{top:6%;left:0%;animation-delay:0s;}
+  .ob2{top:18%;right:-2%;animation-delay:1.2s;}
+  .ob3{bottom:22%;left:-6%;animation-delay:2s;}
+  .ob4{bottom:6%;right:4%;animation-delay:0.6s;}
+  .ob5{top:48%;left:-12%;animation-delay:3s;}
+
+  .hud-corner{position:absolute;width:26px;height:26px;border:1.5px solid rgba(167,139,255,0.5);opacity:0.7;}
+  .hud-tl{top:0;left:6%;border-right:none;border-bottom:none;}
+  .hud-tr{top:0;right:6%;border-left:none;border-bottom:none;}
+  .hud-bl{bottom:0;left:6%;border-right:none;border-top:none;}
+  .hud-br{bottom:0;right:6%;border-left:none;border-top:none;}
+
+  .glow-ring{
+    position:absolute;top:50%;left:50%;width:340px;height:340px;border-radius:50%;
+    transform:translate(-50%,-50%);z-index:0;
+    background:conic-gradient(from 0deg, var(--purple), var(--orange), var(--purple));
+    opacity:0.18;filter:blur(40px);animation:spinRing 12s linear infinite;
+  }
+  @keyframes spinRing{to{transform:translate(-50%,-50%) rotate(360deg);}}
+
+  .phone{
+    position:relative;z-index:1;width:270px;height:540px;
+    border-radius:38px;background:linear-gradient(160deg,#1c1e2b,#0d0e16);
+    border:2px solid #2c2e40;
+    box-shadow:0 0 0 1px rgba(167,139,255,0.25), 0 0 60px -10px rgba(127,82,255,0.55), 0 40px 80px -20px rgba(127,82,255,0.35), inset 0 0 0 1px rgba(255,255,255,0.03);
+    transform-style:preserve-3d;
+    transition:transform .15s ease-out;
+  }
+  .phone::before{
+    content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:70px;height:8px;border-radius:6px;background:#000;z-index:5;
+  }
+  .phone-screen{
+    position:absolute;inset:8px;border-radius:30px;overflow:hidden;
+    background:var(--surface);
+  }
+  .phone-screen::after{
+    content:'';position:absolute;left:0;right:0;height:40%;
+    background:linear-gradient(to bottom, transparent, rgba(167,139,255,0.12), transparent);
+    animation:phoneScan 4s ease-in-out infinite;pointer-events:none;
+  }
+  @keyframes phoneScan{0%{top:-40%;}100%{top:100%;}}
+  .screen-slide{
+    position:absolute;inset:0;padding:36px 16px 16px;
+    opacity:0;transform:translateX(16px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .screen-slide.active{opacity:1;transform:translateX(0);}
+  .screen-app-name{font-family:'JetBrains Mono';font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+  .screen-title{font-family:'Space Grotesk';font-size:17px;font-weight:600;margin-bottom:14px;}
+  .screen-bar{height:34px;border-radius:8px;background:var(--surface-2);margin-bottom:9px;display:flex;align-items:center;padding:0 10px;gap:8px;}
+  .screen-bar .chip{width:20px;height:20px;border-radius:6px;background:var(--grad);flex-shrink:0;}
+  .screen-bar .lines{flex:1;}
+  .screen-bar .lines i{display:block;height:6px;border-radius:3px;background:var(--border);margin-bottom:5px;}
+  .screen-bar .lines i:nth-child(2){width:60%;}
+  .screen-btn{
+    margin-top:16px;height:40px;border-radius:9px;background:var(--grad);
+    display:flex;align-items:center;justify-content:center;color:#0B0C12;
+    font-size:12px;font-weight:600;font-family:'JetBrains Mono';
+  }
+  .dots-nav{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
+  .dots-nav span{width:6px;height:6px;border-radius:50%;background:var(--border);transition:background .3s,width .3s;}
+  .dots-nav span.active{background:var(--purple-soft);width:18px;border-radius:4px;}
+
+  section{position:relative;z-index:1;padding:110px 0;}
+  .section-head{margin-bottom:56px;}
+  .section-tag{font-family:'JetBrains Mono';font-size:12px;color:var(--orange);margin-bottom:10px;display:block;}
+  .section-head h2{font-size:36px;}
+  .section-head p{color:var(--text-muted);margin-top:10px;max-width:560px;}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ABOUT */
+  #about .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+  #about p{color:var(--text-muted);font-size:15.5px;margin-bottom:16px;}
+  .skill-groups{display:flex;flex-direction:column;gap:20px;}
+  .skill-group-label{font-family:'JetBrains Mono';font-size:12px;color:var(--text-muted);margin-bottom:9px;}
+  .skill-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-family:'JetBrains Mono';font-size:12px;padding:6px 12px;
+    border-radius:6px;background:var(--surface);border:1px solid var(--border);
+    color:var(--text);transition:all .2s;
+  }
+  .chip:hover{border-color:var(--purple-soft);color:var(--purple-soft);transform:translateY(-2px);}
+
+  /* TIMELINE */
+  .timeline{position:relative;padding-left:32px;}
+  .timeline::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--purple),var(--orange));border-radius:2px;}
+  .tl-item{position:relative;padding-bottom:56px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{position:absolute;left:-32px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--purple-soft);}
+  .tl-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .tl-role{font-family:'Space Grotesk';font-size:20px;font-weight:600;}
+  .tl-company{color:var(--purple-soft);font-size:14px;font-weight:500;}
+  .tl-date{font-family:'JetBrains Mono';font-size:12px;color:var(--text-muted);white-space:nowrap;}
+  .tl-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+  .tl-list li{list-style:none;display:flex;gap:10px;color:var(--text-muted);font-size:14.5px;}
+  .tl-list li::before{content:'▹';color:var(--orange);flex-shrink:0;}
+  .tl-list b{color:var(--text);font-weight:500;}
+
+  /* APPS TABLET SHOWCASE */
+  .production-tablet-section{
+    padding:16px 0 48px;
+  }
+  .tablet-layout{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:30px;
+    align-items:center;
+  }
+  .tablet-device{
+    position:relative;
+    border-radius:42px;
+    background:rgba(10,11,17,.92);
+    border:1px solid rgba(255,255,255,.06);
+    box-shadow:0 40px 90px rgba(0,0,0,.2);
+    overflow:hidden;
+  }
+  .tablet-device::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,.04) 100%);
+    pointer-events:none;
+  }
+  .tablet-device::after{
+    content:'';
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    width:120px;
+    height:5px;
+    border-radius:999px;
+    background:rgba(255,255,255,.08);
+  }
+  .tablet-screen{
+    position:relative;
+    min-height:460px;
+    border-radius:32px;
+    margin:22px;
+    background:linear-gradient(180deg, rgba(8,9,15,.95), rgba(18,19,30,.94));
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+    overflow:hidden;
+  }
+  .tablet-screen::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0) 25%, rgba(255,255,255,.03) 100%);
+    pointer-events:none;
+  }
+  .tablet-content{
+    position:relative;
+    display:grid;
+    gap:22px;
+    height:100%;
+    padding:28px;
+  }
+  .tablet-slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transform:translateX(22px);
+    transition:opacity .42s ease, transform .42s ease;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:18px;
+  }
+  .tablet-slide.active{
+    opacity:1;
+    transform:translateX(0);
+    position:relative;
+  }
+  .slide-badge{
+    font-family:'JetBrains Mono';
+    font-size:11px;
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    color:rgba(159,147,255,.84);
+  }
+  .slide-title{
+    margin:14px 0 10px;
+    font-family:'Space Grotesk';
+    font-size:32px;
+    line-height:1.05;
+    color:#fff;
+  }
+  .slide-desc{
+    color:rgba(255,255,255,.74);
+    font-size:15.2px;
+    line-height:1.85;
+    max-width:520px;
+  }
+  .slide-meta{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-top:18px;
+  }
+  .slide-chip{
+    padding:12px 14px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.04);
+    color:rgba(255,255,255,.8);
+    font-family:'JetBrains Mono';
+    font-size:12px;
+  }
+  .slide-image{
+    position:absolute;
+    right:24px;
+    bottom:24px;
+    width:160px;
+    height:160px;
+    border-radius:28px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(135deg, rgba(127,82,255,.95), rgba(255,107,74,.92));
+    box-shadow:0 36px 70px rgba(0,0,0,.24);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .slide-image-copy{
+    color:#fff;
+    font-family:'Space Grotesk';
+    font-size:44px;
+    font-weight:800;
+  }
+  .tablet-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin:20px 24px 24px;
+  }
+  .control-btn{
+    width:48px;
+    height:48px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    color:#fff;
+    font-size:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:transform .2s, background .2s, border-color .2s;
+  }
+  .control-btn:hover{
+    transform:scale(1.05);
+    background:rgba(127,82,255,.14);
+    border-color:rgba(127,82,255,.3);
+  }
+  .tablet-dots{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex:1;
+  }
+  .tablet-dots button{
+    width:12px;
+    height:12px;
+    border-radius:999px;
+    border:none;
+    background:rgba(255,255,255,.18);
+    cursor:pointer;
+    transition:transform .2s, background .2s;
+  }
+  .tablet-dots button.active{
+    background:linear-gradient(135deg,#7F52FF,#FF6B4A);
+    transform:scale(1.2);
+  }
+  .content-panel{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:22px;
+    padding:18px 10px 18px 0;
+  }
+  .content-panel h3{
+    font-family:'Space Grotesk';
+    font-size:38px;
+    line-height:1.03;
+    margin:0;
+    color:#fff;
+  }
+  .content-panel p{
+    color:rgba(255,255,255,.74);
+    font-size:15.5px;
+    line-height:1.85;
+    max-width:600px;
+  }
+  .tag-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .tag-list span{
+    display:inline-flex;
+    align-items:center;
+    padding:10px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    color:rgba(255,255,255,.8);
+    font-family:'JetBrains Mono';
+    font-size:12px;
+  }
+  .slide-label{
+    font-family:'JetBrains Mono';
+    font-size:11px;
+    letter-spacing:.26em;
+    text-transform:uppercase;
+    color:var(--purple-soft);
+  }
+  .section-head.highlight h2{
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @media(max-width:960px){
+    .tablet-layout{grid-template-columns:1fr;}
+    .tablet-device{margin-bottom:24px;}
+  }
+  @media(max-width:720px){
+    .tablet-screen{min-height:400px;margin:18px;}
+    .tablet-content{padding:20px;}
+    .slide-image{position:static;width:100%;height:220px;margin-top:12px;}
+    .tablet-controls{flex-direction:column;align-items:stretch;margin:16px 18px 18px;}
+    .tablet-dots{justify-content:flex-start;}
+  }
+  @media(max-width:560px){
+    .content-panel h3{font-size:32px;}
+    .slide-meta{grid-template-columns:1fr;}
+  }
+
+  /* SHOWCASE */
+  .showcase-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .showcase-card{
+    background:rgba(20,21,31,0.6);backdrop-filter:blur(10px);
+    border:1px solid var(--border);border-radius:20px;
+    overflow:hidden;cursor:pointer;transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .showcase-card:hover{transform:translateY(-8px);border-color:rgba(127,82,255,0.55);box-shadow:0 0 0 1px rgba(127,82,255,0.3), 0 28px 56px -20px rgba(127,82,255,0.45);}
+  .showcase-cover{
+    height:180px;position:relative;display:flex;align-items:flex-end;padding:18px;
+    overflow:hidden;
+  }
+  .showcase-cover::before{
+    content:'';position:absolute;inset:0;
+    background-image:radial-gradient(rgba(255,255,255,0.18) 1.5px, transparent 1.5px);
+    background-size:22px 22px;opacity:0.5;
+  }
+  .showcase-radius{
+    position:relative;font-family:'JetBrains Mono';font-size:12px;font-weight:600;
+    color:#0B0C12;background:rgba(255,255,255,0.85);padding:6px 12px;border-radius:20px;
+  }
+  .showcase-body{padding:26px;}
+  .showcase-eyebrow{font-family:'JetBrains Mono';font-size:11.5px;color:var(--orange);display:block;margin-bottom:8px;}
+  .showcase-body h3{font-size:21px;margin-bottom:10px;}
+  .showcase-body p{color:var(--text-muted);font-size:14px;margin-bottom:18px;min-height:64px;}
+  .showcase-open{
+    display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono';font-size:13px;
+    color:var(--purple-soft);
+  }
+  .showcase-card:hover .arrow{transform:translateX(4px);}
+  .arrow{display:inline-block;transition:transform .25s ease;}
+
+  /* PROJECT DETAIL SLIDE-IN */
+  .project-overlay{
+    position:fixed;inset:0;z-index:200;background:rgba(6,7,11,0.72);backdrop-filter:blur(6px);
+    opacity:0;pointer-events:none;transition:opacity .35s ease;
+    display:flex;justify-content:flex-end;
+  }
+  .project-overlay.open{opacity:1;pointer-events:auto;}
+  .project-panel{
+    width:min(560px,92vw);height:100%;background:rgba(20,21,31,0.92);backdrop-filter:blur(16px);
+    border-left:1px solid rgba(167,139,255,0.35);box-shadow:-30px 0 60px -20px rgba(127,82,255,0.35);
+    transform:translateX(100%);transition:transform .45s cubic-bezier(.16,1,.3,1);
+    overflow-y:auto;position:relative;padding:40px;
+  }
+  .project-overlay.open .project-panel{transform:translateX(0);}
+  .project-close{
+    position:absolute;top:24px;right:24px;width:36px;height:36px;border-radius:9px;
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    cursor:pointer;font-size:15px;transition:all .2s;
+  }
+  .project-close:hover{border-color:var(--purple-soft);color:var(--purple-soft);}
+  .pd-cover{height:160px;border-radius:16px;margin-bottom:26px;}
+  .pd-eyebrow{font-family:'JetBrains Mono';font-size:12px;color:var(--orange);display:block;margin-bottom:8px;}
+  .pd-title{font-size:28px;margin-bottom:14px;}
+  .pd-desc{color:var(--text-muted);font-size:14.5px;margin-bottom:24px;}
+  .pd-list{display:flex;flex-direction:column;gap:12px;margin-bottom:26px;}
+  .pd-list li{list-style:none;display:flex;gap:10px;font-size:14px;color:var(--text-muted);}
+  .pd-list li::before{content:'▹';color:var(--purple-soft);flex-shrink:0;}
+  .pd-list b{color:var(--text);font-weight:500;}
+  .pd-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+  .pd-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .pd-note{margin-top:16px;font-size:12px;color:var(--text-muted);}
+
+  /* CONTACT */
+  .contact-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:50px;align-items:center;}
+  .contact-cards{display:flex;flex-direction:column;gap:12px;}
+  .contact-card{
+    display:flex;align-items:center;gap:14px;padding:16px 18px;
+    background:rgba(20,21,31,0.55);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:12px;
+    transition:all .2s;
+  }
+  .contact-card:hover{border-color:rgba(167,139,255,0.5);transform:translateX(4px);box-shadow:0 0 20px -6px rgba(127,82,255,0.4);}
+  .contact-card .ic{
+    width:38px;height:38px;border-radius:10px;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;color:var(--orange);font-family:'JetBrains Mono';font-weight:600;font-size:13px;flex-shrink:0;
+  }
+  .contact-card .lbl{font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono';}
+  .contact-card .val{font-size:14.5px;font-weight:500;}
+  .cta-panel{
+    background:linear-gradient(155deg, var(--surface), var(--surface-2));
+    border:1px solid var(--border);border-radius:20px;padding:44px;position:relative;overflow:hidden;
+  }
+  .cta-panel::after{
+    content:'';position:absolute;width:220px;height:220px;border-radius:50%;
+    background:var(--grad);opacity:0.15;filter:blur(60px);top:-60px;right:-60px;
+  }
+  .cta-panel h3{font-size:26px;margin-bottom:12px;position:relative;}
+  .cta-panel p{color:var(--text-muted);font-size:14.5px;margin-bottom:24px;position:relative;}
+
+  footer{padding:32px 0;border-top:1px solid var(--border);position:relative;z-index:1;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  footer p{font-size:12.5px;color:var(--text-muted);font-family:'JetBrains Mono';}
+  footer .socials{display:flex;gap:16px;}
+  footer .socials a{font-size:12.5px;color:var(--text-muted);}
+  footer .socials a:hover{color:var(--purple-soft);}
+
+  @media(max-width:1080px){
+    .hero-grid{grid-template-columns:1fr;}
+    .phone-stage{height:420px;margin-top:20px;}
+    .phone{width:210px;height:420px;}
+    .about-grid, .contact-grid{grid-template-columns:1fr !important;}
+    .showcase-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .hero h1{font-size:38px;}
+    .orbit-badge{display:none;}
+    .hud-corner{display:none;}
+    .glow-ring{width:220px;height:220px;}
+  }
+  @media(max-width:760px){
+    .hero-stats{flex-wrap:wrap;gap:24px;}
+    section{padding:70px 0;}
+  }
+  
+</style>
+</head>
+<body>
+<div id="portfolio-load-status" aria-hidden="true" style="display:none"></div>
+
+<div class="bg-grid"></div>
+<div class="scan-overlay"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><div class="logo-mark">SD</div>Shubham Diwakar</div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#work">Work</a>
+      <a href="#showcase">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="nav-cta">Let's talk</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Available for opportunities<span class="cursor-blink"></span></div>
+      <h1>Building <span>Android &amp; Flutter</span> apps that businesses run on.</h1>
+      <p class="lede">Software developer with 3 years shipping SaaS, B2B, and e-commerce mobile apps in Kotlin and Flutter — from payment integrations to POS systems serving thousands of businesses.</p>
+      <div class="hero-ctas">
+        <a href="#work" class="btn btn-primary">View my work</a>
+        <a href="#contact" class="btn btn-ghost">Let's connect</a>
+      </div>
+      <div class="hero-stats">
+        <div><span class="num">3+</span><span class="lbl">years experience</span></div>
+        <div><span class="num">5000+</span><span class="lbl">businesses served</span></div>
+        <div><span class="num">8</span><span class="lbl">apps shipped</span></div>
+      </div>
+    </div>
+
+    <div class="phone-stage" id="phoneStage">
+      <div class="hud-corner hud-tl"></div>
+      <div class="hud-corner hud-tr"></div>
+      <div class="hud-corner hud-bl"></div>
+      <div class="hud-corner hud-br"></div>
+      <div class="glow-ring"></div>
+      <div class="orbit-badge ob1">Kotlin</div>
+      <div class="orbit-badge ob2"><b>Jetpack</b> Compose</div>
+      <div class="orbit-badge ob3">Flutter</div>
+      <div class="orbit-badge ob4">Firebase</div>
+      <div class="orbit-badge ob5">MVVM</div>
+
+      <div class="phone" id="phone">
+        <div class="phone-screen">
+          <div class="screen-slide active" data-i="0">
+            <div class="screen-app-name">vasyerp.self-kiosk</div>
+            <div class="screen-title">Self-Kiosk</div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-btn">Book appointment</div>
+          </div>
+          <div class="screen-slide" data-i="1">
+            <div class="screen-app-name">vasyerp.mpos</div>
+            <div class="screen-title">mPOS Security</div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-btn">Verify &amp; unlock</div>
+          </div>
+          <div class="screen-slide" data-i="2">
+            <div class="screen-app-name">shrivani.pay</div>
+            <div class="screen-title">UPI Checkout</div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-btn">Pay ₹1,240</div>
+          </div>
+          <div class="screen-slide" data-i="3">
+            <div class="screen-app-name">grocmart.cart</div>
+            <div class="screen-title">GrocMart</div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-bar"><div class="chip"></div><div class="lines"><i></i><i></i></div></div>
+            <div class="screen-btn">Checkout</div>
+          </div>
+        </div>
+      </div>
+      <div class="dots-nav" id="dotsNav">
+        <span class="active"></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">01 · About</span>
+      <h2>Turning Kotlin and Dart into products people rely on</h2>
+    </div>
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I'm an Android &amp; Flutter developer based in Ahmedabad with three years of experience building SaaS, B2B, e-commerce, and enterprise mobile applications.</p>
+        <p>I work across native Android (Kotlin, Jetpack Compose, XML) and cross-platform Flutter, with deep experience in REST APIs, MVVM/Clean Architecture, and payment integrations like UPI and Razorpay.</p>
+        <p>My focus is on shipping secure, scalable, user-friendly apps that move real business metrics — faster checkouts, fewer fraudulent logins, higher order accuracy.</p>
+      </div>
+      <div class="skill-groups reveal">
+        <div>
+          <div class="skill-group-label">// languages &amp; concepts</div>
+          <div class="skill-chips">
+            <span class="chip">Kotlin</span><span class="chip">Java</span><span class="chip">Dart</span><span class="chip">XML</span><span class="chip">OOPS</span><span class="chip">Spring Boot</span>
+          </div>
+        </div>
+        <div>
+          <div class="skill-group-label">// mobile development</div>
+          <div class="skill-chips">
+            <span class="chip">Android (Compose)</span><span class="chip">Flutter</span><span class="chip">Material Design</span><span class="chip">Postman</span>
+          </div>
+        </div>
+        <div>
+          <div class="skill-group-label">// architecture</div>
+          <div class="skill-chips">
+            <span class="chip">MVVM</span><span class="chip">Clean Architecture</span><span class="chip">DI</span><span class="chip">Bloc</span><span class="chip">Riverpod</span><span class="chip">Dio</span><span class="chip">Chopper</span>
+          </div>
+        </div>
+        <div>
+          <div class="skill-group-label">// integrations &amp; services</div>
+          <div class="skill-chips">
+            <span class="chip">UPI</span><span class="chip">Razorpay</span><span class="chip">Firebase Auth</span><span class="chip">FCM</span><span class="chip">Realtime DB</span><span class="chip">RoomDB</span><span class="chip">Google Maps</span><span class="chip">Cloudinary</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">02 · Experience</span>
+      <h2>Where I've built things</h2>
+    </div>
+    <div class="timeline reveal">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <div><span class="tl-role">Android &amp; Flutter Developer</span><br><span class="tl-company">VasyERP, Ahmedabad</span></div>
+          <span class="tl-date">May 2023 — Present</span>
+        </div>
+        <ul class="tl-list">
+          <li><b>Self-Kiosk Appointment App</b> — cut manual booking effort by 40% with real-time scheduling.</li>
+          <li><b>Price Checker App</b> — QR-based product scanner, cutting price lookup time by 50%.</li>
+          <li><b>Vorder (B2B Sales Order App)</b> — automated billing, taxation and order workflows for 1,000+ businesses, on both Android native and Flutter.</li>
+          <li><b>mPOS Application</b> — added a 3-attempt blocking mechanism, cutting fraudulent logins by 35% across 4,000+ businesses.</li>
+          <li><b>Shrivani App</b> — UPI payment integration and transaction history module for seamless digital payments.</li>
+          <li><b>Iscon Ghathiya POS</b> — barcode scanning, Bluetooth receipt printing, and order history, speeding checkout by 40%.</li>
+          <li><b>Plova Infotech (Flutter)</b> — sales, purchase and Razorpay payment workflows with GST &amp; Aadhaar-based onboarding.</li>
+          <li><b>GrocMart</b> — cart and order management in Jetpack Compose with Clean Architecture.</li>
+          <li><b>API design</b> — led API development in Spring Boot, deployed for GrocMart and GrocMart Owner.</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <div><span class="tl-role">Android Developer Intern</span><br><span class="tl-company">Enjay IT Solutions, Bhilad, Gujarat</span></div>
+          <span class="tl-date">Dec 2022 — Apr 2023</span>
+        </div>
+        <ul class="tl-list">
+          <li>Implemented <b>Room DB</b>, SharedPreferences and Firebase (Realtime DB, Storage, Auth) for secure data handling.</li>
+          <li>Built a <b>fitness app</b> with activity-tracking features to improve user engagement.</li>
+          <li>Developed Android apps with <b>Kotlin/XML</b>, focused on smooth UI/UX.</li>
+          <li>Collaborated in an agile team to deliver apps on time, on quality.</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-head">
+          <div><span class="tl-role">B.Tech, Information Technology</span><br><span class="tl-company">Rec Ambedkar-Nagar</span></div>
+          <span class="tl-date">2018 — 2022</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-head reveal highlight">
+      <span class="section-tag">03 · Selected work</span>
+      <h2>Apps in production</h2>
+      <p>Live product experiences built for businesses, shown here in a tablet-style interactive showcase.</p>
+    </div>
+    <div class="production-tablet-section reveal">
+      <div class="tablet-layout">
+        <div class="tablet-device">
+          <div class="tablet-screen">
+            <div class="tablet-content" id="tabletSlides">
+              <div class="tablet-slide active" data-index="0">
+                <span class="slide-badge">Appointment kiosk</span>
+                <h3 class="slide-title">Self-Kiosk</h3>
+                <p class="slide-desc">A touch-first appointment scheduling app used in live clinics and salons, reducing walk-in management time by 40%.</p>
+                <div class="slide-meta">
+                  <span class="slide-chip">Kotlin</span>
+                  <span class="slide-chip">Firebase</span>
+                </div>
+              </div>
+              <div class="tablet-slide" data-index="1">
+                <span class="slide-badge">Retail scanner</span>
+                <h3 class="slide-title">Price Checker</h3>
+                <p class="slide-desc">A QR-powered in-store scanner that makes product pricing instant for cashiers and customers alike.</p>
+                <div class="slide-meta">
+                  <span class="slide-chip">Kotlin</span>
+                  <span class="slide-chip">CameraX</span>
+                </div>
+              </div>
+              <div class="tablet-slide" data-index="2">
+                <span class="slide-badge">Sales automation</span>
+                <h3 class="slide-title">Vorder</h3>
+                <p class="slide-desc">A B2B order entry app that automates billing, taxation, and workflows for merchants and field teams.</p>
+                <div class="slide-meta">
+                  <span class="slide-chip">Android</span>
+                  <span class="slide-chip">REST</span>
+                </div>
+              </div>
+              <div class="tablet-slide" data-index="3">
+                <span class="slide-badge">Payment terminal</span>
+                <h3 class="slide-title">mPOS</h3>
+                <p class="slide-desc">A secure mobile point-of-sale interface with fraud-resilient lockout and fast checkout flows.</p>
+                <div class="slide-meta">
+                  <span class="slide-chip">Kotlin</span>
+                  <span class="slide-chip">Security</span>
+                </div>
+              </div>
+              <div class="tablet-slide" data-index="4">
+                <span class="slide-badge">Payments experience</span>
+                <h3 class="slide-title">Shrivani</h3>
+                <p class="slide-desc">A UPI-powered payments interface with clean transaction history and transparent transaction flows.</p>
+                <div class="slide-meta">
+                  <span class="slide-chip">UPI</span>
+                  <span class="slide-chip">Razorpay</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tablet-controls">
+            <button class="control-btn" id="tabletPrev" aria-label="Previous project">‹</button>
+            <div class="tablet-dots" id="tabletDots"></div>
+            <button class="control-btn" id="tabletNext" aria-label="Next project">›</button>
+          </div>
+        </div>
+        <div class="content-panel">
+          <span class="slide-label">Tablet showcase</span>
+          <h3>Swipe through production apps in a tablet view.</h3>
+          <p>This carousel is designed to mimic a tablet interface while keeping the work section clean, immersive, and easy to navigate.</p>
+          <div class="tag-list">
+            <span>Business-ready</span>
+            <span>Tablet UI</span>
+            <span>Production live</span>
+            <span>Interactive</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="showcase">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">04 · Personal projects</span>
+      <h2>Built end-to-end, backend and all</h2>
+      <p>Two projects where I owned the full stack — API, database, and product. Click either one to see it up close.</p>
+    </div>
+    <div class="showcase-grid">
+      <div class="showcase-card reveal" onclick="openProject('grocmart')">
+        <div class="showcase-cover" style="background:linear-gradient(135deg,#5A3ACF,#FF6B4A);">
+          <span class="showcase-radius">5–6 km</span>
+        </div>
+        <div class="showcase-body">
+          <span class="showcase-eyebrow">Hyperlocal marketplace</span>
+          <h3>GrocMart</h3>
+          <p>Connects users with local grocery, paan, fruit, vegetable and kirana stores within a 5–6 km radius — built for both shoppers and merchants.</p>
+          <div class="showcase-open">View project <span class="arrow">→</span></div>
+        </div>
+      </div>
+      <div class="showcase-card reveal" onclick="openProject('portfolio')">
+        <div class="showcase-cover" style="background:linear-gradient(135deg,#7F52FF,#3C3489);">
+          <span class="showcase-radius">Form → live site</span>
+        </div>
+        <div class="showcase-body">
+          <span class="showcase-eyebrow">SaaS website builder</span>
+          <h3>Portfolio Builder</h3>
+          <p>A user fills out a form and gets a complete, hosted portfolio website back — full backend and database behind it.</p>
+          <div class="showcase-open">View project <span class="arrow">→</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="project-overlay" id="projectOverlay">
+  <div class="project-panel" id="projectPanel">
+    <button class="project-close" onclick="closeProject()">✕</button>
+    <div id="projectContent"></div>
+  </div>
+</div>
+
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div class="reveal">
+      <span class="section-tag">05 · Contact</span>
+      <h2 style="font-size:36px;margin-bottom:20px;">Let's build something for your business</h2>
+      <div class="contact-cards">
+        <a class="contact-card" href="mailto:shubhamdiwakar2698@gmail.com">
+          <div class="ic">@</div>
+          <div><div class="lbl">Email</div><div class="val">shubhamdiwakar2698@gmail.com</div></div>
+        </a>
+        <a class="contact-card" href="tel:+918303312581">
+          <div class="ic">#</div>
+          <div><div class="lbl">Phone</div><div class="val">+91 83033 12581</div></div>
+        </a>
+        <a class="contact-card" href="https://www.linkedin.com/in/shubham-android-developer">
+          <div class="ic">in</div>
+          <div><div class="lbl">LinkedIn</div><div class="val">linkedin.com/in/shubham-android-developer</div></div>
+        </a>
+        <a class="contact-card" href="https://github.com/ShubhamDiwa">
+          <div class="ic">gh</div>
+          <div><div class="lbl">GitHub</div><div class="val">github.com/ShubhamDiwa</div></div>
+        </a>
+        <div class="contact-card" style="cursor:default;">
+          <div class="ic">loc</div>
+          <div><div class="lbl">Location</div><div class="val">Ahmedabad, India</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-panel reveal">
+      <h3>Open to Android &amp; Flutter roles</h3>
+      <p>3 years shipping production apps across SaaS, POS, and payments. Currently open to new opportunities and freelance work.</p>
+      <a href="mailto:shubhamdiwakar2698@gmail.com" class="btn btn-primary" style="position:relative;">Email me directly</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 Shubham Diwakar — Built with Kotlin energy.</p>
+    <div class="socials">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+<div class="footer-social-links" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+<a href="https://www.linkedin.com/in/shubham-android-developer" target="_blank" rel="noopener">LinkedIn ↗</a>
+<a href="https://github.com/ShubhamDiwa" target="_blank" rel="noopener">GitHub ↗</a>
+</div>
+</footer>
+
+<script>
+  // scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:0.15});
+  reveals.forEach(r=>io.observe(r));
+
+  // phone parallax tilt
+  const stage = document.getElementById('phoneStage');
+  const phone = document.getElementById('phone');
+  stage.addEventListener('mousemove',(e)=>{
+    const rect = stage.getBoundingClientRect();
+    const x = (e.clientX - rect.left)/rect.width - 0.5;
+    const y = (e.clientY - rect.top)/rect.height - 0.5;
+    phone.style.transform = `rotateY(${x*22}deg) rotateX(${-y*22}deg)`;
+  });
+  stage.addEventListener('mouseleave',()=>{
+    phone.style.transform = 'rotateY(0deg) rotateX(0deg)';
+  });
+
+  // screen slide cycle
+  const slides = document.querySelectorAll('.screen-slide');
+  const dots = document.querySelectorAll('#dotsNav span');
+  let cur = 0;
+  setInterval(()=>{
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = (cur+1)%slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+  },3200);
+
+  // personal project detail slide-in panels
+  const projects = {
+    sk: {
+      cover: 'linear-gradient(135deg,#7F52FF,#5A3ACF)',
+      eyebrow: 'VasyERP · Android',
+      title: 'Self-Kiosk Appointment App',
+      desc: 'A self-service kiosk app that lets customers book appointments in real time on the spot, removing manual front-desk booking entirely.',
+      list: [
+        '<b>Real-time scheduling</b> — live slot availability, no manual coordination needed.',
+        '<b>40% less manual effort</b> — booking work shifted from staff to the kiosk itself.',
+        '<b>Improved convenience</b> — customers self-serve at their own pace.'
+      ],
+      tags: ['Kotlin','MVVM','Firebase'],
+      actions: '',
+      note: ''
+    },
+    pc: {
+      cover: 'linear-gradient(135deg,#FF6B4A,#D8492C)',
+      eyebrow: 'VasyERP · Android',
+      title: 'Price Checker App',
+      desc: 'An in-store QR scanner that lets shoppers check product prices instantly, cutting the time staff previously spent on manual lookups.',
+      list: [
+        '<b>QR-based scanning</b> — point, scan, see the price.',
+        '<b>50% faster lookups</b> — replaced manual price-checking with an instant scan.',
+        '<b>Better shopping experience</b> — fewer queues at the help desk.'
+      ],
+      tags: ['Kotlin','Camera X','MVVM'],
+      actions: '',
+      note: ''
+    },
+    vo: {
+      cover: 'linear-gradient(135deg,#7F52FF,#FF6B4A)',
+      eyebrow: 'VasyERP · Android & iOS',
+      title: 'Vorder — B2B Sales Order App',
+      desc: 'A B2B sales order platform automating billing, taxation, and order workflows for over 1,000 businesses, built and shipped natively across Android and iOS.',
+      list: [
+        '<b>Automated billing & taxation</b> — removed manual, error-prone order entry.',
+        '<b>1,000+ businesses served</b> — running in production at scale.',
+        '<b>Cross-platform</b> — native builds on both Android and iOS.'
+      ],
+      tags: ['Android','iOS','REST API','MVVM'],
+      actions: '',
+      note: ''
+    },
+    mp: {
+      cover: 'linear-gradient(135deg,#A78BFF,#7F52FF)',
+      eyebrow: 'VasyERP · Android',
+      title: 'mPOS Application',
+      desc: 'A point-of-sale app hardened against fraudulent access with a 3-attempt account-lock mechanism, protecting 4,000+ business and international clients.',
+      list: [
+        '<b>3-attempt lockout</b> — cut fraudulent login attempts by 35%.',
+        '<b>4,000+ businesses</b> — including international onboarding.',
+        '<b>Streamlined account management</b> — fewer security vulnerabilities overall.'
+      ],
+      tags: ['Kotlin','Security','MVVM'],
+      actions: '',
+      note: ''
+    },
+    sh: {
+      cover: 'linear-gradient(135deg,#FF6B4A,#A78BFF)',
+      eyebrow: 'VasyERP · Android',
+      title: 'Shrivani App',
+      desc: 'A retail app with UPI payment integration and a transparent transaction history module, giving both merchants and customers a clear digital payment trail.',
+      list: [
+        '<b>UPI payments</b> — seamless, secure digital checkout.',
+        '<b>Transaction history</b> — a transparent, always-available payment record.'
+      ],
+      tags: ['UPI','Razorpay','Kotlin'],
+      actions: '',
+      note: ''
+    },
+    gm2: {
+      cover: 'linear-gradient(135deg,#5A3ACF,#FF6B4A)',
+      eyebrow: 'VasyERP · Android',
+      title: 'GrocMart — Cart & Orders',
+      desc: 'Built the cart and order-management features inside the GrocMart e-commerce app using Jetpack Compose and Clean Architecture, plus led the API design in Spring Boot for GrocMart and GrocMart Owner.',
+      list: [
+        '<b>Jetpack Compose UI</b> — smooth cart and checkout experience.',
+        '<b>Clean Architecture</b> — maintainable, testable feature layer.',
+        '<b>API design</b> — led and deployed Spring Boot services for both apps.'
+      ],
+      tags: ['Compose','Clean Architecture','Spring Boot'],
+      actions: '',
+      note: ''
+    },
+    pt: {
+      cover: 'linear-gradient(135deg,#7F52FF,#A78BFF)',
+      eyebrow: 'Plova Infotech · Flutter',
+      title: 'Plova Tiles',
+      desc: 'A cross-platform Flutter app streamlining sales, purchase, and payment workflows with Razorpay integration, plus faster GST and Aadhaar-based onboarding.',
+      list: [
+        '<b>Cross-platform Flutter</b> — one codebase, Android and iOS.',
+        '<b>Razorpay integration</b> — secure, seamless transactions.',
+        '<b>Faster onboarding</b> — GST and Aadhaar-based flows.',
+        '<b>Credit-based insights</b> — business-facing financial visibility.'
+      ],
+      tags: ['Flutter','Razorpay','Cross-platform'],
+      actions: '',
+      note: ''
+    },
+    ft: {
+      cover: 'linear-gradient(135deg,#D8492C,#7F52FF)',
+      eyebrow: 'Enjay IT Solutions · Android',
+      title: 'Fitness App',
+      desc: 'A full-fledged fitness tracker built during my internship, with activity-tracking features designed to improve day-to-day user engagement.',
+      list: [
+        '<b>Activity tracking</b> — logs daily fitness activity.',
+        '<b>Room DB & Firebase</b> — Realtime DB, Storage, and Auth for secure local + cloud data handling.',
+        '<b>Kotlin/XML UI</b> — built for smooth, responsive interaction.'
+      ],
+      tags: ['Kotlin','Room DB','Firebase'],
+      actions: '',
+      note: ''
+    },
+    grocmart: {
+      cover: 'linear-gradient(135deg,#5A3ACF,#FF6B4A)',
+      eyebrow: 'Hyperlocal marketplace · Android & Flutter',
+      title: 'GrocMart',
+      desc: 'A two-sided marketplace connecting everyday shoppers with local sellers — grocery stores, paan houses, fruit and vegetable sellers, and registered kirana stores — all within a 5–6 km radius. Built and shipped both the consumer app and the merchant-facing app, plus the backend and database powering both.',
+      list: [
+        '<b>Consumer app</b> — browse nearby registered sellers by category, place orders, and track them in real time.',
+        '<b>Merchant app</b> — sellers manage catalog, inventory, and incoming orders from one dashboard.',
+        '<b>Location-aware discovery</b> — surfaces only sellers within a 5–6 km radius of the shopper.',
+        '<b>Full backend & database</b> — REST API and data layer built and deployed end to end.'
+      ],
+      tags: ['Android','Flutter','Jetpack Compose','Spring Boot','Firebase','REST API'],
+      actions: `<a href="#" class="btn btn-primary">Download APK ↓</a><a href="#" class="btn btn-ghost">Merchant app ↓</a>`,
+      note: 'Add your GitHub Release or Play Store link here to make these buttons live.'
+    },
+    portfolio: {
+      cover: 'linear-gradient(135deg,#7F52FF,#3C3489)',
+      eyebrow: 'SaaS website builder · Full stack',
+      title: 'Portfolio Builder',
+      desc: "A self-serve tool where a user fills out a short form — name, work, projects, links — and gets back a complete, hosted portfolio website. Built the form flow, the site-generation logic, and the backend and database that store each user's content.",
+      list: [
+        '<b>Form-driven generation</b> — structured input turns straight into a live, styled site.',
+        "<b>Backend &amp; database</b> — every user's content is persisted and re-editable.",
+        '<b>Instant hosting</b> — the generated site is live immediately, no manual deployment.'
+      ],
+      tags: ['Full-stack','Backend','Database','Forms','Hosting'],
+      actions: `<a href="#" class="btn btn-primary">Visit website ↗</a>`,
+      note: 'Add your live portfolio-builder URL here to make this link real.'
+    }
+  };
+
+  const overlay = document.getElementById('projectOverlay');
+  const content = document.getElementById('projectContent');
+  const glow = document.getElementById('cursorGlow');
+
+  function openProject(key){
+    const p = projects[key];
+    content.innerHTML = `
+      <div class="pd-cover" style="background:${p.cover};"></div>
+      <span class="pd-eyebrow">${p.eyebrow}</span>
+      <h3 class="pd-title">${p.title}</h3>
+      <p class="pd-desc">${p.desc}</p>
+      <ul class="pd-list">${p.list.map(l=>`<li>${l}</li>`).join('')}</ul>
+      <div class="pd-tags">${p.tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+      ${p.actions ? `<div class="pd-actions">${p.actions}</div>` : ''}
+      ${p.note ? `<div class="pd-note">${p.note}</div>` : ''}
+    `;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeProject(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closeProject(); });
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeProject(); });
+
+  // tablet slideshow
+  const tabletSlides = document.querySelectorAll('.tablet-slide');
+  const tabletDots = document.getElementById('tabletDots');
+  const tabletPrev = document.getElementById('tabletPrev');
+  const tabletNext = document.getElementById('tabletNext');
+  let tabletIndex = 0;
+  let tabletAutoPlay;
+
+  const switchTabletSlide = (index) => {
+    tabletSlides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    document.querySelectorAll('.tablet-dots button').forEach((dot, i) => dot.classList.toggle('active', i === index));
+  };
+
+  const createTabletDots = () => {
+    if (!tabletDots) return;
+    tabletDots.innerHTML = '';
+    tabletSlides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.addEventListener('click', () => {
+        tabletIndex = i;
+        switchTabletSlide(tabletIndex);
+      });
+      if (i === 0) dot.classList.add('active');
+      tabletDots.appendChild(dot);
+    });
+  };
+
+  const nextTabletSlide = () => {
+    tabletIndex = (tabletIndex + 1) % tabletSlides.length;
+    switchTabletSlide(tabletIndex);
+  };
+  const prevTabletSlide = () => {
+    tabletIndex = (tabletIndex - 1 + tabletSlides.length) % tabletSlides.length;
+    switchTabletSlide(tabletIndex);
+  };
+
+  tabletPrev?.addEventListener('click', prevTabletSlide);
+  tabletNext?.addEventListener('click', nextTabletSlide);
+
+  const resetTabletAutoplay = () => {
+    clearInterval(tabletAutoPlay);
+    tabletAutoPlay = setInterval(nextTabletSlide, 5200);
+  };
+
+  createTabletDots();
+  resetTabletAutoplay();
+
+  document.querySelector('.production-tablet-section')?.addEventListener('mouseenter', () => clearInterval(tabletAutoPlay));
+  document.querySelector('.production-tablet-section')?.addEventListener('mouseleave', resetTabletAutoplay);
+
+  document.addEventListener('mousemove',(e)=>{
+    glow.style.opacity = '1';
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+  document.addEventListener('mouseleave',()=>{ glow.style.opacity = '0'; });
+</script>
+
+</body>
+</html>

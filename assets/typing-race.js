@@ -1,5 +1,5 @@
 import { draftChat } from './chat-draft.js';
-import { prompts, wordsPerMinute } from './typing-prompts.mjs';
+import { normalizeTyping, prompts, wordsPerMinute } from './typing-prompts.mjs';
 
 const byId = id => document.getElementById(id);
 const join = byId('typingJoin');
@@ -46,7 +46,7 @@ function showRoom() {
   }
   entry.hidden = score !== null;
   const scores = room.scores.map((value, index) => `P${index + 1} ${value === null ? 'typing' : value + ' WPM'}`).join(' · ');
-  status.textContent = room.winner ? `Player ${room.winner} won. ${scores}` : 'Type the message exactly, then press Finish.';
+  status.textContent = room.winner ? `Player ${room.winner} won. ${scores}` : 'Type the message, then press Finish.';
 }
 
 async function sync(action, fields = {}) {
@@ -90,7 +90,7 @@ byId('typingSolo').addEventListener('click', () => {
   if (busy) return;
   showSession();
   prompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
-  status.textContent = 'Type the message exactly, then press Finish.';
+  status.textContent = 'Type the message, then press Finish.';
   entry.hidden = false;
   input.focus({ preventScroll: true });
   soloStart = performance.now();
@@ -102,8 +102,13 @@ join.addEventListener('submit', event => {
 });
 entry.addEventListener('submit', event => {
   event.preventDefault();
-  if (input.value !== prompt.textContent) {
-    status.textContent = 'Match the prompt exactly to finish.';
+  const typed = normalizeTyping(input.value);
+  const expected = normalizeTyping(prompt.textContent);
+  if (typed !== expected) {
+    const index = [...expected].findIndex((character, i) => character !== typed[i]);
+    status.textContent = index === -1 ? 'Remove the extra text after the prompt.' :
+      `Check character ${index + 1}. Expected ${expected[index] === ' ' ? 'a space' : '“' + expected[index] + '”'}.`;
+    input.focus();
     return;
   }
   if (room) {
@@ -115,7 +120,7 @@ entry.addEventListener('submit', event => {
     return;
   }
   if (soloStart === undefined || recorded) return;
-  const score = wordsPerMinute(input.value, performance.now() - soloStart);
+  const score = wordsPerMinute(prompt.textContent, performance.now() - soloStart);
   record(score);
   status.textContent = `Finished · ${score} WPM.`;
   entry.hidden = true;

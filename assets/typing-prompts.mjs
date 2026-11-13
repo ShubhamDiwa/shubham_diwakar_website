@@ -7,3 +7,7 @@ export const prompts = [
 export function wordsPerMinute(prompt, elapsedMs) {
   return Math.min(300, Math.round(prompt.length * 12000 / Math.max(1000, elapsedMs)));
 }
+
+export function normalizeTyping(text) {
+  return text.trim().replace(/\s+/g, ' ').toLowerCase();
+}

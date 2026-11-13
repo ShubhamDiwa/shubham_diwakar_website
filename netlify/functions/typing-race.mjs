@@ -1,6 +1,6 @@
 import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
-import { prompts, wordsPerMinute } from '../../assets/typing-prompts.mjs';
+import { normalizeTyping, prompts, wordsPerMinute } from '../../assets/typing-prompts.mjs';
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 const codePattern = /^[A-F0-9]{10}$/;
@@ -46,8 +46,11 @@ export function makeTypingHandler(openStore) {
           if (action === 'poll' || action === 'join' || (action === 'finish' && room.scores[player] !== null)) return view(code, room, player, now);
           if (action !== 'finish') return json({ error: 'Unknown action.' }, 400);
           if (!room.start || now < room.start) return json({ error: 'Wait for the race to start.' }, 409);
-          if (text !== prompts[room.prompt]) return json({ error: 'Match the prompt exactly to finish.' }, 400);
-          room.scores[player] = wordsPerMinute(text, now - room.start);
+          const prompt = prompts[room.prompt];
+          if (typeof text !== 'string' || text.length > 250 || normalizeTyping(text) !== normalizeTyping(prompt)) {
+            return json({ error: 'Check the wording and punctuation against the prompt.' }, 400);
+          }
+          room.scores[player] = wordsPerMinute(prompt, now - room.start);
           room.winner ??= player + 1;
         }
         if ((await store.setJSON(code, room, { onlyIfMatch: saved.etag })).modified) return view(code, room, player, now);

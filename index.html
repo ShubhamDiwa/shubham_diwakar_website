@@ -371,13 +371,28 @@ const teamMoments = {
   'Tech & QA': [['“Works on my machine.”', 'QA has a screen recording.'], ['“Just deploy it once.”', 'Someone already renamed the release branch.']]
 };
 const workdayTimeline = document.getElementById('workdayTimeline');
+const roleDayDetails = {
+  "Developer": [["Checking the build on the commute","The overnight test run has opinions."],["Open the sprint board","Yesterday’s ticket is back in progress."],["Chai and a failing test","The test passed right before you shared your screen."],["Push the last commit","The commit message is ‘Actually final’."]],
+  "DevOps": [["Check the overnight alerts","The quiet dashboard is suspicious."],["Morning pipeline check","One runner has been pending since dawn."],["Chai during a rollout","The deployment is at 99%. So is your stress."],["Hand off to on-call","The runbook gets one more sticky note."]],
+  "Data Analyst": [["Check yesterday’s refresh","The dashboard still thinks it’s yesterday."],["Open the numbers","A column changed names overnight."],["Chai and a SQL query","The join returned twice as many rows."],["Schedule the refresh","Tomorrow’s first meeting depends on it."]],
+  "Business Analyst": [["Read the meeting notes","There are three versions of the same decision."],["Map the workflow","Every team starts at a different step."],["Chai with a stakeholder","A five-minute chat reveals a missing requirement."],["Send the updated requirements","The sign-off is pencilled in."]],
+  "Data Scientist": [["Check the training run","It finished five minutes before your alarm."],["Review the experiment","The baseline is still annoyingly good."],["Chai while the notebook runs","Someone forgot to set the seed."],["Save the experiment","Future you deserves better than untitled.ipynb."]],
+  "Project Manager": [["Scan the project chat","Two blockers and a thumbs-up."],["Run the stand-up","The parking lot needs its own meeting."],["Chai between calls","You found a gap. Someone booked it."],["Send the handover","The next owner has been tagged twice."]],
+  "Sales & Support": [["Check the customer queue","The first reply came in before breakfast."],["Triage follow-ups","Every lead says ‘circle back next week.’"],["Chai between calls","The callback comes as you take the first sip."],["Update the CRM","The last call finally has notes."]],
+  "HR & Admin": [["Check today’s interviews","One candidate has a new time request."],["Open the onboarding checklist","A new joiner still needs a badge."],["Chai with a policy question","It starts with ‘asking for a friend.’"],["Send tomorrow’s invites","One calendar finally has a free slot."]],
+  "Finance": [["Check the overnight transactions","One line item already looks familiar."],["Open the reconciliation sheet","The difference is exactly one rupee."],["Chai while the sheet recalculates","The formulas are taking a break too."],["Save the reconciled workbook","It finally earns the word ‘final.’"]],
+  "Operations": [["Check the morning handover","One delivery moved overnight."],["Open the dispatch tracker","Three ETAs need confirming."],["Chai by the dashboard","A vendor calls just as the kettle clicks."],["Send the shift handover","Tomorrow’s first pickup is confirmed."]],
+  "Marketing & Design": [["Check the campaign feed","The comments have their own creative direction."],["Open the brief","The target audience is apparently everyone."],["Chai while exports run","The fourth format needs a different crop."],["Schedule the campaign","The final preview finally matches the brief."]],
+  "Tech & QA": [["Check the overnight test run","One flaky test is back for another round."],["Reproduce the first bug","It only fails on the oldest test device."],["Chai during regression","The suite is stuck on the login screen."],["Send the test report","The release has one last known issue."]]
+};
 let workdayMinute;
 let activeWorkdayRow = -1;
 
 function renderWorkday(team){
-  const scenarios = teamMoments[team];
+  const [commute, login, breakTime, logout] = roleDayDetails[team];
+  const scenarios = [commute, login, breakTime, ...teamMoments[team], logout];
   const rows = workdayMoments.map(([time, title, detail], index) => {
-    const scenario = scenarios[index - 3];
+    const scenario = scenarios[index];
     const row = document.createElement('li');
     row.className = 'row';
     const stamp = document.createElement('div');

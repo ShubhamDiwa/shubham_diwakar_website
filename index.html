@@ -472,6 +472,19 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </article>
 </section>
 
+<section id="game-leaderboard" aria-labelledby="leaderboardTitle">
+ <div class="dash">
+  <h3 id="leaderboardTitle">Game Leaderboard</h3>
+  <label>Game <select id="leaderboardGame"><option>Meeting Dodge</option><option>Chai Run</option><option>Deadline Dash</option></select></label>
+  <ol id="leaderboardEntries" style="padding-left:24px;margin:12px 0"></ol>
+  <p id="leaderboardStatus" role="status"></p>
+  <form id="leaderboardForm" class="actions">
+   <label>Nickname <input name="nickname" maxlength="24" required></label>
+   <button class="btn primary" type="submit">Post score</button>
+  </form>
+ </div>
+</section>
+
 <section class="portfolio" id="portfolio">
  <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
  <p style="max-width:750px;font-size:20px;line-height:1.65;color:#c8cbc5">Hi, I'm <b>Shubham Diwakar</b> — an Android developer working with Kotlin, Android and Flutter. Corporate Mazdoor is the fun side. Engineering is the serious side.</p>
@@ -489,6 +502,12 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 <footer>
  <div class="eyebrow">06 / Logout</div>
 <h2>SEE YOU<br>MONDAY.</h2><p>Corporate life ends here. The developer portfolio doesn't.</p><a class="btn primary" href="#home">BACK TO TOP ↑</a>
+ <div class="actions" style="justify-content:center"><button class="btn primary" id="punchOut" type="button">Punch Out</button></div>
+ <div class="dash" id="shiftReport" hidden>
+  <h3>Shift Report</h3>
+  <p id="shiftSummary"></p>
+  <button class="btn" id="shareShift" type="button">Share in Break Room</button>
+ </div>
 </footer>
 
 <div class="player" role="group" aria-label="Corporate Radio mini-player">
@@ -520,6 +539,7 @@ const ticCells = ticMarks.map((_, index) => {
     const winningLine = ticLines.find(line => line.every(square => ticMarks[square] === ticTurn));
     if (winningLine || ticMarks.every(Boolean)) {
       ticFinished = true;
+      if (winningLine) window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Local Tic-Tac-Toe', score: 1 } }));
       ticStatus.textContent = winningLine ? `Player ${ticTurn} wins!` : 'Draw. Time for a chai break.';
       winningLine?.forEach(square => ticCells[square].classList.add('winning-cell'));
       ticCells.forEach(square => square.setAttribute('aria-disabled', 'true'));
@@ -613,6 +633,7 @@ function gameFrame(now){
   }
   running = false;
   gameStatus.textContent = 'Shift over. Final score ' + score + '.';
+  window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Meeting Dodge', score } }));
   gameStart.disabled = false;
   gameStart.textContent = 'Play again';
   if (arena.contains(document.activeElement)) gameStart.focus();
@@ -896,6 +917,7 @@ function punchIn(){
 }
 
 function enterSite(){
+  window.dispatchEvent(new Event('office-punch-in'));
   stopIntroDiagnostics();
   document.getElementById('intro').classList.add('hide');
   document.body.style.overflow='auto';
@@ -1288,5 +1310,6 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/break-room.js"></script>
 <script type="module" src="/assets/tic-online.js"></script>
 <script type="module" src="/assets/office-games.js"></script>
+<script type="module" src="/assets/shift-report.js"></script>
 </body>
 </html>

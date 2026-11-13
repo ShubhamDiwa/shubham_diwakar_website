@@ -164,6 +164,7 @@ function checkCollision() {
   trays--;
   courier = [...home];
   if (!trays) {
+    window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Chai Run', score: deliveries } }));
     clearTimeout(runTimer);
     runTimer = undefined;
     start.textContent = 'Play again';
@@ -262,6 +263,7 @@ function updateDeadlineDash() {
   deadlineStart.textContent = 'Play again';
   deadlineTask.textContent = '';
   deadlineFeedback.textContent = `Time’s up. Final score ${dashScore}.`;
+  window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Deadline Dash', score: dashScore } }));
   return false;
 }
 

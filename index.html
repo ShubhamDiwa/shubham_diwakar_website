@@ -155,6 +155,10 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .break-room-log button{margin-left:8px;padding:6px}
 .meterrow .meter-slider{width:100%;height:28px;margin:2px 0 0;accent-color:var(--acid);cursor:ew-resize}
 .meterrow .meter-slider:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+.meeting-game{margin-top:20px;scroll-margin-top:90px}
+.meeting-game p{color:var(--muted);margin-top:8px}
+.meeting-game .actions{margin-top:16px}
+.meeting-game #meetingScore{color:var(--acid);font:13px ui-monospace,monospace}
 </style>
 </head>
 <body>
@@ -359,6 +363,23 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </div>
 </section>
 
+<section id="meeting-game" aria-labelledby="meetingGameTitle">
+ <div class="dash meeting-game">
+  <h3 id="meetingGameTitle">Meeting Dodge</h3>
+  <p>Join meetings that need you. Skip the ones that can be an email.</p>
+  <p id="meetingScore"></p>
+  <div role="status">
+   <p><strong id="meetingInvite"></strong></p>
+   <p id="meetingDetail"></p>
+  </div>
+  <div class="actions">
+   <button class="btn primary" id="meetingJoin" type="button">Join</button>
+   <button class="btn" id="meetingSkip" type="button">Skip</button>
+   <button class="btn primary" id="meetingNext" type="button" hidden>Next invite</button>
+  </div>
+ </div>
+</section>
+
 <section class="portfolio" id="portfolio">
  <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
  <p style="max-width:750px;font-size:20px;line-height:1.65;color:#c8cbc5">Hi, I'm <b>Shubham Diwakar</b> — an Android developer working with Kotlin, Android and Flutter. Corporate Mazdoor is the fun side. Engineering is the serious side.</p>
@@ -386,6 +407,59 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <script>
+const meetingInvites = [
+  ['Quick sync (no agenda)', 'Twelve attendees and no decision to make.', false, 'Ask for the update in chat.'],
+  ['Customer escalation', 'You have the details Support needs to unblock a customer.', true, 'Your context will save the team a round of follow-ups.'],
+  ['Read the weekly status deck', 'The deck is already in your inbox.', false, 'Read it when you have a minute.'],
+  ['Sign-off before launch', 'Your approval is the last thing holding up the release.', true, 'Join and make the decision.'],
+  ['Prep for the meeting about the meeting', 'The only agenda item is deciding on the next agenda.', false, 'Save the slot for chai.']
+];
+const meetingJoin = document.getElementById('meetingJoin');
+const meetingSkip = document.getElementById('meetingSkip');
+const meetingNext = document.getElementById('meetingNext');
+const meetingInvite = document.getElementById('meetingInvite');
+const meetingDetail = document.getElementById('meetingDetail');
+const meetingScore = document.getElementById('meetingScore');
+let meetingRound = 0;
+let meetingPoints = 0;
+
+function showMeeting(){
+  const [title, detail] = meetingInvites[meetingRound];
+  meetingInvite.textContent = title;
+  meetingDetail.textContent = detail;
+  meetingScore.textContent = `Invite ${meetingRound + 1}/${meetingInvites.length} · Score ${meetingPoints}`;
+  meetingJoin.hidden = meetingSkip.hidden = false;
+  meetingNext.hidden = true;
+}
+
+function answerMeeting(joined){
+  if (meetingJoin.hidden) return;
+  const [, , shouldJoin, explanation] = meetingInvites[meetingRound];
+  const correct = joined === shouldJoin;
+  if (correct) meetingPoints++;
+  const finished = meetingRound === meetingInvites.length - 1;
+  meetingScore.textContent = `Score ${meetingPoints}/${meetingInvites.length}`;
+  meetingInvite.textContent = correct ? 'Good call.' : 'Calendar regret.';
+  meetingDetail.textContent = explanation + (finished ? ` Final score ${meetingPoints} out of ${meetingInvites.length}.` : '');
+  meetingJoin.hidden = meetingSkip.hidden = true;
+  meetingNext.textContent = finished ? 'Play again' : 'Next invite';
+  meetingNext.hidden = false;
+  meetingNext.focus();
+}
+
+meetingJoin.addEventListener('click', () => answerMeeting(true));
+meetingSkip.addEventListener('click', () => answerMeeting(false));
+meetingNext.addEventListener('click', () => {
+  meetingRound++;
+  if (meetingRound === meetingInvites.length) {
+    meetingRound = 0;
+    meetingPoints = 0;
+  }
+  showMeeting();
+  meetingJoin.focus();
+});
+showMeeting();
+
 for (const slider of document.querySelectorAll('.meter-slider')) {
   const output = document.querySelector(`output[for="${slider.id}"]`);
   slider.addEventListener('input', () => {

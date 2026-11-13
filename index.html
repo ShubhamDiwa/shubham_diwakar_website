@@ -23,6 +23,8 @@ a{color:inherit;text-decoration:none} button{font:inherit}
 .introbrand span{color:var(--acid)}
 .terminal{margin-top:35px;text-align:left;border:1px solid var(--line);border-radius:18px;padding:24px;background:#0d0f0e;font:13px/1.8 ui-monospace,monospace;color:#aab0aa;box-shadow:0 30px 100px #000}
 .green{color:var(--acid)}
+.terminal .scan-error{color:var(--red)}
+.terminal{font-variant-numeric:tabular-nums}
 .cursor{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:0}}
 .btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--paper);border-radius:10px;padding:13px 17px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:.25s}
 .btn:hover{transform:translateY(-3px);border-color:var(--acid)}
@@ -138,10 +140,10 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  <div class="introbox">
   <div class="introbrand">CORPORATE<br><span>MAZDOOR™</span></div>
   <div class="terminal">
-   <div>&gt; scanning employee... <span class="green">FOUND</span></div>
+   <div>&gt; scanning employee... <span class="green" id="employeeScan">FOUND</span></div>
    <div>&gt; coffee... <span class="green">CRITICAL</span></div>
-   <div>&gt; work/life balance... <span class="green">404</span></div>
-   <div>&gt; motivation... <span class="green">MONDAY.EXE</span></div>
+   <div>&gt; work/life balance... <span class="green" id="introBalance">404</span></div>
+   <div>&gt; motivation... <span class="green" id="introMotivation">LOADING</span></div>
    <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
   </div>
   <button class="btn primary" style="margin-top:25px;width:100%" onclick="enterSite()">PUNCH IN →</button>
@@ -383,6 +385,8 @@ function updateOfficeClock(now = new Date()){
   updateOfficeInbox(dateKey, weekday, shift, weekend);
   if (displayedOfficeDate === dateKey) return;
   displayedOfficeDate = dateKey;
+  const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][weekday];
+  document.getElementById('introMotivation').textContent = dayName.toUpperCase() + '.EXE';
   const monday = new Date(today);
   monday.setUTCDate(today.getUTCDate() - (weekday + 6) % 7);
   const days = workdays.map((name, index) => {
@@ -418,8 +422,44 @@ function downloadResume(){
 }
 
 function enterSite(){
+  stopIntroDiagnostics();
   document.getElementById('intro').classList.add('hide');
   document.body.style.overflow='auto';
+}
+
+let introTimer;
+function stopIntroDiagnostics(){
+  clearInterval(introTimer);
+  const scan = document.getElementById('employeeScan');
+  scan.textContent = 'FOUND';
+  scan.classList.remove('scan-error');
+  document.getElementById('introBalance').textContent = '404';
+}
+
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const scan = document.getElementById('employeeScan');
+  const balance = document.getElementById('introBalance');
+  const retryScan = Math.random() < 0.4;
+  const balances = [100, 82, 65, 41, 23, 9, 0];
+  let step = 0;
+  scan.textContent = 'SEARCHING';
+  balance.textContent = balances[step];
+  introTimer = setInterval(() => {
+    step += 1;
+    if (step === balances.length) {
+      stopIntroDiagnostics();
+      return;
+    }
+    balance.textContent = balances[step];
+    if (step === 2) {
+      scan.textContent = retryScan ? 'EMPLOYEE NOT FOUND' : 'FOUND';
+      scan.classList.toggle('scan-error', retryScan);
+    }
+    if (retryScan && step === 4) {
+      scan.textContent = 'CHECKING CREDENTIALS…';
+      scan.classList.remove('scan-error');
+    }
+  }, 350);
 }
 document.body.style.overflow='hidden';
 

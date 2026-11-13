@@ -2,6 +2,17 @@ import { draftChat } from './chat-draft.js';
 
 const byId = id => document.getElementById(id);
 const phrases = ['Quick call?', 'You’re on mute', 'One last change', 'Per my last email', 'Circle back', 'No agenda', 'Can you see my screen?', 'Chai break', 'End of day', 'Let’s take this offline', 'Looping you in', 'Friday deploy', 'Can we sync?', 'Final_v7', 'Who owns this?', 'Adding some context'];
+const hindiPhrases = ['एक छोटी कॉल?', 'आप म्यूट पर हैं', 'बस एक आख़िरी बदलाव', 'जैसा पिछले मेल में लिखा था', 'इस पर फिर बात करेंगे', 'कोई एजेंडा नहीं', 'स्क्रीन दिख रही है?', 'चाय का ब्रेक', 'आज शाम तक', 'इस पर अलग से बात करें', 'आपको भी जोड़ रहा हूँ', 'शुक्रवार का डिप्लॉय', 'एक बार बात करें?', 'फ़ाइनल वाला फ़ाइनल', 'इसकी ज़िम्मेदारी किसकी है?', 'थोड़ी जानकारी और'];
+const bingoLanguage = byId('bingoLanguage');
+let hindiBingo = new URLSearchParams(location.search).get('bingoLang') === 'hi';
+bingoLanguage.setAttribute('aria-pressed', String(hindiBingo));
+bingoLanguage.addEventListener('click', () => {
+  hindiBingo = !hindiBingo;
+  bingoLanguage.setAttribute('aria-pressed', String(hindiBingo));
+  byId('bingoBoard').querySelectorAll('button').forEach((button, position) => {
+    button.textContent = (hindiBingo ? hindiPhrases : phrases)[card[position]];
+  });
+});
 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 const detectiveCases = [
   ['The report lost half its rows.', ['The source file still has every row.', 'A funnel icon appeared in the column header.', 'Clearing the current view brings the rows back.'], ['An active filter', 'A failed upload', 'A deleted worksheet'], 'The rows were hidden by a filter.'],
@@ -71,7 +82,7 @@ function renderBingo(indices) {
     const cell = document.createElement('button');
     cell.className = 'btn';
     cell.type = 'button';
-    cell.textContent = phrases[phrase];
+    cell.textContent = (hindiBingo ? hindiPhrases : phrases)[phrase];
     cell.setAttribute('aria-pressed', 'false');
     cell.addEventListener('click', () => {
       if (marked.has(position)) marked.delete(position);
@@ -107,6 +118,7 @@ byId('bingoNew').addEventListener('click', newBingoCard);
 byId('bingoShare').addEventListener('click', () => {
   const url = new URL(location.pathname, location.origin);
   url.searchParams.set('bingo', card.map(i => i.toString(16)).join(''));
+  if (hindiBingo) url.searchParams.set('bingoLang', 'hi');
   url.hash = 'corporate-bingo';
   draftChat('Join my Corporate Bingo board: ' + url.href);
 });

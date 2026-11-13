@@ -1,3 +1,4 @@
+import { publicName } from '../../assets/public-name.mjs';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
 
@@ -23,7 +24,7 @@ export function createBreakRoomHandler(openStore) {
       return response({ error: 'Invalid request.' }, 400);
     }
     const { action, token, target, messageId, key } = input ?? {};
-    const nickname = typeof input?.nickname === 'string' ? input.nickname.trim() : '';
+    const nickname = publicName(input?.nickname);
     const text = typeof input?.text === 'string' ? input.text.trim() : '';
     if (typeof token !== 'string' || !uuid.test(token) || !nickname || nickname.length > 24 ||
         !['poll', 'send', 'leave', 'delete', 'mute'].includes(action)) {

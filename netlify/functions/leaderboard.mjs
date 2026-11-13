@@ -1,3 +1,4 @@
+import { publicName } from '../../assets/public-name.mjs';
 import { getStore } from '@netlify/blobs';
 import { openSocialStore } from './social-games.mjs';
 
@@ -21,7 +22,7 @@ export function leaderboard(openStore, openRooms = openSocialStore) {
       if (request.headers.get('origin') !== new URL(request.url).origin) return json({ error: 'Invalid origin.' }, 403);
       const body = await request.json().catch(() => null);
       const { game, role, score, id } = body ?? {};
-      const name = typeof body?.name === 'string' ? body.name.trim() : '';
+      const name = publicName(body?.name);
       if (!games.includes(game) || !roles.includes(role) || !name || name.length > 24 ||
           !Number.isInteger(score) || score < (game === 'Deadline Dash' ? -100000 : 0) ||
           score > (limits[game] ?? 100000) ||

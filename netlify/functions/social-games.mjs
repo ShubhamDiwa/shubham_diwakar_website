@@ -1,3 +1,4 @@
+import { publicName } from '../../assets/public-name.mjs';
 import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
 
@@ -109,7 +110,7 @@ export function socialGames(openStore, clock = Date.now) {
     if (request.headers.get('origin') !== new URL(request.url).origin) return json({ error: 'Invalid origin.' }, 403);
     const body = await request.json().catch(() => null);
     const { game, action, code, token, role } = body ?? {};
-    const name = typeof body?.name === 'string' ? body.name.trim() : '';
+    const name = publicName(body?.name);
     if (game !== 'heist' && game !== 'bluff') return invalid('Choose a game.');
     if (typeof token !== 'string' || !uuid.test(token)) return invalid('Invalid player session.');
     if ((action === 'create' || action === 'join') &&

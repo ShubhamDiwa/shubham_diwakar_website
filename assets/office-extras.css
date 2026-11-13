@@ -1,0 +1,33 @@
+.office-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px;margin-top:20px}
+.office-grid .dash{min-width:0}
+.office-grid :is(input,textarea,select){max-width:100%;padding:9px;background:#141816;color:#eeeae0;border:1px solid #666;border-radius:7px;font:inherit}
+.office-grid textarea{display:block;width:100%;min-height:75px}
+.office-grid ul{padding-left:20px;overflow-wrap:anywhere}
+.office-grid li{margin:8px 0}
+.office-grid p{white-space:pre-line;margin:8px 0}
+.office-grid .btn{margin:4px 3px 4px 0}
+.office-dialog{margin:auto;width:min(740px,96vw);max-height:90dvh;overflow:auto;padding:20px;background:#f3f7f4;color:#18241c;border:1px solid #83a995;border-radius:10px}
+.office-dialog::backdrop{background:#e4eee8}
+.office-dialog table{border-collapse:collapse;width:100%;margin:14px 0}
+.office-dialog td,.office-dialog th{border:1px solid #aebfb4;padding:8px;text-align:left}
+.office-dialog button{padding:8px}
+.office-cups{position:fixed;inset:0;display:grid;place-items:center;background:#111d;z-index:2000;pointer-events:none;font-size:clamp(30px,9vw,100px);text-align:center}
+body[data-office-day="Mon"]{--acid:#cbd6ae;--bg:#111414}
+body[data-office-day="Fri"]{--acid:#ffd766;--bg:#10100a}
+html.office-reduced,html.office-reduced *{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+.office-grid :focus-visible,.hire-link:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+#office-tools{scroll-margin-top:80px}
+#officeToolsLink{white-space:nowrap}
+@media(max-width:800px){nav .hire-link{display:inline-flex}.office-grid .dash{padding:15px}}
+#officeToolsLink{display:none}
+#introProgress{width:100%;height:7px;margin-top:12px;accent-color:var(--acid)}
+@media(max-width:800px){#officeToolsLink{display:inline-flex}}
+@media(max-width:430px){nav{gap:6px;padding:8px}.logo{font-size:clamp(11px,3.1vw,15px)}nav :is(.hire-link,#officeToolsLink){padding:9px 7px;letter-spacing:.03em}}
+.radio-sub{color:#a5aaa4}
+@media(prefers-reduced-motion:reduce){.office-cups{display:none}}
+html.office-reduced .office-cups{display:none}
+@media(max-width:550px){
+ #meeting-game .btn,#tic-tac-toe .btn,.office-games .btn,#typing-race .btn,#shift-challenges .btn,#half-day-heist .btn,#office-bluff .btn{min-height:44px}
+ #corporate-bingo #bingoBoard .btn{padding:6px 4px;letter-spacing:0;overflow-wrap:anywhere}
+ #typing-race textarea,#half-day-heist input,#office-bluff input{max-width:100%;min-width:0}
+}

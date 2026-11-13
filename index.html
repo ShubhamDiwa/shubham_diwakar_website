@@ -132,6 +132,13 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-inbox .inbox-copy{font-size:14px;margin:6px 0}
 .inbox-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 @media(max-width:550px){.shift-board{grid-template-columns:1fr;gap:8px}.hero-content{padding-bottom:100px}}
+#timeline .workday-teams{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+#timeline .workday-teams [aria-pressed="true"]{background:var(--acid);color:#111;border-color:var(--acid)}
+#timeline .row{grid-template-columns:clamp(48px,10vw,100px) minmax(0,1fr);gap:14px;padding:19px 12px;border-left:2px solid transparent}
+#timeline .row[aria-current="step"]{border-left-color:var(--acid);background:#151b0d}
+#timeline .row strong{font-size:clamp(16px,3vw,21px)}
+#timeline .row p{color:var(--muted);font-size:14px;margin-top:5px}
+#timeline .time span{display:block;margin-top:5px;font-size:9px}
 </style>
 </head>
 <body>
@@ -216,15 +223,9 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <section id="timeline">
- <div class="sectionhead"><div><div class="eyebrow">02 / A Typical Day</div><h2>FROM LOGIN<br>TO LOGOUT.</h2></div><p class="desc">The official unofficial timeline of an Indian corporate employee.</p></div>
- <div class="timeline">
-  <div class="row"><div class="time">08:30</div><div><strong>🚇 Commute mode activated.</strong></div><small>ENERGY 61%</small></div>
-  <div class="row"><div class="time">09:00</div><div><strong>💻 “Good morning team.”</strong></div><small>ONLINE</small></div>
-  <div class="row"><div class="time">11:30</div><div><strong>☕ Chai break becomes a meeting.</strong></div><small>+10 HP</small></div>
-  <div class="row"><div class="time">14:00</div><div><strong>📧 “Quick call?”</strong></div><small>DANGER</small></div>
-  <div class="row"><div class="time">18:30</div><div><strong>🐛 Production bug enters the chat.</strong></div><small>PANIC</small></div>
-  <div class="row"><div class="time">21:30</div><div><strong>🚀 “Just deploy it once.”</strong></div><small>BOSS FIGHT</small></div>
- </div>
+ <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Pick your team to see how a typical workday unfolds. Times are in IST.</p></div>
+ <div class="workday-teams" id="workdayTeams" role="group" aria-label="Pick your team"></div>
+ <ol class="timeline" id="workdayTimeline" aria-label="Workday timeline"></ol>
 </section>
 
 
@@ -335,6 +336,86 @@ const officeTime = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric',
   hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
 });
+const workdayMoments = [
+  ['08:30', 'The commute begins', 'Metro, traffic, or the walk from bed to laptop.'],
+  ['09:00', '“Good morning, team.”', 'Say it in three chats before opening your inbox.'],
+  ['11:30', 'Chai break', 'The only meeting everyone joins on time.'],
+  ['14:00', '“Quick call?”', 'No agenda. Somehow six attendees.'],
+  ['17:30', '“Can we close this today?”', 'It arrived five minutes before you planned to leave.'],
+  ['18:30', 'Logging off, allegedly', 'One last look at the inbox.']
+];
+const teamMoments = {
+  'Everyone': [],
+  'Sales & Support': [['“Just following up.”', 'The customer replied to the oldest email in the thread.'], ['“Can you send the revised quote?”', 'The discount still needs approval.']],
+  'HR & Admin': [['Interview rescheduled', 'Finding a slot for four calendars is the real assessment.'], ['“Can you share the policy?”', 'It was in the all-hands email. Twice.']],
+  'Finance': [['“Which version is final?”', 'The sheet says Final_v7_revised.'], ['Month-end close', 'One receipt is holding up the whole sheet.']],
+  'Operations': [['“It was dispatched yesterday.”', 'The tracker still says pending.'], ['One last approval', 'The approver just set their status to Away.']],
+  'Marketing & Design': [['“Can we make it pop?”', 'The brief has four references and they all disagree.'], ['Final creative approved', 'A new logo arrives two minutes later.']],
+  'Tech & QA': [['“Works on my machine.”', 'QA has a screen recording.'], ['“Just deploy it once.”', 'Someone already renamed the release branch.']]
+};
+const workdayTimeline = document.getElementById('workdayTimeline');
+const workdayTeams = document.getElementById('workdayTeams');
+let workdayMinute;
+let activeWorkdayRow = -1;
+
+function renderWorkday(team){
+  const scenarios = teamMoments[team];
+  const rows = workdayMoments.map(([time, title, detail], index) => {
+    const scenario = scenarios[index - 3];
+    const row = document.createElement('li');
+    row.className = 'row';
+    const stamp = document.createElement('div');
+    stamp.className = 'time';
+    const clock = document.createElement('time');
+    clock.dateTime = clock.textContent = time;
+    stamp.append(clock);
+    const copy = document.createElement('div');
+    const heading = document.createElement('strong');
+    const description = document.createElement('p');
+    heading.textContent = scenario?.[0] ?? title;
+    description.textContent = scenario?.[1] ?? detail;
+    copy.append(heading, description);
+    row.append(stamp, copy);
+    return row;
+  });
+  workdayTimeline.replaceChildren(...rows);
+  activeWorkdayRow = -1;
+  highlightWorkday(workdayMinute);
+}
+
+function highlightWorkday(minute){
+  const index = workdayMoments.findLastIndex(([time]) => {
+    const [hour, minutes] = time.split(':').map(Number);
+    return minute >= hour * 60 + minutes;
+  });
+  if (index === activeWorkdayRow) return;
+  const previous = workdayTimeline.children[activeWorkdayRow];
+  previous?.removeAttribute('aria-current');
+  previous?.querySelector('.time span')?.remove();
+  activeWorkdayRow = index;
+  if (index < 0) return;
+  const current = workdayTimeline.children[index];
+  current.setAttribute('aria-current', 'step');
+  const label = document.createElement('span');
+  label.textContent = 'NOW';
+  current.querySelector('.time').append(label);
+}
+
+for (const team of Object.keys(teamMoments)) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn';
+  button.textContent = team;
+  button.setAttribute('aria-controls', 'workdayTimeline');
+  button.setAttribute('aria-pressed', String(team === 'Everyone'));
+  button.addEventListener('click', () => {
+    workdayTeams.querySelector('[aria-pressed="true"]').setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-pressed', 'true');
+    renderWorkday(team);
+  });
+  workdayTeams.append(button);
+}
+renderWorkday('Everyone');
 const officeDate = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short'
 });
@@ -405,6 +486,12 @@ function updateOfficeClock(now = new Date()){
   const today = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
   const weekday = today.getUTCDay();
   const weekend = weekday === 0 || weekday === 6;
+  const minute = hour * 60 + Number(parts.minute);
+  const timelineMinute = weekend || minute >= 19 * 60 ? -1 : minute;
+  if (workdayMinute !== timelineMinute) {
+    workdayMinute = timelineMinute;
+    highlightWorkday(workdayMinute);
+  }
   const label = weekend ? 'Weekend' : { morning: 'Morning shift', afternoon: 'Afternoon shift', evening: 'Evening shift', night: 'After hours' }[shift];
   document.getElementById('officeShift').textContent = `${officeDate.format(today)} · ${label}`;
 

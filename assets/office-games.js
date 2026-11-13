@@ -3,6 +3,61 @@ import { draftChat } from './chat-draft.js';
 const byId = id => document.getElementById(id);
 const phrases = ['Quick call?', 'You’re on mute', 'One last change', 'Per my last email', 'Circle back', 'No agenda', 'Can you see my screen?', 'Chai break', 'End of day', 'Let’s take this offline', 'Looping you in', 'Friday deploy', 'Can we sync?', 'Final_v7', 'Who owns this?', 'Adding some context'];
 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const detectiveCases = [
+  ['The report lost half its rows.', ['The source file still has every row.', 'A funnel icon appeared in the column header.', 'Clearing the current view brings the rows back.'], ['An active filter', 'A failed upload', 'A deleted worksheet'], 'The rows were hidden by a filter.'],
+  ['Nobody joined the 10 a.m. call.', ['The organiser copied an old invite.', 'Their calendar says 10 a.m. London.', 'The India team was expecting 10 a.m. IST.'], ['The wrong time zone', 'The meeting link expired', 'Everyone was on mute'], 'The invite was scheduled for London time.'],
+  ['The customer opened the wrong proposal.', ['The email points to the correct folder.', 'Two files have almost identical names.', 'The attachment was exported before Legal’s edits.'], ['An older attachment', 'A broken folder link', 'A missing permission'], 'The email had an old copy of the proposal.'],
+  ['The printer keeps producing blank pages.', ['It feeds paper normally.', 'The printer’s own test page is blank.', 'The supply screen shows black at zero.'], ['An empty toner cartridge', 'A paper jam', 'A bad PDF export'], 'The printer is out of toner.'],
+  ['The shared tracker stopped adding up.', ['Only the rows added today are missing from the total.', 'The new amounts are valid numbers.', 'The formula ends one row above today’s entries.'], ['The formula range is too short', 'The amounts are stored as text', 'The sheet is locked'], 'The new rows sit outside the SUM range.'],
+  ['The candidate never received the interview invite.', ['The recruiter’s sent folder shows the invite.', 'The meeting link works for the panel.', 'The candidate’s address has one extra letter.'], ['A mistyped email address', 'A broken meeting link', 'A calendar outage'], 'The invite went to the wrong address.'],
+  ['The office access card stopped working.', ['Other cards work at the same door.', 'The card still reads at reception.', 'The access log says the assignment ended yesterday.'], ['The access assignment expired', 'The door reader failed', 'The card chip broke'], 'The card works, but its access window ended.'],
+  ['The campaign link shows a 404.', ['The landing page opens from the website menu.', 'The email link ends in /offfers.', 'The published page is at /offers.'], ['A typo in the link', 'The server is down', 'The page is private'], 'The campaign URL has an extra f.'],
+  ['The team hears an echo on the call.', ['Two laptops are in the same meeting room.', 'Both have their speakers and microphones on.', 'The echo stops when one laptop mutes.'], ['Audio feedback', 'Slow Wi-Fi', 'A broken camera'], 'The laptops are picking up each other’s audio.'],
+  ['The office ran out of chai at 11.', ['The kettle works.', 'There’s milk in the fridge.', 'The tea tin contains a note saying “please reorder.”'], ['The tea leaves ran out', 'The kettle broke', 'The milk delivery was late'], 'The pantry ran out of tea leaves.']
+];
+const detectiveNext = byId('detectiveNext');
+const detectiveChoices = byId('detectiveChoices');
+const detectiveResult = byId('detectiveResult');
+let caseQueue = [];
+let lastCase;
+let solvedCases = 0;
+let investigatedCases = 0;
+
+detectiveNext.addEventListener('click', () => {
+  if (!caseQueue.length) {
+    caseQueue = shuffle(detectiveCases);
+    if (caseQueue.at(-1) === lastCase) caseQueue.unshift(caseQueue.pop());
+  }
+  lastCase = caseQueue.pop();
+  const [title, clues, choices, explanation] = lastCase;
+  byId('detectiveCase').textContent = title;
+  byId('detectiveClues').replaceChildren(...shuffle(clues).map(clue => {
+    const row = document.createElement('li');
+    row.textContent = clue;
+    return row;
+  }));
+  detectiveResult.textContent = '';
+  const buttons = shuffle(choices).map(choice => {
+    const button = document.createElement('button');
+    button.className = 'btn';
+    button.type = 'button';
+    button.textContent = choice;
+    button.addEventListener('click', () => {
+      const correct = choice === choices[0];
+      investigatedCases++;
+      if (correct) solvedCases++;
+      detectiveResult.textContent = `${correct ? 'Case solved.' : 'Missed it.'} ${explanation} · ${solvedCases}/${investigatedCases} solved`;
+      buttons.forEach(option => { option.disabled = true; });
+      detectiveNext.textContent = 'Next case';
+      detectiveNext.hidden = false;
+      detectiveNext.focus();
+    });
+    return button;
+  });
+  detectiveChoices.replaceChildren(...buttons);
+  detectiveNext.hidden = true;
+  buttons[0].focus();
+});
 let card;
 
 

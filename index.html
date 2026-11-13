@@ -160,7 +160,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
   </div>
   <label class="intro-role">What is your role?
-   <select id="introTeam"><option>Everyone</option></select>
+   <select id="introTeam"></select>
   </label>
   <button class="btn primary" id="introPunch" type="button" onclick="punchIn()">
    <span class="fingerprint" id="introScan" aria-hidden="true" hidden></span>
@@ -357,7 +357,12 @@ const workdayMoments = [
   ['18:30', 'Logging off, allegedly', 'One last look at the inbox.']
 ];
 const teamMoments = {
-  'Everyone': [],
+  'Developer': [['“It’s a one-line change.”', 'The pull request now touches nine files.'], ['Code review arrives', 'The only comment is about the variable name.']],
+  'DevOps': [['The build is green locally', 'CI has other plans.'], ['“Can we deploy before you leave?”', 'The rollback plan is suddenly the most popular document.']],
+  'Data Analyst': [['“Why are the numbers different?”', 'Two dashboards use two definitions of active.'], ['One last dashboard filter', 'It turns into a new breakdown for every region.']],
+  'Business Analyst': [['Requirements walkthrough', 'Everyone agrees until you ask for an example.'], ['“Just one more use case.”', 'The sign-off meeting gets a sequel.']],
+  'Data Scientist': [['The model looks great', 'Then someone asks to see it on last month’s data.'], ['“Can you explain the prediction?”', 'The explanation gets more slides than the model.']],
+  'Project Manager': [['“Are we still on track?”', 'Three teams are waiting for the same approval.'], ['The status update goes out', 'A new blocker arrives thirty seconds later.']],
   'Sales & Support': [['“Just following up.”', 'The customer replied to the oldest email in the thread.'], ['“Can you send the revised quote?”', 'The discount still needs approval.']],
   'HR & Admin': [['Interview rescheduled', 'Finding a slot for four calendars is the real assessment.'], ['“Can you share the policy?”', 'It was in the all-hands email. Twice.']],
   'Finance': [['“Which version is final?”', 'The sheet says Final_v7_revised.'], ['Month-end close', 'One receipt is holding up the whole sheet.']],
@@ -414,12 +419,11 @@ function highlightWorkday(minute){
 
 const introTeam = document.getElementById('introTeam');
 for (const team of Object.keys(teamMoments)) {
-  if (team === 'Everyone') continue;
   const option = document.createElement('option');
   option.textContent = team;
   introTeam.append(option);
 }
-renderWorkday('Everyone');
+renderWorkday(introTeam.value);
 const officeDate = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short'
 });

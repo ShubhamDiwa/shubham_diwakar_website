@@ -48,7 +48,7 @@ async function loadScores() {
     if (id !== requestId) return;
     entries.replaceChildren(...scores.map(({ name, role, score }) => {
       const row = document.createElement('li');
-      row.textContent = `${name} · ${role} · ${score}`;
+      row.textContent = `${name} · ${role} · ${score}${games.value === 'Typing Race' ? ' WPM' : ''}`;
       return row;
     }));
     status.textContent = scores.length ? '' : 'No scores yet.';

@@ -1,6 +1,6 @@
 import { getStore } from '@netlify/blobs';
 
-const games = ['Meeting Dodge', 'Chai Run', 'Deadline Dash'];
+const games = ['Meeting Dodge', 'Chai Run', 'Deadline Dash', 'Typing Race'];
 const roles = ['Developer', 'DevOps', 'Data Analyst', 'Business Analyst', 'Data Scientist', 'Project Manager', 'Sales & Support', 'HR & Admin', 'Finance', 'Operations', 'Marketing & Design', 'Tech & QA'];
 const json = (body, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
@@ -19,7 +19,7 @@ export function leaderboard(openStore) {
       const { game, role, score, id } = body ?? {};
       const name = typeof body?.name === 'string' ? body.name.trim() : '';
       if (!games.includes(game) || !roles.includes(role) || !name || name.length > 24 ||
-          !Number.isInteger(score) || score < 0 || score > 100000 ||
+          !Number.isInteger(score) || score < 0 || score > (game === 'Typing Race' ? 300 : 100000) ||
           typeof id !== 'string' || !/^[a-f0-9-]{36}$/i.test(id)) {
         return json({ error: 'Invalid score entry.' }, 400);
       }

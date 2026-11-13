@@ -183,6 +183,8 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-games input{width:9em;padding:10px;border:1px solid var(--line);border-radius:8px;background:#090b0a;color:var(--paper);font:inherit}
 #chaiFloor{display:block;width:min(100%,480px);height:auto;border:1px solid var(--line);border-radius:8px;background:#101510}
 #chaiFloor:focus-visible{outline:2px solid var(--acid)}
+#typing-race [hidden]{display:none}
+#typingEntry textarea{width:100%;padding:12px;font:inherit;color:var(--paper);background:#090b0a;border:1px solid var(--line);border-radius:8px}
 </style>
 </head>
 <body>
@@ -472,10 +474,34 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </article>
 </section>
 
+<section id="typing-race" aria-labelledby="typingRaceTitle">
+ <div class="dash office-games">
+  <h3 id="typingRaceTitle">Office Typing Race</h3>
+  <form class="actions" id="typingJoin">
+   <button class="btn primary" id="typingSolo" type="button">Solo practice</button>
+   <button class="btn" id="typingCreate" type="button">Create room</button>
+   <input name="code" aria-label="Typing race room code" placeholder="Room code" maxlength="10" required>
+   <button class="btn" type="submit">Join room</button>
+  </form>
+  <p id="typingRoom"></p>
+  <p id="typingStatus" role="status"></p>
+  <blockquote id="typingPrompt"></blockquote>
+  <form class="actions" id="typingEntry" hidden>
+   <textarea name="text" aria-label="Type the office message" rows="3" maxlength="250" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+   <button class="btn primary" type="submit">Finish</button>
+  </form>
+  <div class="actions" id="typingActions" hidden>
+   <button class="btn" id="typingInvite" type="button" hidden>Challenge in Break Room</button>
+   <button class="btn" id="typingLeave" type="button">End session</button>
+   <a class="btn" href="#game-leaderboard" id="typingScores">Typing Race leaderboard</a>
+  </div>
+ </div>
+</section>
+
 <section id="game-leaderboard" aria-labelledby="leaderboardTitle">
  <div class="dash">
   <h3 id="leaderboardTitle">Game Leaderboard</h3>
-  <label>Game <select id="leaderboardGame"><option>Meeting Dodge</option><option>Chai Run</option><option>Deadline Dash</option></select></label>
+  <label>Game <select id="leaderboardGame"><option>Meeting Dodge</option><option>Chai Run</option><option>Deadline Dash</option><option>Typing Race</option></select></label>
   <ol id="leaderboardEntries" style="padding-left:24px;margin:12px 0"></ol>
   <p id="leaderboardStatus" role="status"></p>
   <form id="leaderboardForm" class="actions">
@@ -1311,5 +1337,6 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/tic-online.js"></script>
 <script type="module" src="/assets/office-games.js"></script>
 <script type="module" src="/assets/shift-report.js"></script>
+<script type="module" src="/assets/typing-race.js"></script>
 </body>
 </html>

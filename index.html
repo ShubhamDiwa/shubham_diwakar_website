@@ -145,6 +145,14 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 #timeline .row strong{font-size:clamp(16px,3vw,21px)}
 #timeline .row p{color:var(--muted);font-size:14px;margin-top:5px}
 #timeline .time span{display:block;margin-top:5px;font-size:9px}
+.break-room{margin-top:16px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#101211}
+.break-room summary{cursor:pointer;color:var(--acid);font-weight:800}
+.break-room form,.break-room-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.break-room input{flex:1;min-width:min(100%,170px);padding:10px;background:#090b0a;border:1px solid var(--line);border-radius:8px;color:var(--paper);font:inherit}
+.break-room-log{max-height:260px;overflow:auto;list-style:none;margin-top:10px}
+.break-room-log li{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere;white-space:pre-wrap}
+.break-room-log strong{color:var(--acid)}
+.break-room-log button{margin-left:8px;padding:6px}
 </style>
 </head>
 <body>
@@ -301,6 +309,26 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
      </div>
    </div>
  </div>
+ <details class="break-room" id="breakRoom">
+   <summary>Break Room <span id="breakRoomCount"></span></summary>
+   <p class="radio-sub">Public chat. Anyone who joins can read your messages.</p>
+   <form id="breakRoomJoin">
+     <input name="nickname" aria-label="Nickname" placeholder="Nickname" maxlength="24" required>
+     <button class="btn primary" type="submit">Join Break Room</button>
+   </form>
+   <div id="breakRoomSession" hidden>
+     <ul class="break-room-log" id="breakRoomLog" aria-label="Recent messages" tabindex="0"></ul>
+     <form id="breakRoomSend">
+       <input name="message" aria-label="Message" placeholder="Write a message" maxlength="280" required>
+       <button class="btn primary" type="submit">Send</button>
+     </form>
+     <div class="break-room-actions">
+       <button class="btn" id="breakRoomLeave" type="button">Leave</button>
+       <button class="btn" id="breakRoomModerate" type="button">Moderator</button>
+     </div>
+   </div>
+   <p class="radio-sub" id="breakRoomStatus" role="status"></p>
+ </details>
 </section>
 
 
@@ -975,5 +1003,6 @@ document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
 loadPlaylist(goLivePlaylist, 'Go Live', false);
 
 </script>
+<script type="module" src="/assets/break-room.js"></script>
 </body>
 </html>

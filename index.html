@@ -78,13 +78,6 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .radio-control{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#151716;color:#fff;cursor:pointer}
 .radio-control:hover{border-color:var(--acid);transform:translateY(-2px)}
 .radio-control.radio-play{background:var(--acid);color:#111;border-color:var(--acid);font-size:16px}
-.radio-link-input{display:flex;gap:10px;margin-top:16px}
-.radio-link-input input{flex:1;min-width:0;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0b0d0d;color:#eee;outline:none}
-.radio-link-input input::placeholder{color:#666}
-.radio-link-note{margin-top:10px;color:#8f9a8c;font-size:12px}
-.radio-playlist-form{margin-top:16px}
-.radio-playlist-form .radio-link-input{flex-wrap:wrap;margin-top:8px}
-.radio-playlist-form input{flex-basis:220px}
 .radio-embed iframe{display:block;width:100%;height:352px;border:0;border-radius:12px}
 .radio-embed iframe.youtube{height:auto;min-height:200px;aspect-ratio:16/9}
 .radio-embed .btn{margin-top:12px}
@@ -106,9 +99,8 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .radio-queue .tracks{max-height:340px;overflow:auto}
 .radio .track{width:100%;grid-template-columns:28px minmax(0,1fr) 54px;text-align:left;color:inherit;background:transparent;font:inherit}
 .radio .track:hover,.radio .track.active{background:rgba(202,255,57,.08)}
-.radio .track:focus-visible,.radio-link-input input:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+.radio .track:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
 .radio-import{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
-.radio-import summary{cursor:pointer;width:fit-content}
 .radio:not(.expanded) .radio-queue{display:none}
 .radio:not(.expanded) .radio-console{grid-template-columns:minmax(0,1fr)}
 @media(max-width:800px){
@@ -199,7 +191,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
      <button class="btn" id="expandRadio" type="button">EXPAND RADIO ⤢</button>
    </div>
 
-   <div class="radio-stations" role="group" aria-label="Radio stations">
+   <div class="radio-stations" id="localRadioStations" role="group" aria-label="Radio stations">
      <button class="btn" id="loadChillMode" type="button">GO LIVE</button>
      <button class="btn" id="loadSmoothProduction" type="button">SMOOTH PRODUCTION</button>
      <button class="btn" id="loadCodePhatGaya" type="button">CODE PHAT GAYA</button>
@@ -234,22 +226,15 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    </div>
    </div>
 
-   <details class="radio-import">
-     <summary>Play a Spotify or YouTube link</summary>
-     <form class="radio-playlist-form" id="playlistLinkForm" novalidate>
-       <label for="playlistLink">Spotify album or playlist, or YouTube playlist</label>
-       <div class="radio-link-input">
-         <input id="playlistLink" type="url" placeholder="Paste a link" aria-describedby="radioLinkNotice">
-         <button class="btn" type="submit">LOAD LINK</button>
-       </div>
-       <div class="radio-link-note" id="radioLinkNotice" role="status"></div>
-     </form>
+   <div class="radio-import">
+     <h3>Online picks</h3>
+     <div class="radio-stations" id="onlineRadioPicks" role="group" aria-label="Online picks"></div>
      <div class="audio-stage radio-embed" id="radioEmbed" hidden>
        <div id="radioEmbedPlayer"></div>
        <a class="btn" id="openRadioProvider" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL</a>
        <button class="btn" id="closeRadioEmbed" type="button">CLOSE PLAYER</button>
      </div>
-   </details>
+   </div>
  </div>
 </section>
 
@@ -363,10 +348,12 @@ const radioProgress = document.getElementById('radioProgress');
 const radioArt = document.getElementById('radioArt');
 const radioAudio = document.getElementById('radioAudio');
 const trackList = document.getElementById('trackList');
-const playlistLink = document.getElementById('playlistLink');
-const radioLinkNotice = document.getElementById('radioLinkNotice');
+const onlineRadioPicks = document.getElementById('onlineRadioPicks');
 const radioEmbed = document.getElementById('radioEmbed');
 const radioEmbedPlayer = document.getElementById('radioEmbedPlayer');
+const onlineTracks = [
+  { title: 'Sajan Sajan Remix', url: 'https://youtu.be/YW7Uc5_ixtM' }
+];
 
 function getPlaylistEmbed(value){
   let url;
@@ -390,30 +377,28 @@ function getPlaylistEmbed(value){
   if (youtubeHosts.includes(url.hostname) && playlistId && /^[\w-]+$/.test(playlistId)) {
     return { provider: 'YouTube', src: `https://www.youtube.com/embed?listType=playlist&list=${playlistId}`, original: `https://www.youtube.com/playlist?list=${playlistId}` };
   }
+  if (youtubeHosts.includes(url.hostname)) {
+    const videoId = url.hostname === 'youtu.be' ? url.pathname.slice(1) : url.searchParams.get('v');
+    if (videoId && /^[\w-]{11}$/.test(videoId)) {
+      return { provider: 'YouTube', src: `https://www.youtube.com/embed/${videoId}`, original: `https://www.youtube.com/watch?v=${videoId}` };
+    }
+  }
   return null;
 }
 
 function closeOnlinePlaylist(){
   radioEmbedPlayer.replaceChildren();
   radioEmbed.hidden = true;
-  radioLinkNotice.textContent = '';
+  onlineRadioPicks.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
 }
 
-document.getElementById('playlistLinkForm').addEventListener('submit', event => {
-  event.preventDefault();
-  const playlist = getPlaylistEmbed(playlistLink.value);
-  if (!playlist) {
-    playlistLink.setAttribute('aria-invalid', 'true');
-    radioLinkNotice.textContent = 'Enter a Spotify album or playlist link, or a YouTube playlist link.';
-    playlistLink.focus();
-    return;
-  }
-
-  playlistLink.removeAttribute('aria-invalid');
+function openOnlineTrack(playlist){
   radioAudio.pause();
   const player = document.createElement('iframe');
   player.title = `${playlist.provider} player`;
-  player.src = playlist.src;
+  const embedUrl = new URL(playlist.src);
+  if (playlist.provider === 'YouTube') embedUrl.searchParams.set('autoplay', '1');
+  player.src = embedUrl.href;
   player.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
   player.allowFullscreen = true;
   player.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -423,12 +408,28 @@ document.getElementById('playlistLinkForm').addEventListener('submit', event => 
   originalLink.href = playlist.original;
   originalLink.textContent = `Open in ${playlist.provider}`;
   radioEmbed.hidden = false;
-  radioLinkNotice.textContent = `Use the ${playlist.provider} player below to listen.`;
-});
+}
+
+for (const track of onlineTracks) {
+  const playlist = getPlaylistEmbed(track.url);
+  if (!playlist) continue;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn';
+  button.textContent = track.title;
+  button.setAttribute('aria-pressed', 'false');
+  button.addEventListener('click', () => {
+    closeOnlinePlaylist();
+    openOnlineTrack(playlist);
+    button.setAttribute('aria-pressed', 'true');
+  });
+  onlineRadioPicks.append(button);
+}
 
 document.getElementById('closeRadioEmbed').addEventListener('click', () => {
+  const activePick = onlineRadioPicks.querySelector('[aria-pressed="true"]');
   closeOnlinePlaylist();
-  playlistLink.focus();
+  activePick?.focus();
 });
 
 function escapeHtml(value){
@@ -504,7 +505,7 @@ function toggleRadio(){
 
 function loadPlaylist(playlist, label, autoplay = true){
   if (autoplay && !radioEmbed.hidden) closeOnlinePlaylist();
-  const stations = document.querySelectorAll('.radio-stations button');
+  const stations = document.querySelectorAll('#localRadioStations button');
   for (const station of stations) {
     station.setAttribute('aria-pressed', String(station.textContent.trim() === label.toUpperCase()));
   }

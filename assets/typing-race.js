@@ -13,6 +13,7 @@ let soloStart;
 let timer;
 let busy = false;
 let recorded = false;
+let previousSoloPrompt;
 
 function showSession() {
   join.hidden = true;
@@ -89,7 +90,9 @@ function leave() {
 byId('typingSolo').addEventListener('click', () => {
   if (busy) return;
   showSession();
-  prompt.textContent = prompts[Math.floor(Math.random() * prompts.length)];
+  const choices = prompts.filter(message => message !== previousSoloPrompt);
+  previousSoloPrompt = choices[Math.floor(Math.random() * choices.length)];
+  prompt.textContent = previousSoloPrompt;
   status.textContent = 'Type the message, then press Finish.';
   entry.hidden = false;
   input.focus({ preventScroll: true });

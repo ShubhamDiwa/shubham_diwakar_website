@@ -1,7 +1,7 @@
 import { draftChat } from './chat-draft.js';
 
 const byId = id => document.getElementById(id);
-const phrases = ['Quick call?', 'You’re on mute', 'One last change', 'Per my last email', 'Circle back', 'No agenda', 'Can you see my screen?', 'Chai break', 'End of day', 'Let’s take this offline', 'Looping you in', 'Friday deploy'];
+const phrases = ['Quick call?', 'You’re on mute', 'One last change', 'Per my last email', 'Circle back', 'No agenda', 'Can you see my screen?', 'Chai break', 'End of day', 'Let’s take this offline', 'Looping you in', 'Friday deploy', 'Can we sync?', 'Final_v7', 'Who owns this?', 'Adding some context'];
 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let card;
 
@@ -28,15 +28,20 @@ function renderBingo(indices) {
 
 const sharedCard = [...(new URLSearchParams(location.search).get('bingo') || '')].map(char => parseInt(char, 16));
 const validCard = sharedCard.length === 9 && new Set(sharedCard).size === 9 && sharedCard.every(i => i >= 0 && i < phrases.length);
-renderBingo(validCard ? sharedCard : [0,1,2,3,4,5,6,7,8]);
-byId('bingoNew').addEventListener('click', () => {
-  const shuffled = phrases.map((_, i) => i);
+function shuffle(items) {
+  const shuffled = [...items];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  renderBingo(shuffled.slice(0, 9));
-});
+  return shuffled;
+}
+function newBingoCard() {
+  renderBingo(shuffle(phrases.map((_, i) => i)).slice(0, 9));
+}
+if (validCard) renderBingo(sharedCard);
+else newBingoCard();
+byId('bingoNew').addEventListener('click', newBingoCard);
 byId('bingoShare').addEventListener('click', () => {
   const url = new URL(location.pathname, location.origin);
   url.searchParams.set('bingo', card.map(i => i.toString(16)).join(''));
@@ -128,12 +133,16 @@ const floor = byId('chaiFloor');
 const ctx = floor.getContext('2d');
 const start = byId('chaiStart');
 const directions = { left: [-1,0], right: [1,0], up: [0,-1], down: [0,1] };
-const chairs = new Set(['3,1','3,3','6,1','6,3']);
+let chairs = new Set();
 const home = [0, 5], desk = [9, 0];
-let courier = [...home], deliveries = 0, trays = 3, tick = 0, runTimer;
+let courier = [...home], deliveries = 0, trays = 3, runTimer;
+let patrols = [];
 
-function coworkers() {
-  return [[tick % 10, 2], [9 - (tick + 3) % 10, 4]];
+function resetFloor() {
+  const clearColumn = Math.floor(Math.random() * 10);
+  const chairSlots = [1, 3].flatMap(y => Array.from({ length: 10 }, (_, x) => [x, y]));
+  chairs = new Set(shuffle(chairSlots.filter(([x]) => x !== clearColumn)).slice(0, 6).map(([x,y]) => `${x},${y}`));
+  patrols = [2, 4].map(y => ({ x: Math.floor(Math.random() * 10), y, direction: Math.random() < .5 ? -1 : 1 }));
 }
 
 function drawFloor() {
@@ -152,7 +161,7 @@ function drawFloor() {
     const [x,y] = chair.split(',').map(Number);
     ctx.fillText('🪑', x * 48 + 24, y * 48 + 33);
   }
-  for (const [x,y] of coworkers()) ctx.fillText('🧑‍💼', x * 48 + 24, y * 48 + 33);
+  for (const { x, y } of patrols) ctx.fillText('🧑‍💼', x * 48 + 24, y * 48 + 33);
   ctx.fillText('☕', courier[0] * 48 + 24, courier[1] * 48 + 33);
   const status = `Deliveries ${deliveries} · Trays ${trays}`;
   const display = trays ? status : 'Shift over. ' + status;
@@ -160,7 +169,7 @@ function drawFloor() {
 }
 
 function checkCollision() {
-  if (!coworkers().some(([x,y]) => x === courier[0] && y === courier[1])) return;
+  if (!patrols.some(({ x, y }) => x === courier[0] && y === courier[1])) return;
   trays--;
   courier = [...home];
   if (!trays) {
@@ -173,7 +182,13 @@ function checkCollision() {
 }
 
 function advanceCoworkers() {
-  tick++;
+  for (const coworker of patrols) {
+    if (Math.random() < .15) continue;
+    if (Math.random() < .2) coworker.direction *= -1;
+    const next = coworker.x + coworker.direction;
+    if (next < 0 || next > 9) coworker.direction *= -1;
+    coworker.x += coworker.direction;
+  }
   checkCollision();
   drawFloor();
   if (trays) runTimer = setTimeout(advanceCoworkers, Math.max(170, 560 - deliveries * 45));
@@ -195,7 +210,8 @@ function move(direction) {
 
 start.addEventListener('click', () => {
   courier = [...home];
-  deliveries = tick = 0;
+  deliveries = 0;
+  resetFloor();
   trays = 3;
   start.disabled = true;
   floor.focus({ preventScroll: true });
@@ -214,6 +230,7 @@ floor.addEventListener('keydown', event => {
 for (const button of document.querySelectorAll('[data-chai]')) {
   button.addEventListener('click', () => move(button.dataset.chai));
 }
+resetFloor();
 drawFloor();
 
 const roleTasks = {
@@ -236,19 +253,23 @@ const deadlineTask = byId('deadlineTask');
 const deadlineFeedback = byId('deadlineFeedback');
 const deadlineButtons = [...document.querySelectorAll('[data-deadline]')];
 const taskTypes = [
-  { action: 'now', detail: 'Blocking work due today. Only you can resolve it.' },
-  { action: 'delegate', detail: 'Routine work. A teammate has capacity to take it.' },
-  { action: 'later', detail: 'Optional improvement. No deadline or blocked work.' }
+  { action: 'now', clues: ['The release is blocked and the decision needs your approval today.', 'The deadline is in ten minutes and you are the only available owner.', 'A customer is waiting and only you have the required access.'] },
+  { action: 'delegate', clues: ['A teammate is free and has handled this before.', 'The backup owner is available and has the instructions.', 'A teammate has offered to take it and already has access.'] },
+  { action: 'later', clues: ['This can wait until next sprint without blocking anyone.', 'It is an optional polish item with no deadline.', 'The request is for next month and nothing depends on it today.'] }
 ];
 let dashEnd = 0;
 let dashScore = 0;
 let dashTimer;
 let dashTasks = [];
+let taskQueue = [];
 let currentTask;
 
 function nextDeadlineTask() {
-  const options = dashTasks.filter(task => task !== currentTask);
-  currentTask = options[Math.floor(Math.random() * options.length)];
+  if (!taskQueue.length) {
+    taskQueue = shuffle(dashTasks);
+    if (taskQueue.at(-1) === currentTask) taskQueue.unshift(taskQueue.pop());
+  }
+  currentTask = taskQueue.pop();
   deadlineTask.textContent = `${currentTask.title} · ${currentTask.detail}`;
 }
 
@@ -270,7 +291,11 @@ function updateDeadlineDash() {
 deadlineStart.addEventListener('click', () => {
   const role = byId('introTeam').value;
   const titles = roleTasks[role] ?? roleTasks.Developer;
-  dashTasks = taskTypes.map((type, index) => ({ ...type, title: titles[index] }));
+  dashTasks = taskTypes.flatMap(({ action, clues }, index) =>
+    clues.flatMap(detail => [titles[index], 'New inbox request', 'Task from your team board']
+      .map(title => ({ action, detail, title })))
+  );
+  taskQueue = [];
   dashScore = 0;
   dashEnd = performance.now() + 30000;
   deadlineFeedback.textContent = '';

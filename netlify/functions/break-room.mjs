@@ -3,6 +3,7 @@ import { getStore } from '@netlify/blobs';
 
 const digest = value => createHash('sha256').update(value).digest();
 const uuid = /^[a-f0-9-]{36}$/i;
+const messageLifetimeMs = 60 * 60 * 1000;
 const response = (body, status = 200) => Response.json(body, {
   status, headers: { 'Cache-Control': 'no-store' }
 });
@@ -50,7 +51,9 @@ export function createBreakRoomHandler(openStore) {
         for (const [member, until] of Object.entries(room.muted)) {
           if (until <= now) delete room.muted[member];
         }
-        room.messages = room.messages.filter(message => now - message.at < 86400000);
+        const messageCount = room.messages.length;
+        room.messages = room.messages.filter(message => now - message.at < messageLifetimeMs);
+        const expiredMessages = room.messages.length !== messageCount;
         const refresh = now - (room.members[id] ?? 0) >= 15000;
         if (action === 'leave') {
           delete room.members[id];
@@ -75,7 +78,7 @@ export function createBreakRoomHandler(openStore) {
           if (!message) return response({ error: 'That message is no longer in the room.' }, 404);
           room.muted[message.sender] = now + 3600000;
         }
-        if (refresh || action !== 'poll') {
+        if (expiredMessages || refresh || action !== 'poll') {
           const result = await store.setJSON('room', room, saved ? { onlyIfMatch: saved.etag } : { onlyIfNew: true });
           if (!result.modified) continue;
         }

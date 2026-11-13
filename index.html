@@ -558,7 +558,7 @@ function punchIn(){
   document.getElementById('introScan').hidden = false;
   const label = document.getElementById('introPunchLabel');
   const status = document.getElementById('introScanStatus');
-  label.textContent = status.textContent = 'Simulating fingerprint scan…';
+  label.textContent = status.textContent = 'Scanning fingerprint…';
   setTimeout(() => {
     document.getElementById('introScan').hidden = true;
     label.textContent = status.textContent = 'Access granted';

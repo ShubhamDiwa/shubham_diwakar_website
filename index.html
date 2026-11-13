@@ -395,7 +395,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <div class="game-arena" id="gameArena" tabindex="0" role="group" aria-label="Meeting Dodge playfield">
    <span class="game-piece game-player" id="gameEmployee" aria-hidden="true">🧑‍💻</span>
   </div>
-  <p id="gameStatus" role="status">Use ← and → or the move buttons.</p>
+  <p id="gameStatus" role="status">Use A / D, ← / →, or the move buttons.</p>
   <div class="actions">
    <button class="btn" id="gameLeft" type="button" aria-label="Move left">←</button>
    <button class="btn primary" id="gameStart" type="button">Start shift</button>
@@ -440,7 +440,8 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  <article class="dash" id="chai-run">
   <h3>Chai Run</h3>
   <p>Deliver chai to the green desk. Dodge moving coworkers and go around chairs.</p>
-  <canvas id="chaiFloor" width="480" height="288" tabindex="0" aria-label="Chai Run playfield. Use arrow keys to move."></canvas>
+  <p>Move with WASD, arrow keys, or the buttons below.</p>
+  <canvas id="chaiFloor" width="480" height="288" tabindex="0" aria-label="Chai Run playfield. Use WASD or arrow keys to move."></canvas>
   <p id="chaiStatus" role="status">Deliveries 0 · Trays 3</p>
   <div class="actions">
    <button class="btn primary" id="chaiStart">Start delivery</button>
@@ -620,9 +621,11 @@ gameStart.addEventListener('click', () => {
 });
 
 arena.addEventListener('keydown', event => {
-  if (!running || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  const key = event.key.toLowerCase();
+  const direction = { arrowleft: -1, a: -1, arrowright: 1, d: 1 }[key];
+  if (!running || !direction || event.ctrlKey || event.metaKey || event.altKey) return;
   event.preventDefault();
-  moveEmployee(event.key === 'ArrowLeft' ? -1 : 1);
+  moveEmployee(direction);
 });
 document.getElementById('gameLeft').addEventListener('click', () => moveEmployee(-1));
 document.getElementById('gameRight').addEventListener('click', () => moveEmployee(1));

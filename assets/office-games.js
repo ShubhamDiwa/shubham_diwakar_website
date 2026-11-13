@@ -208,10 +208,13 @@ start.addEventListener('click', () => {
   runTimer = setTimeout(advanceCoworkers, 560);
 });
 floor.addEventListener('keydown', event => {
-  const direction = event.key.replace(/^Arrow/, '').toLowerCase();
-  if (!event.key.startsWith('Arrow') || !Object.hasOwn(directions, direction)) return;
+  if (!runTimer || event.ctrlKey || event.metaKey || event.altKey) return;
+  const key = event.key.toLowerCase();
+  const controls = { w: 'up', a: 'left', s: 'down', d: 'right',
+    arrowup: 'up', arrowleft: 'left', arrowdown: 'down', arrowright: 'right' };
+  if (!Object.hasOwn(controls, key)) return;
   event.preventDefault();
-  move(direction);
+  move(controls[key]);
 });
 for (const button of document.querySelectorAll('[data-chai]')) {
   button.addEventListener('click', () => move(button.dataset.chai));

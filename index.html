@@ -82,6 +82,12 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .radio-link-input input{flex:1;min-width:0;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#0b0d0d;color:#eee;outline:none}
 .radio-link-input input::placeholder{color:#666}
 .radio-link-note{margin-top:10px;color:#8f9a8c;font-size:12px}
+.radio-playlist-form{margin-top:16px}
+.radio-playlist-form .radio-link-input{flex-wrap:wrap;margin-top:8px}
+.radio-playlist-form input{flex-basis:220px}
+.radio-embed iframe{display:block;width:100%;height:352px;border:0;border-radius:12px}
+.radio-embed iframe.youtube{height:auto;min-height:200px;aspect-ratio:16/9}
+.radio-embed .btn{margin-top:12px}
 .radio-progress{height:5px;border-radius:99px;background:#242625;overflow:hidden;margin-top:14px}
 .radio-progress i{display:block;width:0;height:100%;background:var(--acid)}
 .radio .tracks{margin-top:17px;display:none}
@@ -180,7 +186,18 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
      <button class="btn" id="loadCodePhatGaya" type="button">CODE PHAT GAYA</button>
      <button class="btn" id="loadQaPassed" type="button">QA PASSED</button>
    </div>
-   <div class="radio-link-note" id="radioLinkNotice">Tap a playlist button to load the local songs. Click any song to play it.</div>
+   <form class="radio-playlist-form" id="playlistLinkForm" novalidate>
+     <label for="playlistLink">Spotify or YouTube playlist link</label>
+     <div class="radio-link-input">
+       <input id="playlistLink" type="url" placeholder="Paste a playlist link" aria-describedby="radioLinkNotice">
+       <button class="btn" type="submit">LOAD PLAYLIST</button>
+     </div>
+     <div class="radio-link-note" id="radioLinkNotice" role="status"></div>
+   </form>
+   <div class="audio-stage radio-embed" id="radioEmbed" hidden>
+     <div id="radioEmbedPlayer"></div>
+     <button class="btn" id="closeRadioEmbed" type="button">CLOSE ONLINE PLAYLIST</button>
+   </div>
 
    <div class="audio-stage" id="audioStage">
      <audio id="radioAudio" controls preload="auto"></audio>
@@ -317,6 +334,69 @@ const radioProgress = document.getElementById('radioProgress');
 const radioArt = document.getElementById('radioArt');
 const radioAudio = document.getElementById('radioAudio');
 const trackList = document.getElementById('trackList');
+const playlistLink = document.getElementById('playlistLink');
+const radioLinkNotice = document.getElementById('radioLinkNotice');
+const radioEmbed = document.getElementById('radioEmbed');
+const radioEmbedPlayer = document.getElementById('radioEmbedPlayer');
+
+function getPlaylistEmbed(value){
+  let url;
+  try {
+    url = new URL(value.trim());
+  } catch {
+    return null;
+  }
+  if (url.protocol !== 'https:' || url.username || url.password || url.port) return null;
+
+  if (url.hostname === 'open.spotify.com') {
+    const match = url.pathname.match(/^\/(?:intl-[a-z-]+\/)?(?:embed\/)?playlist\/([a-zA-Z0-9]{22})\/?$/);
+    if (match) {
+      return { provider: 'Spotify', src: `https://open.spotify.com/embed/playlist/${match[1]}` };
+    }
+  }
+
+  const youtubeHosts = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
+  const playlistId = url.searchParams.get('list');
+  if (youtubeHosts.includes(url.hostname) && playlistId && /^[\w-]+$/.test(playlistId)) {
+    return { provider: 'YouTube', src: `https://www.youtube.com/embed?listType=playlist&list=${playlistId}` };
+  }
+  return null;
+}
+
+function closeOnlinePlaylist(){
+  radioEmbedPlayer.replaceChildren();
+  radioEmbed.hidden = true;
+  radioLinkNotice.textContent = '';
+}
+
+document.getElementById('playlistLinkForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const playlist = getPlaylistEmbed(playlistLink.value);
+  if (!playlist) {
+    playlistLink.setAttribute('aria-invalid', 'true');
+    radioLinkNotice.textContent = 'Enter a full Spotify or YouTube playlist link.';
+    playlistLink.focus();
+    return;
+  }
+
+  playlistLink.removeAttribute('aria-invalid');
+  radioAudio.pause();
+  const player = document.createElement('iframe');
+  player.title = `${playlist.provider} playlist player`;
+  player.src = playlist.src;
+  player.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+  player.allowFullscreen = true;
+  player.referrerPolicy = 'strict-origin-when-cross-origin';
+  if (playlist.provider === 'YouTube') player.classList.add('youtube');
+  radioEmbedPlayer.replaceChildren(player);
+  radioEmbed.hidden = false;
+  radioLinkNotice.textContent = `Use the ${playlist.provider} player below to listen.`;
+});
+
+document.getElementById('closeRadioEmbed').addEventListener('click', () => {
+  closeOnlinePlaylist();
+  playlistLink.focus();
+});
 
 function escapeHtml(value){
   return String(value).replace(/[&<>"']/g, m => ({
@@ -388,7 +468,7 @@ function toggleRadio(){
   }
 }
 
-function loadPlaylist(playlist, label){
+function loadPlaylist(playlist, label, autoplay = true){
   radioTracks = playlist.map(track => ({ ...track }));
   radioIndex = 0;
   const firstTrack = radioTracks[0];
@@ -398,13 +478,13 @@ function loadPlaylist(playlist, label){
   radioAudio.currentTime = 0;
   radioAudio.src = firstTrack.source;
   radioAudio.load();
-  radioStatus.textContent = `● Playing · ${label}`;
-  radioLive.textContent = 'PLAYING';
-  radioLive.classList.add('playing');
-  radioPlay.textContent = 'Ⅱ';
-  document.getElementById('playBtn').textContent = 'Ⅱ';
+  radioStatus.textContent = `Ready · ${label}`;
+  radioLive.textContent = 'READY';
+  radioLive.classList.remove('playing');
+  radioPlay.textContent = '▶';
+  document.getElementById('playBtn').textContent = '▶';
   updateRadioMeta();
-  radioAudio.play().catch(()=>{});
+  if (autoplay) radioAudio.play().catch(()=>{});
 }
 
 function loadGoLivePlaylist(){
@@ -424,6 +504,7 @@ function loadQaPassedPlaylist(){
 }
 
 function onAudioLoaded(){
+  if (!radioAudio.paused) return;
   const current = radioTracks[radioIndex] || radioTracks[0];
   const playlistName = current?.author || 'Local playlist';
   radioStatus.textContent = `Ready · ${playlistName}`;
@@ -450,6 +531,7 @@ function stopRadioProgress(){
 }
 
 radioAudio.addEventListener('play', ()=>{
+  if (!radioEmbed.hidden) closeOnlinePlaylist();
   radioPlay.textContent = 'Ⅱ';
   document.getElementById('playBtn').textContent = 'Ⅱ';
   radioLive.textContent = 'PLAYING';
@@ -521,7 +603,7 @@ document.getElementById('expandRadio').addEventListener('click', ()=>{
 
 radio.classList.add('expanded');
 document.getElementById('expandRadio').textContent = 'CLOSE PLAYLIST ↙';
-loadGoLivePlaylist();
+loadPlaylist(goLivePlaylist, 'Go Live', false);
 
 </script>
 </body>

@@ -139,8 +139,6 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-inbox .inbox-copy{font-size:14px;margin:6px 0}
 .inbox-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 @media(max-width:550px){.shift-board{grid-template-columns:1fr;gap:8px}.hero-content{padding-bottom:100px}}
-#timeline .workday-teams{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
-#timeline .workday-teams [aria-pressed="true"]{background:var(--acid);color:#111;border-color:var(--acid)}
 #timeline .row{grid-template-columns:clamp(48px,10vw,100px) minmax(0,1fr);gap:14px;padding:19px 12px;border-left:2px solid transparent}
 #timeline .row[aria-current="step"]{border-left-color:var(--acid);background:#151b0d}
 #timeline .row strong{font-size:clamp(16px,3vw,21px)}
@@ -237,8 +235,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <section id="timeline">
- <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Pick your team to see how a typical workday unfolds. Times are in IST.</p></div>
- <div class="workday-teams" id="workdayTeams" role="group" aria-label="Pick your team"></div>
+ <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Your typical workday. Times are in IST.</p></div>
  <ol class="timeline" id="workdayTimeline" aria-label="Workday timeline"></ol>
 </section>
 
@@ -368,7 +365,6 @@ const teamMoments = {
   'Tech & QA': [['“Works on my machine.”', 'QA has a screen recording.'], ['“Just deploy it once.”', 'Someone already renamed the release branch.']]
 };
 const workdayTimeline = document.getElementById('workdayTimeline');
-const workdayTeams = document.getElementById('workdayTeams');
 let workdayMinute;
 let activeWorkdayRow = -1;
 
@@ -416,29 +412,11 @@ function highlightWorkday(minute){
 }
 
 const introTeam = document.getElementById('introTeam');
-const workdayButtons = new Map();
-
-function selectWorkdayTeam(team){
-  workdayTeams.querySelector('[aria-pressed="true"]').setAttribute('aria-pressed', 'false');
-  workdayButtons.get(team).setAttribute('aria-pressed', 'true');
-  renderWorkday(team);
-}
-
 for (const team of Object.keys(teamMoments)) {
-  if (team !== 'Everyone') {
-    const option = document.createElement('option');
-    option.textContent = team;
-    introTeam.append(option);
-  }
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'btn';
-  button.textContent = team;
-  button.setAttribute('aria-controls', 'workdayTimeline');
-  button.setAttribute('aria-pressed', String(team === 'Everyone'));
-  button.addEventListener('click', () => selectWorkdayTeam(team));
-  workdayButtons.set(team, button);
-  workdayTeams.append(button);
+  if (team === 'Everyone') continue;
+  const option = document.createElement('option');
+  option.textContent = team;
+  introTeam.append(option);
 }
 renderWorkday('Everyone');
 const officeDate = new Intl.DateTimeFormat('en-IN', {
@@ -568,7 +546,7 @@ function downloadResume(){
 function punchIn(){
   const button = document.getElementById('introPunch');
   if (button.disabled) return;
-  selectWorkdayTeam(introTeam.value);
+  renderWorkday(introTeam.value);
   stopIntroDiagnostics();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     enterSite();

@@ -167,6 +167,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .tic-board button{aspect-ratio:1;padding:0;font-size:32px;letter-spacing:0}
 .tic-board button[aria-disabled="true"]{cursor:default;transform:none}
 .tic-board .winning-cell{background:var(--acid);color:#111;border-color:var(--acid)}
+.break-room form[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -395,6 +396,21 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  <p id="ticStatus" role="status">Player X’s turn</p>
  <div class="tic-board" id="ticBoard" role="group" aria-label="Tic-Tac-Toe board"></div>
  <button class="btn" id="ticReset" type="button">New game</button>
+ <details class="break-room" id="onlineTic">
+  <summary>Play online with a friend</summary>
+  <form id="onlineTicJoin">
+   <input name="code" placeholder="Room code" aria-label="Room code" maxlength="10" autocomplete="off">
+   <button class="btn" type="submit">Join room</button>
+   <button class="btn primary" id="onlineTicCreate" type="button">Create room</button>
+  </form>
+  <p id="onlineTicStatus" role="status"></p>
+  <div id="onlineTicMatch" hidden>
+   <p>Room code <strong id="onlineTicCode"></strong> · You play <strong id="onlineTicMark"></strong></p>
+   <div class="tic-board" id="onlineTicBoard" role="group" aria-label="Online Tic-Tac-Toe board"></div>
+   <button class="btn" id="onlineTicReset" type="button" hidden>Rematch</button>
+   <button class="btn" id="onlineTicLeave" type="button">Leave room</button>
+  </div>
+ </details>
 </div>
 </section>
 
@@ -1210,5 +1226,6 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 
 </script>
 <script type="module" src="/assets/break-room.js"></script>
+<script type="module" src="/assets/tic-online.js"></script>
 </body>
 </html>

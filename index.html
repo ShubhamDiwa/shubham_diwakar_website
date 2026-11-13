@@ -123,6 +123,12 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .shift-days li{display:grid;gap:5px;justify-items:center;padding:8px 2px;border-radius:8px;background:#202321;color:#ddd;font-size:11px}
 .shift-days li strong{font:700 16px ui-monospace,monospace}
 .shift-days [aria-current="date"]{background:var(--acid);color:#101110}
+.office-inbox{width:min(650px,100%);margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:rgba(8,9,9,.88)}
+.office-inbox summary{cursor:pointer;font-weight:800;color:var(--acid)}
+.office-inbox summary span{margin-left:8px;color:var(--muted);font-size:12px;font-weight:500}
+.office-inbox h2{font-size:19px;letter-spacing:normal;margin:12px 0 4px}
+.office-inbox .inbox-copy{font-size:14px;margin:6px 0}
+.inbox-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 @media(max-width:550px){.shift-board{grid-template-columns:1fr;gap:8px}.hero-content{padding-bottom:100px}}
 </style>
 </head>
@@ -167,6 +173,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
     <ol class="shift-days" id="officeWeek" aria-labelledby="officeWeekTitle"></ol>
    </div>
   </div>
+  <details class="office-inbox">
+   <summary>Office Inbox <span id="officeInboxPreview"></span></summary>
+   <h2 id="officeInboxSubject"></h2>
+   <p class="inbox-copy" id="officeInboxBody"></p>
+   <div class="inbox-actions">
+    <button class="btn primary" id="officeInboxAccept" type="button">Accept</button>
+    <button class="btn" id="officeInboxDecline" type="button">Decline</button>
+   </div>
+   <p class="inbox-copy" id="officeInboxReply" role="status"></p>
+  </details>
  </div>
 </section>
 
@@ -312,6 +328,42 @@ const officeDate = new Intl.DateTimeFormat('en-IN', {
 });
 const workdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 let displayedOfficeDate = '';
+let displayedInboxSlot = '';
+const inboxMessages = {
+  morning: ['Stand-up moved to 9:05', 'Bring your latest update and today’s blocker.'],
+  afternoon: ['Quick sync in five?', 'Please bring the deck. Your focus time can move.'],
+  evening: ['One small change before you log off', 'The release is ready. Someone said “just one tweak.”'],
+  night: ['Are you still online?', 'Production sent a message. Then it sent three more.'],
+  weekend: ['Optional weekend check-in', 'The invite says optional. Your manager is already in the call.']
+};
+const weekdayTopics = ['Sprint planning', 'Sprint check-in', 'Bug triage', 'Release prep', 'Friday deploy'];
+const weekdayMessages = {
+  '1/morning': ['Monday stand-up at 9:05', 'Bring a sprint goal and a convincing answer to “How was your weekend?”'],
+  '3/afternoon': ['Bug triage just got longer', 'The ticket says “cannot reproduce.” QA brought a screen recording.'],
+  '5/evening': ['One small change before the Friday deploy', 'The release is ready. Someone just reopened the ticket.']
+};
+const inboxReply = document.getElementById('officeInboxReply');
+
+function updateOfficeInbox(dateKey, weekday, shift, weekend){
+  const slot = weekend ? 'weekend' : shift;
+  const inboxSlot = `${dateKey}/${slot}`;
+  if (displayedInboxSlot === inboxSlot) return;
+  displayedInboxSlot = inboxSlot;
+
+  const [subject, body] = weekdayMessages[`${weekday}/${slot}`] ?? inboxMessages[slot];
+  const preview = weekend ? 'Weekend' : weekdayTopics[weekday - 1];
+  document.getElementById('officeInboxPreview').textContent = preview;
+  document.getElementById('officeInboxSubject').textContent = subject;
+  document.getElementById('officeInboxBody').textContent = body;
+  inboxReply.textContent = '';
+}
+
+document.getElementById('officeInboxAccept').addEventListener('click', () => {
+  inboxReply.textContent = 'Accepted. You’ve been asked to take notes.';
+});
+document.getElementById('officeInboxDecline').addEventListener('click', () => {
+  inboxReply.textContent = 'Invite updated. Attendance is now required.';
+});
 
 function updateOfficeClock(now = new Date()){
   const parts = Object.fromEntries(officeTime.formatToParts(now).map(({type, value}) => [type, value]));
@@ -328,6 +380,7 @@ function updateOfficeClock(now = new Date()){
   document.getElementById('officeShift').textContent = `${officeDate.format(today)} · ${label}`;
 
   const dateKey = today.toISOString().slice(0, 10);
+  updateOfficeInbox(dateKey, weekday, shift, weekend);
   if (displayedOfficeDate === dateKey) return;
   displayedOfficeDate = dateKey;
   const monday = new Date(today);

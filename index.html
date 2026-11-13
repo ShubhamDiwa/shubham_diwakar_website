@@ -114,6 +114,21 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  .radio-stations{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+:root[data-shift="morning"]{--acid:#ffd184;--shift-glow:#b86d32}
+:root[data-shift="afternoon"]{--acid:#d9fa79;--shift-glow:#667d32}
+:root[data-shift="evening"]{--acid:#ffad98;--shift-glow:#9e485e}
+:root[data-shift="night"]{--acid:#b5c6ff;--shift-glow:#46569e}
+.hero:before{background:linear-gradient(90deg,#070808 4%,rgba(7,8,8,.65) 52%,transparent),linear-gradient(0deg,#070808,transparent 35%),radial-gradient(ellipse at 86% 24%,var(--shift-glow,#667d32),transparent 66%)}
+.shift-board{display:grid;grid-template-columns:minmax(170px,.75fr) minmax(0,1.25fr);gap:16px;width:min(650px,100%);margin-top:34px}
+.shift-clock,.shift-calendar{padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(8,9,9,.88)}
+.shift-clock time{display:block;font:700 clamp(26px,5vw,42px)/1.15 ui-monospace,monospace;color:var(--acid);font-variant-numeric:tabular-nums;margin:6px 0}
+.shift-label,.shift-date{color:#b9bcb5;font-size:12px}
+.shift-calendar h2{font-size:13px;font-weight:700;line-height:1.3;letter-spacing:normal;margin:0 0 12px;text-transform:none}
+.shift-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;list-style:none}
+.shift-days li{display:grid;gap:5px;justify-items:center;padding:8px 2px;border-radius:8px;background:#202321;color:#ddd;font-size:11px}
+.shift-days li strong{font:700 16px ui-monospace,monospace}
+.shift-days [aria-current="date"]{background:var(--acid);color:#101110}
+@media(max-width:550px){.shift-board{grid-template-columns:1fr;gap:8px}.hero-content{padding-bottom:100px}}
 </style>
 </head>
 <body>
@@ -146,8 +161,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
   <p>Office. Chai. Meetings. Bugs. “One small change.” Repeat. A cinematic, slightly unhinged archive of corporate life — with a developer portfolio hiding inside.</p>
   <div class="actions"><a class="btn primary" href="#life">PUNCH IN ↓</a><a class="btn" href="#radio">PLAY CORPORATE RADIO</a></div>
-  <div class="metrics">
-   <div class="metric"><b>09:00</b><small>Login Time</small></div><div class="metric"><b>∞</b><small>Meetings</small></div><div class="metric"><b>☕</b><small>Chai Required</small></div><div class="metric"><b>404</b><small>Work-Life Balance</small></div>
+  <div class="shift-board">
+   <div class="shift-clock">
+    <div class="shift-label">Office clock · IST</div>
+    <time id="officeClock"></time>
+    <div class="shift-date" id="officeShift"></div>
+   </div>
+   <div class="shift-calendar">
+    <h2 id="officeWeekTitle">Office calendar</h2>
+    <ol class="shift-days" id="officeWeek" aria-labelledby="officeWeekTitle"></ol>
+   </div>
   </div>
  </div>
 </section>
@@ -285,6 +308,58 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <script>
+const officeTime = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric',
+  hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+});
+const officeDate = new Intl.DateTimeFormat('en-IN', {
+  timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short'
+});
+const workdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+let displayedOfficeDate = '';
+
+function updateOfficeClock(now = new Date()){
+  const parts = Object.fromEntries(officeTime.formatToParts(now).map(({type, value}) => [type, value]));
+  const clock = document.getElementById('officeClock');
+  clock.dateTime = clock.textContent = `${parts.hour}:${parts.minute}:${parts.second}`;
+
+  const hour = Number(parts.hour);
+  const shift = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+  document.documentElement.dataset.shift = shift;
+
+  const today = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
+  const weekday = today.getUTCDay();
+  const weekend = weekday === 0 || weekday === 6;
+  const label = weekend ? 'Weekend' : { morning: 'Morning shift', afternoon: 'Afternoon shift', evening: 'Evening shift', night: 'After hours' }[shift];
+  document.getElementById('officeShift').textContent = `${officeDate.format(today)} · ${label}`;
+
+  const dateKey = today.toISOString().slice(0, 10);
+  if (displayedOfficeDate === dateKey) return;
+  displayedOfficeDate = dateKey;
+  const monday = new Date(today);
+  monday.setUTCDate(today.getUTCDate() - (weekday + 6) % 7);
+  const days = workdays.map((name, index) => {
+    const date = new Date(monday);
+    date.setUTCDate(monday.getUTCDate() + index);
+    const cell = document.createElement('li');
+    if (date.getTime() === today.getTime()) cell.setAttribute('aria-current', 'date');
+    cell.setAttribute('aria-label', officeDate.format(date));
+    const day = document.createElement('span');
+    day.textContent = name;
+    const number = document.createElement('strong');
+    number.textContent = date.getUTCDate();
+    cell.append(day, number);
+    return cell;
+  });
+  document.getElementById('officeWeek').replaceChildren(...days);
+}
+
+updateOfficeClock();
+setInterval(updateOfficeClock, 1000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) updateOfficeClock();
+});
+
 function downloadResume(){
   const fileUrl = 'assets/resume_shubham_diwakar.pdf';
   const link = document.createElement('a');

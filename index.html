@@ -78,7 +78,12 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .radio-control{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#151716;color:#fff;cursor:pointer}
 .radio-control:hover{border-color:var(--acid);transform:translateY(-2px)}
 .radio-control.radio-play{background:var(--acid);color:#111;border-color:var(--acid);font-size:16px}
-.radio-embed{max-width:510px;overflow-x:auto}
+.player .now{min-width:0;color:var(--paper);text-decoration:none}
+.player .now span,.player .now small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.player .now:hover span,.player .now:focus-visible span{color:var(--acid)}
+.player .controls[hidden],.player .mini-youtube[hidden]{display:none}
+.player .mini-youtube{font-size:11px;padding:10px}
+.radio-embed{max-width:510px;overflow-x:auto;scroll-margin-top:90px;scroll-margin-bottom:95px}
 .radio-embed iframe{display:block;width:100%;min-width:200px;min-height:200px;aspect-ratio:16/9;border:0}
 .radio-embed .btn{margin-top:12px}
 .radio-progress{height:5px;border-radius:99px;background:#242625;overflow:hidden;margin-top:14px}
@@ -140,7 +145,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <div class="eyebrow">An Indian corporate survival archive</div>
   <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
   <p>Office. Chai. Meetings. Bugs. “One small change.” Repeat. A cinematic, slightly unhinged archive of corporate life — with a developer portfolio hiding inside.</p>
-  <div class="actions"><a class="btn primary" href="#life">ENTER THE LIFE ↓</a><a class="btn" href="#portfolio">WHO IS THE MAZDOOR?</a></div>
+  <div class="actions"><a class="btn primary" href="#life">PUNCH IN ↓</a><a class="btn" href="#radio">PLAY CORPORATE RADIO</a></div>
   <div class="metrics">
    <div class="metric"><b>09:00</b><small>Login Time</small></div><div class="metric"><b>∞</b><small>Meetings</small></div><div class="metric"><b>☕</b><small>Chai Required</small></div><div class="metric"><b>404</b><small>Work-Life Balance</small></div>
   </div>
@@ -272,10 +277,11 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 <h2>SEE YOU<br>MONDAY.</h2><p>Corporate life ends here. The developer portfolio doesn't.</p><a class="btn primary" href="#home">BACK TO TOP ↑</a>
 </footer>
 
-<div class="player">
- <img class="cover" id="compactCover" src="assets/corporate-collage.png" alt="Corporate Radio">
- <div class="now"><span id="nowTitle">Corporate Radio</span><small id="nowSub">YouTube · loading track…</small></div>
- <div class="controls"><button onclick="prevRadio()" aria-label="Previous track">◀</button><button class="main" id="playBtn" onclick="toggleRadio()" aria-label="Play">▶</button><button onclick="nextRadio()" aria-label="Next track">▶</button></div>
+<div class="player" role="group" aria-label="Corporate Radio mini-player">
+ <img class="cover" id="compactCover" src="assets/corporate-collage.png" alt="">
+ <a class="now" id="miniRadioLink" href="#radio"><span id="nowTitle">Corporate Radio</span><small id="nowSub">Choose a station</small></a>
+ <div class="controls" id="miniLocalControls"><button type="button" onclick="prevRadio()" aria-label="Previous track">◀</button><button type="button" class="main" id="playBtn" onclick="toggleRadio()" aria-label="Play">▶</button><button type="button" onclick="nextRadio()" aria-label="Next track">▶</button></div>
+ <a class="btn mini-youtube" id="miniYouTubeLink" href="#radioEmbed" hidden>Open player</a>
 </div>
 
 <script>
@@ -352,10 +358,18 @@ const trackList = document.getElementById('trackList');
 const onlineRadioPicks = document.getElementById('onlineRadioPicks');
 const radioEmbed = document.getElementById('radioEmbed');
 const radioEmbedPlayer = document.getElementById('radioEmbedPlayer');
+const miniLocalControls = document.getElementById('miniLocalControls');
+const miniYouTubeLink = document.getElementById('miniYouTubeLink');
+const miniRadioLink = document.getElementById('miniRadioLink');
+const miniPlayButton = document.getElementById('playBtn');
 
 function closeOnlinePlaylist(){
   radioEmbedPlayer.replaceChildren();
   radioEmbed.hidden = true;
+  miniLocalControls.hidden = false;
+  miniYouTubeLink.hidden = true;
+  miniRadioLink.href = '#radio';
+  updateMiniTrack();
   onlineRadioPicks.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
 }
 
@@ -373,6 +387,11 @@ function openOnlineTrack(playlist){
   originalLink.href = `https://www.youtube.com/playlist?${new URLSearchParams({ list: playlist.id })}`;
   originalLink.textContent = 'Open in YouTube';
   radioEmbed.hidden = false;
+  miniLocalControls.hidden = true;
+  miniYouTubeLink.hidden = false;
+  miniRadioLink.href = '#radioEmbed';
+  document.getElementById('nowTitle').textContent = playlist.title;
+  document.getElementById('nowSub').textContent = 'YouTube playlist';
 }
 
 function addOnlinePlaylist(playlist) {
@@ -427,6 +446,11 @@ function renderRadioTracks(){
       <small>${i===radioIndex ? 'SELECTED' : ''}</small>
     </button>
   `).join('');
+  if (radioEmbed.hidden) updateMiniTrack();
+}
+
+function updateMiniTrack(){
+  const current = radioTracks[radioIndex] || radioTracks[0];
   document.getElementById('nowTitle').textContent = current.title || 'Corporate Radio';
   document.getElementById('nowSub').textContent = `${current.author || 'Go Live'} · local`;
   document.getElementById('compactCover').src = current.thumb || 'assets/corporate-collage.png';
@@ -454,7 +478,6 @@ function selectRadio(index){
     radioLive.textContent = 'LOADING';
     radioLive.classList.remove('playing');
     radioPlay.textContent = 'Ⅱ';
-    document.getElementById('playBtn').textContent = 'Ⅱ';
     updateRadioMeta();
     radioAudio.play().catch(()=>{});
   }
@@ -501,7 +524,8 @@ function loadPlaylist(playlist, label, autoplay = true){
   radioLive.textContent = 'READY';
   radioLive.classList.remove('playing');
   radioPlay.textContent = '▶';
-  document.getElementById('playBtn').textContent = '▶';
+  miniPlayButton.textContent = '▶';
+  miniPlayButton.setAttribute('aria-label', 'Play');
   updateRadioMeta();
   if (autoplay) radioAudio.play().catch(()=>{});
 }
@@ -552,7 +576,8 @@ function stopRadioProgress(){
 radioAudio.addEventListener('play', ()=>{
   if (!radioEmbed.hidden) closeOnlinePlaylist();
   radioPlay.textContent = 'Ⅱ';
-  document.getElementById('playBtn').textContent = 'Ⅱ';
+  miniPlayButton.textContent = 'Ⅱ';
+  miniPlayButton.setAttribute('aria-label', 'Pause');
   radioLive.textContent = 'PLAYING';
   radioLive.classList.add('playing');
   const current = radioTracks[radioIndex] || radioTracks[0];
@@ -562,7 +587,8 @@ radioAudio.addEventListener('play', ()=>{
 
 radioAudio.addEventListener('pause', ()=>{
   radioPlay.textContent = '▶';
-  document.getElementById('playBtn').textContent = '▶';
+  miniPlayButton.textContent = '▶';
+  miniPlayButton.setAttribute('aria-label', 'Play');
   radioLive.textContent = 'PAUSED';
   radioLive.classList.remove('playing');
   const current = radioTracks[radioIndex] || radioTracks[0];

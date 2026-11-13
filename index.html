@@ -21,9 +21,10 @@ a{color:inherit;text-decoration:none} button{font:inherit}
 #intro{overflow-y:auto;padding:24px 0}
 .intro-role{display:grid;gap:6px;margin-top:16px;text-align:left;font-size:13px}
 .intro-role select{width:100%;padding:10px;color:var(--paper);background:#0d0f0e;border:1px solid var(--line);border-radius:8px;font:inherit}
-.intro-scan{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;color:var(--acid);font:12px ui-monospace,monospace}
-.intro-scan[hidden]{display:none}
-.fingerprint{width:28px;height:34px;border-radius:50%;background:repeating-radial-gradient(ellipse at center,transparent 0 2px,currentColor 2px 3px,transparent 3px 5px);animation:fingerprint-scan .6s ease-in-out alternate infinite}
+#introPunch{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;margin-top:12px;width:100%}
+#introPunch:disabled{cursor:wait;transform:none}
+.fingerprint{flex:none;width:21px;height:26px;border-radius:50%;background:repeating-radial-gradient(ellipse at center,transparent 0 2px,currentColor 2px 3px,transparent 3px 5px);animation:fingerprint-scan .6s ease-in-out alternate infinite}
+.intro-scan-announcement{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @keyframes fingerprint-scan{from{opacity:.35}to{opacity:1}}
 .introbox{width:min(680px,90%);text-align:center}
 .introbrand{font-size:clamp(54px,10vw,120px);line-height:.78;letter-spacing:-.09em;font-weight:950}
@@ -158,14 +159,14 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    <div>&gt; motivation... <span class="green" id="introMotivation">LOADING</span></div>
    <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
   </div>
-  <label class="intro-role">What’s your team?
+  <label class="intro-role">What is your role?
    <select id="introTeam"><option>Everyone</option></select>
   </label>
-  <button class="btn primary" id="introPunch" type="button" style="margin-top:12px;width:100%" onclick="punchIn()">PUNCH IN →</button>
-  <div class="intro-scan" id="introScan" hidden>
-   <span class="fingerprint" aria-hidden="true"></span>
-   <span id="introScanStatus" role="status"></span>
-  </div>
+  <button class="btn primary" id="introPunch" type="button" onclick="punchIn()">
+   <span class="fingerprint" id="introScan" aria-hidden="true" hidden></span>
+   <span id="introPunchLabel">PUNCH IN →</span>
+  </button>
+  <span class="intro-scan-announcement" id="introScanStatus" role="status"></span>
  </div>
 </div>
 
@@ -555,10 +556,12 @@ function punchIn(){
   button.disabled = true;
   introTeam.disabled = true;
   document.getElementById('introScan').hidden = false;
+  const label = document.getElementById('introPunchLabel');
   const status = document.getElementById('introScanStatus');
-  status.textContent = 'Simulating fingerprint scan…';
+  label.textContent = status.textContent = 'Simulating fingerprint scan…';
   setTimeout(() => {
-    status.textContent = 'Access granted';
+    document.getElementById('introScan').hidden = true;
+    label.textContent = status.textContent = 'Access granted';
     setTimeout(enterSite, 350);
   }, 800);
 }

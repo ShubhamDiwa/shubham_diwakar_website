@@ -168,6 +168,21 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .tic-board button[aria-disabled="true"]{cursor:default;transform:none}
 .tic-board .winning-cell{background:var(--acid);color:#111;border-color:var(--acid)}
 .break-room form[hidden]{display:none}
+.office-games{display:grid;gap:16px}
+.office-games article{min-width:0;scroll-margin-top:90px}
+.office-games p{margin:8px 0;color:var(--muted)}
+.office-games .actions{margin-top:12px}
+.bingo-board,.word-board{display:grid;gap:5px;margin-top:12px}
+.bingo-board{grid-template-columns:repeat(3,minmax(0,1fr));max-width:560px}
+.bingo-board button{min-height:64px;padding:6px;letter-spacing:0;text-transform:none}
+.bingo-board [aria-pressed="true"]{background:var(--acid);color:#111}
+.word-board{grid-template-columns:repeat(5,minmax(0,1fr));max-width:270px}
+.word-board span{display:grid;place-items:center;aspect-ratio:1;background:#272b27;border-radius:5px;font-weight:800}
+.word-board [data-match="correct"]{background:#35623d}
+.word-board [data-match="present"]{background:#79560f}
+.office-games input{width:9em;padding:10px;border:1px solid var(--line);border-radius:8px;background:#090b0a;color:var(--paper);font:inherit}
+#chaiFloor{display:block;width:min(100%,480px);height:auto;border:1px solid var(--line);border-radius:8px;background:#101510}
+#chaiFloor:focus-visible{outline:2px solid var(--acid)}
 </style>
 </head>
 <body>
@@ -412,6 +427,34 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   </div>
  </details>
 </div>
+</section>
+
+<section class="office-games" aria-label="Office games">
+ <article class="dash" id="corporate-bingo">
+  <h3>Corporate Bingo</h3>
+  <p>Mark the phrases you hear at work. First to complete a line calls Bingo in the Break Room.</p>
+  <div class="bingo-board" id="bingoBoard"></div>
+  <p id="bingoStatus" role="status"></p>
+  <div class="actions"><button class="btn" id="bingoShare">Share board in chat</button><button class="btn" id="bingoNew">Shuffle board</button></div>
+ </article>
+ <article class="dash" id="chai-run">
+  <h3>Chai Run</h3>
+  <p>Deliver chai to the green desk. Dodge moving coworkers and go around chairs.</p>
+  <canvas id="chaiFloor" width="480" height="288" tabindex="0" aria-label="Chai Run playfield. Use arrow keys to move."></canvas>
+  <p id="chaiStatus" role="status">Deliveries 0 · Trays 3</p>
+  <div class="actions">
+   <button class="btn primary" id="chaiStart">Start delivery</button>
+   <button class="btn" data-chai="left" aria-label="Move left">←</button><button class="btn" data-chai="up" aria-label="Move up">↑</button><button class="btn" data-chai="down" aria-label="Move down">↓</button><button class="btn" data-chai="right" aria-label="Move right">→</button>
+  </div>
+ </article>
+ <article class="dash" id="corporate-wordle">
+  <h3>Corporate Wordle</h3>
+  <p>Guess today’s five-letter office word in six tries. Green means right spot, amber means wrong spot.</p>
+  <div class="word-board" id="wordBoard" aria-label="Guess history"></div>
+  <form class="actions" id="wordForm"><input name="guess" aria-label="Five-letter guess" minlength="5" maxlength="5" pattern="[A-Za-z]{5}" required autocomplete="off"><button class="btn primary">Guess</button></form>
+  <p id="wordStatus" role="status"></p>
+  <button class="btn" id="wordShare" hidden>Share result in chat</button>
+ </article>
 </section>
 
 <section class="portfolio" id="portfolio">
@@ -1227,5 +1270,6 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 </script>
 <script type="module" src="/assets/break-room.js"></script>
 <script type="module" src="/assets/tic-online.js"></script>
+<script type="module" src="/assets/office-games.js"></script>
 </body>
 </html>

@@ -42,7 +42,19 @@ function render({ messages, online, moderator }) {
     const row = document.createElement('li');
     const name = document.createElement('strong');
     name.textContent = message.nickname;
-    row.append(name, ` · ${message.text}`);
+    row.append(name, ' · ');
+    const bingo = message.text.match(/^Join my Corporate Bingo board: (\S+)$/);
+    const boardUrl = bingo ? URL.parse(bingo[1]) : null;
+    if (boardUrl?.origin === location.origin && boardUrl.hash === '#corporate-bingo') {
+      const link = document.createElement('a');
+      link.href = boardUrl.href;
+      link.textContent = 'Join my Corporate Bingo board ↗';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      row.append(link);
+    } else {
+      row.append(message.text);
+    }
     if (moderator) {
       for (const action of ['delete', 'mute']) {
         const button = document.createElement('button');

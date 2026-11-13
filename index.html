@@ -159,6 +159,9 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .meeting-game p{color:var(--muted);margin-top:8px}
 .meeting-game .actions{margin-top:16px}
 .meeting-game #meetingScore{color:var(--acid);font:13px ui-monospace,monospace}
+.game-arena{position:relative;height:320px;margin-top:12px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:repeating-linear-gradient(90deg,#161a16 0 24.7%,#33392a 24.7% 25%)}
+.game-piece{position:absolute;left:0;top:0;width:25%;height:38px;display:grid;place-items:center;font-size:26px;pointer-events:none}
+.game-player{background:rgba(202,255,57,.16);border-bottom:2px solid var(--acid)}
 </style>
 </head>
 <body>
@@ -366,16 +369,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 <section id="meeting-game" aria-labelledby="meetingGameTitle">
  <div class="dash meeting-game">
   <h3 id="meetingGameTitle">Meeting Dodge</h3>
-  <p>Join meetings that need you. Skip the ones that can be an email.</p>
-  <p id="meetingScore"></p>
-  <div role="status">
-   <p><strong id="meetingInvite"></strong></p>
-   <p id="meetingDetail"></p>
+  <p>Dodge falling meeting invites 📅 and catch chai ☕. Three hits end your shift.</p>
+  <p id="meetingScore">Score 0 · Lives 3</p>
+  <div class="game-arena" id="gameArena" tabindex="0" role="group" aria-label="Meeting Dodge playfield">
+   <span class="game-piece game-player" id="gameEmployee" aria-hidden="true">🧑‍💻</span>
   </div>
+  <p id="gameStatus" role="status">Use ← and → or the move buttons.</p>
   <div class="actions">
-   <button class="btn primary" id="meetingJoin" type="button">Join</button>
-   <button class="btn" id="meetingSkip" type="button">Skip</button>
-   <button class="btn primary" id="meetingNext" type="button" hidden>Next invite</button>
+   <button class="btn" id="gameLeft" type="button" aria-label="Move left">←</button>
+   <button class="btn primary" id="gameStart" type="button">Start shift</button>
+   <button class="btn" id="gameRight" type="button" aria-label="Move right">→</button>
   </div>
  </div>
 </section>
@@ -407,58 +410,102 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <script>
-const meetingInvites = [
-  ['Quick sync (no agenda)', 'Twelve attendees and no decision to make.', false, 'Ask for the update in chat.'],
-  ['Customer escalation', 'You have the details Support needs to unblock a customer.', true, 'Your context will save the team a round of follow-ups.'],
-  ['Read the weekly status deck', 'The deck is already in your inbox.', false, 'Read it when you have a minute.'],
-  ['Sign-off before launch', 'Your approval is the last thing holding up the release.', true, 'Join and make the decision.'],
-  ['Prep for the meeting about the meeting', 'The only agenda item is deciding on the next agenda.', false, 'Save the slot for chai.']
-];
-const meetingJoin = document.getElementById('meetingJoin');
-const meetingSkip = document.getElementById('meetingSkip');
-const meetingNext = document.getElementById('meetingNext');
-const meetingInvite = document.getElementById('meetingInvite');
-const meetingDetail = document.getElementById('meetingDetail');
-const meetingScore = document.getElementById('meetingScore');
-let meetingRound = 0;
-let meetingPoints = 0;
+const arena = document.getElementById('gameArena');
+const employee = document.getElementById('gameEmployee');
+const gameStart = document.getElementById('gameStart');
+const gameStatus = document.getElementById('gameStatus');
+const gameScore = document.getElementById('meetingScore');
+const employeeY = 274;
+let lane = 1;
+let score = 0;
+let lives = 3;
+let elapsed = 0;
+let spawnIn = 0;
+let lastFrame = 0;
+let running = false;
+let pieces = [];
 
-function showMeeting(){
-  const [title, detail] = meetingInvites[meetingRound];
-  meetingInvite.textContent = title;
-  meetingDetail.textContent = detail;
-  meetingScore.textContent = `Invite ${meetingRound + 1}/${meetingInvites.length} · Score ${meetingPoints}`;
-  meetingJoin.hidden = meetingSkip.hidden = false;
-  meetingNext.hidden = true;
+function placePiece(element, column, y){
+  element.style.transform = 'translate(' + column * 100 + '%, ' + y + 'px)';
 }
 
-function answerMeeting(joined){
-  if (meetingJoin.hidden) return;
-  const [, , shouldJoin, explanation] = meetingInvites[meetingRound];
-  const correct = joined === shouldJoin;
-  if (correct) meetingPoints++;
-  const finished = meetingRound === meetingInvites.length - 1;
-  meetingScore.textContent = `Score ${meetingPoints}/${meetingInvites.length}`;
-  meetingInvite.textContent = correct ? 'Good call.' : 'Calendar regret.';
-  meetingDetail.textContent = explanation + (finished ? ` Final score ${meetingPoints} out of ${meetingInvites.length}.` : '');
-  meetingJoin.hidden = meetingSkip.hidden = true;
-  meetingNext.textContent = finished ? 'Play again' : 'Next invite';
-  meetingNext.hidden = false;
-  meetingNext.focus();
+function moveEmployee(direction){
+  if (!running) return;
+  lane = Math.max(0, Math.min(3, lane + direction));
+  placePiece(employee, lane, employeeY);
 }
 
-meetingJoin.addEventListener('click', () => answerMeeting(true));
-meetingSkip.addEventListener('click', () => answerMeeting(false));
-meetingNext.addEventListener('click', () => {
-  meetingRound++;
-  if (meetingRound === meetingInvites.length) {
-    meetingRound = 0;
-    meetingPoints = 0;
+function updateGameScore(){
+  gameScore.textContent = 'Score ' + score + ' · Lives ' + lives;
+}
+
+function gameFrame(now){
+  const delta = lastFrame ? Math.min((now - lastFrame) / 1000, .05) : 0;
+  lastFrame = now;
+  elapsed += delta;
+  spawnIn -= delta;
+  if (spawnIn <= 0) {
+    spawnIn = Math.max(.45, 1.05 - elapsed / 100);
+    const column = Math.floor(Math.random() * 4);
+    const chai = Math.random() < .24;
+    const element = document.createElement('span');
+    element.className = 'game-piece';
+    element.setAttribute('aria-hidden', 'true');
+    element.textContent = chai ? '☕' : '📅';
+    arena.append(element);
+    pieces.push({ column, chai, element, y: -38 });
   }
-  showMeeting();
-  meetingJoin.focus();
+
+  for (const piece of pieces) {
+    piece.y += delta * Math.min(310, 125 + elapsed * 3);
+    placePiece(piece.element, piece.column, piece.y);
+    if (piece.column === lane && piece.y >= employeeY - 26 && piece.y <= employeeY + 22) {
+      if (piece.chai) score += 3;
+      else lives = Math.max(0, lives - 1);
+      piece.element.remove();
+      updateGameScore();
+    } else if (piece.y > 320) {
+      if (!piece.chai) score++;
+      piece.element.remove();
+      updateGameScore();
+    }
+  }
+  pieces = pieces.filter(piece => piece.element.isConnected);
+  if (lives > 0) {
+    requestAnimationFrame(gameFrame);
+    return;
+  }
+  running = false;
+  gameStatus.textContent = 'Shift over. Final score ' + score + '.';
+  gameStart.disabled = false;
+  gameStart.textContent = 'Play again';
+  if (arena.contains(document.activeElement)) gameStart.focus();
+}
+
+gameStart.addEventListener('click', () => {
+  for (const piece of pieces) piece.element.remove();
+  pieces = [];
+  lane = 1;
+  score = elapsed = lastFrame = 0;
+  spawnIn = .4;
+  lives = 3;
+  running = true;
+  gameStart.disabled = true;
+  gameStatus.textContent = 'Dodge invites. Catch chai for 3 points.';
+  updateGameScore();
+  placePiece(employee, lane, employeeY);
+  arena.focus({ preventScroll: true });
+  requestAnimationFrame(gameFrame);
 });
-showMeeting();
+
+arena.addEventListener('keydown', event => {
+  if (!running || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  event.preventDefault();
+  moveEmployee(event.key === 'ArrowLeft' ? -1 : 1);
+});
+document.getElementById('gameLeft').addEventListener('click', () => moveEmployee(-1));
+document.getElementById('gameRight').addEventListener('click', () => moveEmployee(1));
+placePiece(employee, lane, employeeY);
 
 for (const slider of document.querySelectorAll('.meter-slider')) {
   const output = document.querySelector(`output[for="${slider.id}"]`);

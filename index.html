@@ -20,7 +20,7 @@ a{color:inherit;text-decoration:none} button{font:inherit}
 #intro.hide{opacity:0;visibility:hidden}
 #intro{overflow-y:auto;padding:24px 0}
 .intro-role{display:grid;gap:6px;margin-top:16px;text-align:left;font-size:13px}
-.intro-role select{width:100%;padding:10px;color:var(--paper);background:#0d0f0e;border:1px solid var(--line);border-radius:8px;font:inherit}
+.intro-role :is(select,input){width:100%;padding:10px;color:var(--paper);background:#0d0f0e;border:1px solid var(--line);border-radius:8px;font:inherit}
 #introPunch{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;margin-top:12px;width:100%}
 #introPunch:disabled{cursor:wait;transform:none}
 .fingerprint{flex:none;width:21px;height:26px;border-radius:50%;background:repeating-radial-gradient(ellipse at center,transparent 0 2px,currentColor 2px 3px,transparent 3px 5px);animation:fingerprint-scan .6s ease-in-out alternate infinite}
@@ -41,6 +41,7 @@ nav{position:fixed;z-index:500;top:16px;left:50%;transform:translateX(-50%);widt
 .logo{font-weight:950;letter-spacing:-.04em}.logo span{color:var(--acid)}
 .navlinks{display:flex;gap:23px;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#aaa}
 .navlinks a:hover{color:var(--acid)}
+#meeting-game{scroll-margin-top:80px}
 .avail{font-size:10px;color:var(--acid);border:1px solid rgba(202,255,57,.25);padding:8px 10px;border-radius:99px}
 .hero{min-height:100vh;position:relative;display:flex;align-items:end;overflow:hidden}
 .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.29) saturate(.72)}
@@ -199,20 +200,26 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    <div>&gt; motivation... <span class="green" id="introMotivation">LOADING</span></div>
    <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
   </div>
+  <form id="introForm">
+  <label class="intro-role">Display name
+   <input id="introName" autocomplete="nickname" required maxlength="24" pattern=".*\S.*" aria-describedby="introNameHint">
+   <span id="introNameHint">Your display name and role appear on public game leaderboards.</span>
+  </label>
   <label class="intro-role">What is your role?
    <select id="introTeam"></select>
   </label>
-  <button class="btn primary" id="introPunch" type="button" onclick="punchIn()">
+  <button class="btn primary" id="introPunch" type="submit">
    <span class="fingerprint" id="introScan" aria-hidden="true" hidden></span>
    <span id="introPunchLabel">PUNCH IN →</span>
   </button>
+  </form>
   <span class="intro-scan-announcement" id="introScanStatus" role="status"></span>
  </div>
 </div>
 
 <nav>
  <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
- <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#portfolio">Portfolio</a></div>
+ <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#meeting-game">Games</a><a href="#portfolio">Portfolio</a></div>
  <div class="avail">● AVAILABLE FOR CHAI</div>
 </nav>
 
@@ -224,6 +231,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
   <p>Office. Chai. Meetings. Bugs. “One small change.” Repeat. A cinematic, slightly unhinged archive of corporate life — with a developer portfolio hiding inside.</p>
   <div class="actions"><a class="btn primary" href="#life">PUNCH IN ↓</a><a class="btn" href="#radio">PLAY CORPORATE RADIO</a></div>
+  <a class="btn" id="plotInvite" href="#corporate-plot-twist" hidden>Take your shift challenge</a>
   <div class="shift-board">
    <div class="shift-clock">
     <div class="shift-label">Office clock · IST</div>
@@ -343,6 +351,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </div>
  <details class="break-room" id="breakRoom" open>
    <summary>Break Room <span id="breakRoomCount"></span></summary>
+   <div class="actions"><a class="btn" href="#half-day-heist">Half-Day Heist</a><a class="btn" href="#office-bluff">Office Bluff</a></div>
    <p class="radio-sub">Public chat. Messages expire one hour after sending.</p>
    <form id="breakRoomJoin">
      <input name="nickname" aria-label="Nickname" placeholder="Nickname" maxlength="24" required>
@@ -507,16 +516,50 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </div>
 </section>
 
+<section id="shift-challenges" aria-label="Shift challenges">
+ <div class="dash" id="chai-streak">
+  <h3>Chai Break Streak</h3>
+  <p id="chaiChallenge"></p>
+  <p id="chaiStreakStatus" role="status"></p>
+  <a class="btn" id="chaiPlay">Play today’s challenge</a>
+ </div>
+ <div class="dash" id="corporate-plot-twist">
+  <h3>Corporate Plot Twist</h3>
+  <p id="plotPrompt"></p>
+  <p id="plotClock"></p>
+  <div class="actions" id="plotChoices"></div>
+  <p id="plotStatus" role="status"></p>
+  <button class="btn primary" id="plotStart" type="button">Take the challenge</button>
+ </div>
+</section>
+<section id="half-day-heist" aria-label="Friday Half-Day Heist">
+ <div class="dash">
+  <h3>Friday Half-Day Heist</h3>
+  <p>Two players, 90 seconds. One gets the calendar and the other gets the manager’s messages. Compare clues and pick the same safe exit time.</p>
+  <div id="heistRoom"></div>
+ </div>
+</section>
+<section id="office-bluff" aria-label="Office Bluff">
+ <div class="dash">
+  <h3>Office Bluff</h3>
+  <p>Get 3–8 coworkers together. Write your best excuse, then vote anonymously.</p>
+  <div id="bluffRoom"></div>
+ </div>
+</section>
 <section id="game-leaderboard" aria-labelledby="leaderboardTitle">
  <div class="dash">
   <h3 id="leaderboardTitle">Game Leaderboard</h3>
-  <label>Game <select id="leaderboardGame"><option>Meeting Dodge</option><option>Chai Run</option><option>Deadline Dash</option><option>Typing Race</option></select></label>
+  <p>Results are submitted automatically. See the top 10 personal bests and fastest team escapes.</p>
+  <label>Game <select id="leaderboardGame">
+   <option>Meeting Dodge</option><option>Chai Run</option><option>Deadline Dash</option><option>Typing Race</option>
+   <option>Local Tic-Tac-Toe</option><option>Online Tic-Tac-Toe</option><option>Corporate Bingo</option>
+   <option>Corporate Wordle</option><option>Office Detective</option>
+   <option>Corporate Plot Twist</option><option>Friday Half-Day Heist</option><option>Office Bluff</option>
+  </select></label>
   <ol id="leaderboardEntries" style="padding-left:24px;margin:12px 0"></ol>
   <p id="leaderboardStatus" role="status"></p>
-  <form id="leaderboardForm" class="actions">
-   <label>Nickname <input name="nickname" maxlength="24" required></label>
-   <button class="btn primary" type="submit">Post score</button>
-  </form>
+  <p id="leaderboardSubmission" role="status"></p>
+  <button class="btn" id="leaderboardRetry" type="button" hidden>Retry saving scores</button>
  </div>
 </section>
 
@@ -574,7 +617,7 @@ const ticCells = ticMarks.map((_, index) => {
     const winningLine = ticLines.find(line => line.every(square => ticMarks[square] === ticTurn));
     if (winningLine || ticMarks.every(Boolean)) {
       ticFinished = true;
-      if (winningLine) window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Local Tic-Tac-Toe', score: 1 } }));
+      window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Local Tic-Tac-Toe', score: 1, won: Boolean(winningLine) } }));
       ticStatus.textContent = winningLine ? `Player ${ticTurn} wins!` : 'Draw. Time for a chai break.';
       winningLine?.forEach(square => ticCells[square].classList.add('winning-cell'));
       ticCells.forEach(square => square.setAttribute('aria-disabled', 'true'));
@@ -929,9 +972,17 @@ function downloadResume(){
   document.body.removeChild(link);
 }
 
+document.getElementById('introForm').addEventListener('submit', event => {
+  event.preventDefault();
+  punchIn();
+});
+
 function punchIn(){
   const button = document.getElementById('introPunch');
   if (button.disabled) return;
+  const name = document.getElementById('introName');
+  name.value = name.value.trim();
+  if (!name.reportValidity()) return;
   renderWorkday(introTeam.value);
   stopIntroDiagnostics();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -940,6 +991,7 @@ function punchIn(){
   }
   button.disabled = true;
   introTeam.disabled = true;
+  name.disabled = true;
   document.getElementById('introScan').hidden = false;
   const label = document.getElementById('introPunchLabel');
   const status = document.getElementById('introScanStatus');
@@ -1346,6 +1398,8 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/tic-online.js"></script>
 <script type="module" src="/assets/office-games.js"></script>
 <script type="module" src="/assets/shift-report.js"></script>
+<script type="module" src="/assets/shift-challenges.js"></script>
+<script type="module" src="/assets/social-games.js"></script>
 <script type="module" src="/assets/typing-race.js"></script>
 </body>
 </html>

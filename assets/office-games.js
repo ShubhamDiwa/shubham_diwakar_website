@@ -46,6 +46,7 @@ detectiveNext.addEventListener('click', () => {
       const correct = choice === choices[0];
       investigatedCases++;
       if (correct) solvedCases++;
+      window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Office Detective', score: solvedCases } }));
       detectiveResult.textContent = `${correct ? 'Case solved.' : 'Missed it.'} ${explanation} · ${solvedCases}/${investigatedCases} solved`;
       buttons.forEach(option => { option.disabled = true; });
       detectiveNext.textContent = 'Next case';
@@ -64,6 +65,7 @@ let card;
 function renderBingo(indices) {
   card = indices;
   const marked = new Set();
+  let reported = false;
   byId('bingoStatus').textContent = '';
   byId('bingoBoard').replaceChildren(...card.map((phrase, position) => {
     const cell = document.createElement('button');
@@ -75,7 +77,12 @@ function renderBingo(indices) {
       if (marked.has(position)) marked.delete(position);
       else marked.add(position);
       cell.setAttribute('aria-pressed', String(marked.has(position)));
-      byId('bingoStatus').textContent = lines.some(line => line.every(i => marked.has(i))) ? 'Bingo! Call it in the Break Room.' : '';
+      const bingo = lines.some(line => line.every(i => marked.has(i)));
+      byId('bingoStatus').textContent = bingo ? 'Bingo! Call it in the Break Room.' : '';
+      if (bingo && !reported) {
+        reported = true;
+        window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Corporate Bingo', score: 1 } }));
+      }
     });
     return cell;
   }));
@@ -173,6 +180,10 @@ wordForm.addEventListener('submit', event => {
   try { localStorage.setItem('office-wordle-' + day, JSON.stringify(guesses)); } catch {}
   wordInput.value = '';
   renderWord();
+  if (wordInput.disabled) {
+    const score = guess === answer ? 7 - guesses.length : 0;
+    window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Corporate Wordle', score } }));
+  }
 });
 wordShare.addEventListener('click', () => {
   updateWordDay();

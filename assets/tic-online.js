@@ -10,7 +10,7 @@ const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let room;
 let busy = false;
 let timer;
-let reportedWin;
+let reportedRound;
 
 const cells = Array.from({ length: 9 }, (_, square) => {
   const cell = document.createElement('button');
@@ -30,9 +30,10 @@ function showRoom() {
   const win = lines.find(line => room.board[line[0]] && line.every(i => room.board[i] === room.board[line[0]]));
   const finished = Boolean(win) || room.board.every(Boolean);
   const resultId = `${room.code}/${room.round}`;
-  if (win && room.board[win[0]] === room.mark && reportedWin !== resultId) {
-    reportedWin = resultId;
-    window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Online Tic-Tac-Toe', score: 1 } }));
+  if (finished && reportedRound !== resultId) {
+    reportedRound = resultId;
+    const won = Boolean(win && room.board[win[0]] === room.mark);
+    window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Online Tic-Tac-Toe', score: Number(won), won } }));
   }
   const yourTurn = room.turn === room.mark;
   cells.forEach((cell, i) => {

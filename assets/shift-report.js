@@ -1,35 +1,66 @@
 import { draftChat } from './chat-draft.js';
+import { chaiRegular } from './shift-challenges.js';
 
 const byId = id => document.getElementById(id);
 const games = byId('leaderboardGame');
 const entries = byId('leaderboardEntries');
 const status = byId('leaderboardStatus');
-const form = byId('leaderboardForm');
-const post = form.querySelector('button');
+const submission = byId('leaderboardSubmission');
+const retry = byId('leaderboardRetry');
 const results = new Map();
+const pending = new Map();
+const badgeUpdates = new Set();
+const counts = new Map();
+const countedGames = new Set(['Online Tic-Tac-Toe', 'Local Tic-Tac-Toe', 'Corporate Bingo']);
+const units = {
+  'Typing Race': ' WPM',
+  'Local Tic-Tac-Toe': ' rounds played',
+  'Online Tic-Tac-Toe': ' wins',
+  'Corporate Bingo': ' cards cleared',
+  'Corporate Wordle': ' points',
+  'Office Detective': ' cases solved',
+  'Office Bluff': ' votes'
+};
 const endpoint = '/.netlify/functions/leaderboard';
 let punchedIn;
+let player;
 let requestId = 0;
 let matchWins = 0;
 let posting = false;
 
-window.addEventListener('office-punch-in', () => { punchedIn = Date.now(); });
-window.addEventListener('office-result', ({ detail: { game, score } }) => {
-  if (game === 'Local Tic-Tac-Toe' || game === 'Online Tic-Tac-Toe') {
-    matchWins++;
+window.addEventListener('office-punch-in', () => {
+  punchedIn = Date.now();
+  let id = crypto.randomUUID();
+  try {
+    const saved = localStorage.getItem('office-leaderboard-player');
+    if (saved && /^[a-f0-9-]{36}$/i.test(saved)) id = saved;
+    else localStorage.setItem('office-leaderboard-player', id);
+  } catch {}
+  player = { id, name: byId('introName').value.trim(), role: byId('introTeam').value };
+  const chatName = byId('breakRoomJoin').elements.nickname;
+  if (!chatName.value) chatName.value = player.name;
+});
+window.addEventListener('office-result', ({ detail: { game, score, won, roomCode, proof } }) => {
+  if (!player) return;
+  if (game === 'Friday Half-Day Heist') {
+    pending.set(roomCode, { game, score, roomCode, proof });
+    saveScores();
     return;
   }
-  if (!results.has(game) || results.get(game).score < score) {
-    results.set(game, { score, role: byId('introTeam').value, id: crypto.randomUUID() });
+  if (won) matchWins++;
+  if (countedGames.has(game)) {
+    score += counts.get(game) ?? 0;
+    counts.set(game, score);
   }
-  updatePostButton();
+  const improved = !results.has(game) || results.get(game) < score;
+  const badge = chaiRegular();
+  if (improved || (badge && !badgeUpdates.has(game))) {
+    if (improved) results.set(game, score);
+    if (badge) badgeUpdates.add(game);
+    pending.set(game, { game, score: results.get(game), chaiRegular: badge });
+    saveScores();
+  }
 });
-
-function updatePostButton() {
-  const result = results.get(games.value);
-  post.disabled = posting || !result || result.score < 0 || Boolean(result.posted);
-  post.textContent = result?.posted ? 'Score posted' : result && result.score >= 0 ? `Post score · ${result.score}` : 'Finish a game to post';
-}
 
 async function request(url, options) {
   const response = await fetch(url, { ...options, signal: AbortSignal.timeout(8000) });
@@ -42,13 +73,15 @@ async function loadScores() {
   const id = ++requestId;
   entries.replaceChildren();
   status.textContent = 'Loading scores…';
-  updatePostButton();
   try {
     const scores = await request(endpoint + '?' + new URLSearchParams({ game: games.value }));
     if (id !== requestId) return;
-    entries.replaceChildren(...scores.map(({ name, role, score }) => {
+    entries.replaceChildren(...scores.map(({ name, role, score, chaiRegular: badge }) => {
       const row = document.createElement('li');
-      row.textContent = `${name} · ${role} · ${score}${games.value === 'Typing Race' ? ' WPM' : ''}`;
+      const value = games.value === 'Friday Half-Day Heist'
+        ? `${((90001 - score) / 1000).toFixed(2)}s`
+        : `${score}${units[games.value] ?? ''}`;
+      row.textContent = `${name}${badge ? ' ☕ Chai Regular' : ''} · ${role} · ${value}`;
       return row;
     }));
     status.textContent = scores.length ? '' : 'No scores yet.';
@@ -58,33 +91,41 @@ async function loadScores() {
 }
 
 games.addEventListener('change', loadScores);
-form.addEventListener('submit', async event => {
-  event.preventDefault();
-  const game = games.value;
-  const result = results.get(game);
-  const name = form.elements.nickname.value.trim();
-  if (post.disabled || !result || !name) return;
+retry.addEventListener('click', saveScores);
+window.addEventListener('online', saveScores);
+
+async function saveScores() {
+  if (posting || !pending.size) return;
   posting = true;
-  updatePostButton();
+  retry.hidden = true;
+  submission.textContent = 'Saving scores…';
+  const failed = new Set();
   try {
-    await request(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ game, ...result, name })
-    });
-    result.posted = true;
-    await loadScores();
-  } catch (error) {
-    status.textContent = error.message || 'Could not post the score.';
+    for (const [key, result] of pending) {
+      try {
+        await request(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...player, ...result })
+        });
+        const latest = pending.get(key);
+        pending.delete(key);
+        if (latest !== result) pending.set(key, latest);
+        if (result.game === games.value) loadScores();
+      } catch {
+        failed.add(key);
+      }
+    }
   } finally {
     posting = false;
-    updatePostButton();
+    retry.hidden = !failed.size;
+    submission.textContent = failed.size ? 'Some scores could not be saved. Retry when connected.' : 'Scores saved.';
   }
-});
+}
 
 byId('punchOut').addEventListener('click', () => {
   const minutes = Math.floor((Date.now() - (punchedIn ?? Date.now())) / 60000);
-  const best = game => results.get(game)?.score ?? '—';
+  const best = game => results.get(game) ?? '—';
   byId('shiftSummary').textContent = [
     byId('introTeam').value,
     `${minutes} min on shift`,

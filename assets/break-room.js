@@ -43,9 +43,10 @@ function render({ messages, online, moderator }) {
     const name = document.createElement('strong');
     name.textContent = message.nickname;
     row.append(name, ' · ');
-    const invite = message.text.match(/^Join my (Corporate Bingo board|Tic-Tac-Toe game|Typing Race): (\S+)$/);
+    const invite = message.text.match(/^Join my (Corporate Bingo board|Tic-Tac-Toe game|Typing Race|Friday Half-Day Heist|Office Bluff): (\S+)$/);
     const inviteUrl = invite ? URL.parse(invite[2]) : null;
-    const destinations = { 'Corporate Bingo board': '#corporate-bingo', 'Tic-Tac-Toe game': '#onlineTic', 'Typing Race': '#typing-race' };
+    const destinations = { 'Corporate Bingo board': '#corporate-bingo', 'Tic-Tac-Toe game': '#onlineTic', 'Typing Race': '#typing-race',
+      'Friday Half-Day Heist': '#half-day-heist', 'Office Bluff': '#office-bluff' };
     const destination = destinations[invite?.[1]];
     if (inviteUrl?.origin === location.origin && inviteUrl.pathname === location.pathname && inviteUrl.hash === destination) {
       const link = document.createElement('a');

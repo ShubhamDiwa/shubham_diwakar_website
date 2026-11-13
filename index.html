@@ -185,6 +185,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    </div>
    <p class="inbox-copy" id="officeInboxReply" role="status"></p>
   </details>
+  <details class="office-inbox" id="teamChat">
+   <summary>Team Chat <span id="teamChatChannel"></span></summary>
+   <p class="inbox-copy" id="teamChatMessage"></p>
+   <div class="inbox-actions">
+    <button class="btn primary" id="teamChatReply" type="button">Reply</button>
+    <button class="btn" id="teamChatWait" type="button">Wait</button>
+    <button class="btn" id="teamChatDnd" type="button">Do Not Disturb</button>
+   </div>
+   <p class="inbox-copy" id="teamChatResult" role="status"></p>
+  </details>
  </div>
 </section>
 
@@ -330,6 +340,23 @@ const officeDate = new Intl.DateTimeFormat('en-IN', {
 });
 const workdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 let displayedOfficeDate = '';
+const teamConversations = [
+  ['#standup', 'Priya: Hey', 'Priya: Got a minute? I booked thirty.'],
+  ['#bug-triage', 'QA: Can you reproduce this?', 'QA: Great. It only happens when you share your screen.'],
+  ['#release', 'Release manager: One tiny change before we ship?', 'Release manager: Perfect. I’ll send the other twelve.']
+];
+const teamChatResult = document.getElementById('teamChatResult');
+let teamReply;
+
+document.getElementById('teamChatReply').addEventListener('click', () => {
+  teamChatResult.textContent = teamReply;
+});
+document.getElementById('teamChatWait').addEventListener('click', () => {
+  teamChatResult.textContent = 'They stopped typing. Then they sent a calendar invite.';
+});
+document.getElementById('teamChatDnd').addEventListener('click', () => {
+  teamChatResult.textContent = 'Do Not Disturb is on. Someone marked the next message urgent.';
+});
 let displayedInboxSlot = '';
 const inboxMessages = {
   morning: ['Stand-up moved to 9:05', 'Bring your latest update and today’s blocker.'],
@@ -385,6 +412,11 @@ function updateOfficeClock(now = new Date()){
   updateOfficeInbox(dateKey, weekday, shift, weekend);
   if (displayedOfficeDate === dateKey) return;
   displayedOfficeDate = dateKey;
+  const [channel, message, reply] = teamConversations[((weekday + 6) % 7) % teamConversations.length];
+  document.getElementById('teamChatChannel').textContent = channel;
+  document.getElementById('teamChatMessage').textContent = message;
+  teamChatResult.textContent = '';
+  teamReply = reply;
   const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][weekday];
   document.getElementById('introMotivation').textContent = dayName.toUpperCase() + '.EXE';
   const monday = new Date(today);

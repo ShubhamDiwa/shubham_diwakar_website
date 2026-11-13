@@ -94,8 +94,27 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .radio.expanded .tracks{display:grid}
 .radio .track{grid-template-columns:40px 1fr 90px}
 .radio .track small{font-size:10px}
+.radio-stations{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:20px 0 14px}
+.radio-stations .btn{min-width:0;padding:13px 8px}
+.radio-stations [aria-pressed="true"]{background:var(--acid);border-color:var(--acid);color:#111}
+.radio-console{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px}
+.radio-deck,.radio-queue{min-width:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a0d0d}
+.radio-deck{padding:14px}
+.radio-banner{display:block;width:100%;aspect-ratio:2.4;object-fit:cover;border-radius:10px}
+.radio-queue{padding:14px}
+.radio-queue h3{margin:0;font-size:16px}
+.radio-queue .tracks{max-height:340px;overflow:auto}
+.radio .track{width:100%;grid-template-columns:28px minmax(0,1fr) 54px;text-align:left;color:inherit;background:transparent;font:inherit}
+.radio .track:hover,.radio .track.active{background:rgba(202,255,57,.08)}
+.radio .track:focus-visible,.radio-link-input input:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+.radio-import{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.radio-import summary{cursor:pointer;width:fit-content}
+.radio:not(.expanded) .radio-queue{display:none}
+.radio:not(.expanded) .radio-console{grid-template-columns:minmax(0,1fr)}
 @media(max-width:800px){
  .radio-current-art{width:45px;height:45px}.radio-live{display:none}
+ .radio-console{grid-template-columns:minmax(0,1fr)}
+ .radio-stations{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 </style>
@@ -180,29 +199,15 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
      <button class="btn" id="expandRadio" type="button">EXPAND RADIO ⤢</button>
    </div>
 
-   <div class="radio-link-input" style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+   <div class="radio-stations" role="group" aria-label="Radio stations">
      <button class="btn" id="loadChillMode" type="button">GO LIVE</button>
      <button class="btn" id="loadSmoothProduction" type="button">SMOOTH PRODUCTION</button>
      <button class="btn" id="loadCodePhatGaya" type="button">CODE PHAT GAYA</button>
      <button class="btn" id="loadQaPassed" type="button">QA PASSED</button>
    </div>
-   <form class="radio-playlist-form" id="playlistLinkForm" novalidate>
-     <label for="playlistLink">Spotify or YouTube playlist link</label>
-     <div class="radio-link-input">
-       <input id="playlistLink" type="url" placeholder="Paste a playlist link" aria-describedby="radioLinkNotice">
-       <button class="btn" type="submit">LOAD PLAYLIST</button>
-     </div>
-     <div class="radio-link-note" id="radioLinkNotice" role="status"></div>
-   </form>
-   <div class="audio-stage radio-embed" id="radioEmbed" hidden>
-     <div id="radioEmbedPlayer"></div>
-     <button class="btn" id="closeRadioEmbed" type="button">CLOSE ONLINE PLAYLIST</button>
-   </div>
-
-   <div class="audio-stage" id="audioStage">
-     <audio id="radioAudio" controls preload="auto"></audio>
-   </div>
-
+   <div class="radio-console">
+   <div class="radio-deck">
+   <img class="radio-banner" src="assets/corporate-collage.png" alt="" loading="lazy">
    <div class="radio-current">
      <div class="radio-current-art" id="radioArt">🎧</div>
      <div class="radio-current-copy">
@@ -219,8 +224,32 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    </div>
 
    <div class="radio-progress"><i id="radioProgress"></i></div>
+   <div class="audio-stage" id="audioStage">
+     <audio id="radioAudio" controls preload="metadata"></audio>
+   </div>
+   </div>
+   <div class="radio-queue">
+     <h3 id="radioQueueTitle">Go Live</h3>
+     <div class="tracks" id="trackList"></div>
+   </div>
+   </div>
 
-   <div class="tracks" id="trackList"></div>
+   <details class="radio-import">
+     <summary>Play a Spotify or YouTube link</summary>
+     <form class="radio-playlist-form" id="playlistLinkForm" novalidate>
+       <label for="playlistLink">Spotify album or playlist, or YouTube playlist</label>
+       <div class="radio-link-input">
+         <input id="playlistLink" type="url" placeholder="Paste a link" aria-describedby="radioLinkNotice">
+         <button class="btn" type="submit">LOAD LINK</button>
+       </div>
+       <div class="radio-link-note" id="radioLinkNotice" role="status"></div>
+     </form>
+     <div class="audio-stage radio-embed" id="radioEmbed" hidden>
+       <div id="radioEmbedPlayer"></div>
+       <a class="btn" id="openRadioProvider" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL</a>
+       <button class="btn" id="closeRadioEmbed" type="button">CLOSE PLAYER</button>
+     </div>
+   </details>
  </div>
 </section>
 
@@ -349,16 +378,17 @@ function getPlaylistEmbed(value){
   if (url.protocol !== 'https:' || url.username || url.password || url.port) return null;
 
   if (url.hostname === 'open.spotify.com') {
-    const match = url.pathname.match(/^\/(?:intl-[a-z-]+\/)?(?:embed\/)?playlist\/([a-zA-Z0-9]{22})\/?$/);
+    const match = url.pathname.match(/^\/(?:intl-[a-z-]+\/)?(?:embed\/)?(album|playlist)\/([a-zA-Z0-9]{22})\/?$/);
     if (match) {
-      return { provider: 'Spotify', src: `https://open.spotify.com/embed/playlist/${match[1]}` };
+      const path = `${match[1]}/${match[2]}`;
+      return { provider: 'Spotify', src: `https://open.spotify.com/embed/${path}`, original: `https://open.spotify.com/${path}` };
     }
   }
 
   const youtubeHosts = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
   const playlistId = url.searchParams.get('list');
   if (youtubeHosts.includes(url.hostname) && playlistId && /^[\w-]+$/.test(playlistId)) {
-    return { provider: 'YouTube', src: `https://www.youtube.com/embed?listType=playlist&list=${playlistId}` };
+    return { provider: 'YouTube', src: `https://www.youtube.com/embed?listType=playlist&list=${playlistId}`, original: `https://www.youtube.com/playlist?list=${playlistId}` };
   }
   return null;
 }
@@ -374,7 +404,7 @@ document.getElementById('playlistLinkForm').addEventListener('submit', event => 
   const playlist = getPlaylistEmbed(playlistLink.value);
   if (!playlist) {
     playlistLink.setAttribute('aria-invalid', 'true');
-    radioLinkNotice.textContent = 'Enter a full Spotify or YouTube playlist link.';
+    radioLinkNotice.textContent = 'Enter a Spotify album or playlist link, or a YouTube playlist link.';
     playlistLink.focus();
     return;
   }
@@ -382,13 +412,16 @@ document.getElementById('playlistLinkForm').addEventListener('submit', event => 
   playlistLink.removeAttribute('aria-invalid');
   radioAudio.pause();
   const player = document.createElement('iframe');
-  player.title = `${playlist.provider} playlist player`;
+  player.title = `${playlist.provider} player`;
   player.src = playlist.src;
   player.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
   player.allowFullscreen = true;
   player.referrerPolicy = 'strict-origin-when-cross-origin';
   if (playlist.provider === 'YouTube') player.classList.add('youtube');
   radioEmbedPlayer.replaceChildren(player);
+  const originalLink = document.getElementById('openRadioProvider');
+  originalLink.href = playlist.original;
+  originalLink.textContent = `Open in ${playlist.provider}`;
   radioEmbed.hidden = false;
   radioLinkNotice.textContent = `Use the ${playlist.provider} player below to listen.`;
 });
@@ -406,12 +439,13 @@ function escapeHtml(value){
 
 function renderRadioTracks(){
   const current = radioTracks[radioIndex] || radioTracks[0];
+  document.getElementById('radioQueueTitle').textContent = `${current.author} · ${radioTracks.length} tracks`;
   trackList.innerHTML = radioTracks.map((v,i)=>`
-    <div class="track ${i===radioIndex?'active':''}" onclick="selectRadio(${i})">
+    <button type="button" class="track ${i===radioIndex?'active':''}" aria-current="${i===radioIndex}" onclick="selectRadio(${i}); trackList.children[${i}].focus()">
       <span class="trackno">${String(i+1).padStart(2,'0')}</span>
       <b>${escapeHtml(v.title || 'Untitled track')}</b>
-      <small>${i===radioIndex ? 'NOW' : 'LOCAL'}</small>
-    </div>
+      <small>${i===radioIndex ? 'SELECTED' : ''}</small>
+    </button>
   `).join('');
   document.getElementById('nowTitle').textContent = current.title || 'Corporate Radio';
   document.getElementById('nowSub').textContent = `${current.author || 'Go Live'} · local`;
@@ -469,6 +503,11 @@ function toggleRadio(){
 }
 
 function loadPlaylist(playlist, label, autoplay = true){
+  if (autoplay && !radioEmbed.hidden) closeOnlinePlaylist();
+  const stations = document.querySelectorAll('.radio-stations button');
+  for (const station of stations) {
+    station.setAttribute('aria-pressed', String(station.textContent.trim() === label.toUpperCase()));
+  }
   radioTracks = playlist.map(track => ({ ...track }));
   radioIndex = 0;
   const firstTrack = radioTracks[0];
@@ -552,11 +591,9 @@ radioAudio.addEventListener('pause', ()=>{
 });
 
 radioAudio.addEventListener('ended', ()=>{
-  radioLive.textContent = 'READY';
-  radioLive.classList.remove('playing');
-  radioStatus.textContent = 'Finished · load another track';
   stopRadioProgress();
   radioProgress.style.width = '0%';
+  nextRadio();
 });
 
 radioAudio.addEventListener('canplay', onAudioLoaded);

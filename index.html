@@ -153,6 +153,8 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .break-room-log li{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere;white-space:pre-wrap}
 .break-room-log strong{color:var(--acid)}
 .break-room-log button{margin-left:8px;padding:6px}
+.meterrow .meter-slider{width:100%;height:28px;margin:2px 0 0;accent-color:var(--acid);cursor:ew-resize}
+.meterrow .meter-slider:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -337,10 +339,22 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  <div class="dashboard">
   <div class="dash"><h3>EMPLOYEE STATUS</h3><p style="color:#777;margin-top:10px;line-height:1.6">No employees were harmed in the making of this dashboard. Productivity remains under investigation.</p><div style="margin-top:30px;font:13px ui-monospace;color:var(--acid)">STATUS: STILL ONLINE_</div></div>
   <div class="dash">
-   <div class="meterrow"><header><span>☕ Chai Dependency</span><b>94%</b></header><div class="bar"><i style="width:94%"></i></div></div>
-   <div class="meterrow"><header><span>😴 Sleep Debt</span><b>81%</b></header><div class="bar"><i style="width:81%"></i></div></div>
-   <div class="meterrow"><header><span>🧠 Mental RAM</span><b>28%</b></header><div class="bar"><i style="width:28%"></i></div></div>
-   <div class="meterrow"><header><span>😂 Sarcasm</span><b>100%</b></header><div class="bar"><i style="width:100%"></i></div></div>
+   <div class="meterrow">
+    <header><label for="meter-chai">☕ Chai Dependency</label><output for="meter-chai">94%</output></header>
+    <input class="meter-slider" id="meter-chai" type="range" min="0" max="100" value="94" aria-valuetext="94%">
+   </div>
+   <div class="meterrow">
+    <header><label for="meter-sleep">😴 Sleep Debt</label><output for="meter-sleep">81%</output></header>
+    <input class="meter-slider" id="meter-sleep" type="range" min="0" max="100" value="81" aria-valuetext="81%">
+   </div>
+   <div class="meterrow">
+    <header><label for="meter-ram">🧠 Mental RAM</label><output for="meter-ram">28%</output></header>
+    <input class="meter-slider" id="meter-ram" type="range" min="0" max="100" value="28" aria-valuetext="28%">
+   </div>
+   <div class="meterrow">
+    <header><label for="meter-sarcasm">😂 Sarcasm</label><output for="meter-sarcasm">100%</output></header>
+    <input class="meter-slider" id="meter-sarcasm" type="range" min="0" max="100" value="100" aria-valuetext="100%">
+   </div>
   </div>
  </div>
 </section>
@@ -372,6 +386,15 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <script>
+for (const slider of document.querySelectorAll('.meter-slider')) {
+  const output = document.querySelector(`output[for="${slider.id}"]`);
+  slider.addEventListener('input', () => {
+    const percentage = `${slider.value}%`;
+    output.value = percentage;
+    slider.setAttribute('aria-valuetext', percentage);
+  });
+}
+
 const officeTime = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Kolkata', year: 'numeric', month: 'numeric', day: 'numeric',
   hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'

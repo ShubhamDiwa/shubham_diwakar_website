@@ -114,11 +114,6 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  .radio-stations{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
-:root[data-shift="morning"]{--acid:#ffd184;--shift-glow:#b86d32}
-:root[data-shift="afternoon"]{--acid:#d9fa79;--shift-glow:#667d32}
-:root[data-shift="evening"]{--acid:#ffad98;--shift-glow:#9e485e}
-:root[data-shift="night"]{--acid:#b5c6ff;--shift-glow:#46569e}
-.hero:before{background:linear-gradient(90deg,#070808 4%,rgba(7,8,8,.65) 52%,transparent),linear-gradient(0deg,#070808,transparent 35%),radial-gradient(ellipse at 86% 24%,var(--shift-glow,#667d32),transparent 66%)}
 .shift-board{display:grid;grid-template-columns:minmax(170px,.75fr) minmax(0,1.25fr);gap:16px;width:min(650px,100%);margin-top:34px}
 .shift-clock,.shift-calendar{padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(8,9,9,.88)}
 .shift-clock time{display:block;font:700 clamp(26px,5vw,42px)/1.15 ui-monospace,monospace;color:var(--acid);font-variant-numeric:tabular-nums;margin:6px 0}
@@ -325,7 +320,6 @@ function updateOfficeClock(now = new Date()){
 
   const hour = Number(parts.hour);
   const shift = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
-  document.documentElement.dataset.shift = shift;
 
   const today = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
   const weekday = today.getUTCDay();

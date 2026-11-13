@@ -162,6 +162,11 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .game-arena{position:relative;height:320px;margin-top:12px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:repeating-linear-gradient(90deg,#161a16 0 24.7%,#33392a 24.7% 25%)}
 .game-piece{position:absolute;left:0;top:0;width:25%;height:38px;display:grid;place-items:center;font-size:26px;pointer-events:none}
 .game-player{background:rgba(202,255,57,.16);border-bottom:2px solid var(--acid)}
+.office-tic-tac-toe{margin-top:20px;scroll-margin-top:90px}
+.tic-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:min(100%,280px);margin:14px 0}
+.tic-board button{aspect-ratio:1;padding:0;font-size:32px;letter-spacing:0}
+.tic-board button[aria-disabled="true"]{cursor:default;transform:none}
+.tic-board .winning-cell{background:var(--acid);color:#111;border-color:var(--acid)}
 </style>
 </head>
 <body>
@@ -383,6 +388,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </div>
 </section>
 
+<section id="tic-tac-toe" aria-labelledby="ticTitle">
+<div class="dash office-tic-tac-toe">
+ <h3 id="ticTitle">Tic-Tac-Toe</h3>
+ <p>Two players · Same screen</p>
+ <p id="ticStatus" role="status">Player X’s turn</p>
+ <div class="tic-board" id="ticBoard" role="group" aria-label="Tic-Tac-Toe board"></div>
+ <button class="btn" id="ticReset" type="button">New game</button>
+</div>
+</section>
+
 <section class="portfolio" id="portfolio">
  <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
  <p style="max-width:750px;font-size:20px;line-height:1.65;color:#c8cbc5">Hi, I'm <b>Shubham Diwakar</b> — an Android developer working with Kotlin, Android and Flutter. Corporate Mazdoor is the fun side. Engineering is the serious side.</p>
@@ -410,6 +425,53 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </div>
 
 <script>
+const ticBoard = document.getElementById('ticBoard');
+const ticStatus = document.getElementById('ticStatus');
+const ticLines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const ticMarks = Array(9).fill('');
+let ticTurn = 'X';
+let ticFinished = false;
+
+const ticCells = ticMarks.map((_, index) => {
+  const cell = document.createElement('button');
+  cell.type = 'button';
+  cell.className = 'btn';
+  const position = `Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}`;
+  cell.setAttribute('aria-label', `${position}, empty`);
+  cell.addEventListener('click', () => {
+    if (ticFinished || ticMarks[index]) return;
+    ticMarks[index] = cell.textContent = ticTurn;
+    cell.setAttribute('aria-label', `${position}, ${ticTurn}`);
+    cell.setAttribute('aria-disabled', 'true');
+    const winningLine = ticLines.find(line => line.every(square => ticMarks[square] === ticTurn));
+    if (winningLine || ticMarks.every(Boolean)) {
+      ticFinished = true;
+      ticStatus.textContent = winningLine ? `Player ${ticTurn} wins!` : 'Draw. Time for a chai break.';
+      winningLine?.forEach(square => ticCells[square].classList.add('winning-cell'));
+      ticCells.forEach(square => square.setAttribute('aria-disabled', 'true'));
+      return;
+    }
+    ticTurn = ticTurn === 'X' ? 'O' : 'X';
+    ticStatus.textContent = `Player ${ticTurn}’s turn`;
+  });
+  return cell;
+});
+ticBoard.append(...ticCells);
+
+document.getElementById('ticReset').addEventListener('click', () => {
+  ticMarks.fill('');
+  ticTurn = 'X';
+  ticFinished = false;
+  ticStatus.textContent = 'Player X’s turn';
+  ticCells.forEach((cell, index) => {
+    cell.textContent = '';
+    cell.classList.remove('winning-cell');
+    cell.removeAttribute('aria-disabled');
+    cell.setAttribute('aria-label', `Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}, empty`);
+  });
+  ticCells[0].focus();
+});
+
 const arena = document.getElementById('gameArena');
 const employee = document.getElementById('gameEmployee');
 const gameStart = document.getElementById('gameStart');

@@ -43,12 +43,13 @@ function render({ messages, online, moderator }) {
     const name = document.createElement('strong');
     name.textContent = message.nickname;
     row.append(name, ' · ');
-    const bingo = message.text.match(/^Join my Corporate Bingo board: (\S+)$/);
-    const boardUrl = bingo ? URL.parse(bingo[1]) : null;
-    if (boardUrl?.origin === location.origin && boardUrl.hash === '#corporate-bingo') {
+    const invite = message.text.match(/^Join my (Corporate Bingo board|Tic-Tac-Toe game): (\S+)$/);
+    const inviteUrl = invite ? URL.parse(invite[2]) : null;
+    const destination = invite?.[1] === 'Tic-Tac-Toe game' ? '#onlineTic' : '#corporate-bingo';
+    if (inviteUrl?.origin === location.origin && inviteUrl.pathname === location.pathname && inviteUrl.hash === destination) {
       const link = document.createElement('a');
-      link.href = boardUrl.href;
-      link.textContent = 'Join my Corporate Bingo board ↗';
+      link.href = inviteUrl.href;
+      link.textContent = invite[1] === 'Tic-Tac-Toe game' ? 'Join game ↗' : 'Join my Corporate Bingo board ↗';
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       row.append(link);

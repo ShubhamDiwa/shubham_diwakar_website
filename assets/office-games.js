@@ -1,16 +1,10 @@
+import { draftChat } from './chat-draft.js';
+
 const byId = id => document.getElementById(id);
 const phrases = ['Quick call?', 'You’re on mute', 'One last change', 'Per my last email', 'Circle back', 'No agenda', 'Can you see my screen?', 'Chai break', 'End of day', 'Let’s take this offline', 'Looping you in', 'Friday deploy'];
 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let card;
 
-function draftChat(message) {
-  const room = byId('breakRoom');
-  const input = byId('breakRoomSend').elements.message;
-  input.value = message;
-  room.open = true;
-  room.scrollIntoView({ block: 'start' });
-  (byId('breakRoomSession').hidden ? byId('breakRoomJoin').elements.nickname : input).focus({ preventScroll: true });
-}
 
 function renderBingo(indices) {
   card = indices;
@@ -220,3 +214,80 @@ for (const button of document.querySelectorAll('[data-chai]')) {
   button.addEventListener('click', () => move(button.dataset.chai));
 }
 drawFloor();
+
+const roleTasks = {
+  "Developer": ["checkout regression","routine code review","editor theme"],
+  "DevOps": ["failed production deploy","weekly access audit","dashboard redesign"],
+  "Data Analyst": ["incorrect revenue report","spreadsheet cleanup","chart colors"],
+  "Business Analyst": ["missing launch requirement","meeting notes","template redesign"],
+  "Data Scientist": ["broken production model","dataset labeling","experiment naming"],
+  "Project Manager": ["launch blocker","meeting scheduling","status slide styling"],
+  "Sales & Support": ["customer locked out","CRM cleanup","email signature"],
+  "HR & Admin": ["payroll cutoff issue","interview scheduling","office poster"],
+  "Finance": ["payment cutoff issue","receipt filing","workbook styling"],
+  "Operations": ["stalled priority shipment","stock count","tracker colors"],
+  "Marketing & Design": ["broken campaign link","asset export","mood board refresh"],
+  "Tech & QA": ["checkout fails in production","routine regression check","test report styling"],
+};
+const deadlineStart = byId('deadlineStart');
+const deadlineStats = byId('deadlineStats');
+const deadlineTask = byId('deadlineTask');
+const deadlineFeedback = byId('deadlineFeedback');
+const deadlineButtons = [...document.querySelectorAll('[data-deadline]')];
+const taskTypes = [
+  { action: 'now', detail: 'Blocking work due today. Only you can resolve it.' },
+  { action: 'delegate', detail: 'Routine work. A teammate has capacity to take it.' },
+  { action: 'later', detail: 'Optional improvement. No deadline or blocked work.' }
+];
+let dashEnd = 0;
+let dashScore = 0;
+let dashTimer;
+let dashTasks = [];
+let currentTask;
+
+function nextDeadlineTask() {
+  const options = dashTasks.filter(task => task !== currentTask);
+  currentTask = options[Math.floor(Math.random() * options.length)];
+  deadlineTask.textContent = `${currentTask.title} · ${currentTask.detail}`;
+}
+
+function updateDeadlineDash() {
+  const seconds = Math.max(0, Math.ceil((dashEnd - performance.now()) / 1000));
+  deadlineStats.textContent = `${seconds}s · Score ${dashScore}`;
+  if (seconds > 0) return true;
+  clearInterval(dashTimer);
+  dashEnd = 0;
+  deadlineButtons.forEach(button => { button.disabled = true; });
+  deadlineStart.disabled = false;
+  deadlineStart.textContent = 'Play again';
+  deadlineTask.textContent = '';
+  deadlineFeedback.textContent = `Time’s up. Final score ${dashScore}.`;
+  return false;
+}
+
+deadlineStart.addEventListener('click', () => {
+  const role = byId('introTeam').value;
+  const titles = roleTasks[role] ?? roleTasks.Developer;
+  dashTasks = taskTypes.map((type, index) => ({ ...type, title: titles[index] }));
+  dashScore = 0;
+  dashEnd = performance.now() + 30000;
+  deadlineFeedback.textContent = '';
+  deadlineStart.disabled = true;
+  deadlineButtons.forEach(button => { button.disabled = false; });
+  nextDeadlineTask();
+  updateDeadlineDash();
+  dashTimer = setInterval(updateDeadlineDash, 200);
+  deadlineButtons[0].focus();
+});
+
+for (const button of deadlineButtons) {
+  button.addEventListener('click', () => {
+    if (!dashEnd || !updateDeadlineDash()) return;
+    const correct = button.dataset.deadline === currentTask.action;
+    dashScore += correct ? 1 : -1;
+    const expected = deadlineButtons.find(choice => choice.dataset.deadline === currentTask.action);
+    deadlineFeedback.textContent = correct ? 'Good call. +1' : `Best choice was ${expected.textContent}. −1`;
+    nextDeadlineTask();
+    updateDeadlineDash();
+  });
+}

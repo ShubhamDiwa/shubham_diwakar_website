@@ -421,6 +421,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <p id="onlineTicStatus" role="status"></p>
   <div id="onlineTicMatch" hidden>
    <p>Room code <strong id="onlineTicCode"></strong> · You play <strong id="onlineTicMark"></strong></p>
+   <button class="btn" id="onlineTicChallenge" type="button" hidden>Challenge someone</button>
    <div class="tic-board" id="onlineTicBoard" role="group" aria-label="Online Tic-Tac-Toe board"></div>
    <button class="btn" id="onlineTicReset" type="button" hidden>Rematch</button>
    <button class="btn" id="onlineTicLeave" type="button">Leave room</button>
@@ -446,6 +447,19 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
   <div class="actions">
    <button class="btn primary" id="chaiStart">Start delivery</button>
    <button class="btn" data-chai="left" aria-label="Move left">←</button><button class="btn" data-chai="up" aria-label="Move up">↑</button><button class="btn" data-chai="down" aria-label="Move down">↓</button><button class="btn" data-chai="right" aria-label="Move right">→</button>
+  </div>
+ </article>
+ <article class="dash" id="deadline-dash">
+  <h3>Deadline Dash</h3>
+  <p>Sort tasks for your role in 30 seconds. Act on blockers, delegate routine work, and defer low-priority requests.</p>
+  <p id="deadlineStats">30s · Score 0</p>
+  <p><strong id="deadlineTask"></strong></p>
+  <p id="deadlineFeedback" role="status"></p>
+  <div class="actions">
+   <button class="btn primary" id="deadlineStart" type="button">Start</button>
+   <button class="btn" data-deadline="now" type="button" disabled>Do now</button>
+   <button class="btn" data-deadline="delegate" type="button" disabled>Delegate</button>
+   <button class="btn" data-deadline="later" type="button" disabled>Kal dekhenge</button>
   </div>
  </article>
  <article class="dash" id="corporate-wordle">

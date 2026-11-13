@@ -1,4 +1,7 @@
+import { draftChat } from './chat-draft.js';
+
 const join = document.getElementById('onlineTicJoin');
+const challenge = document.getElementById('onlineTicChallenge');
 const match = document.getElementById('onlineTicMatch');
 const board = document.getElementById('onlineTicBoard');
 const status = document.getElementById('onlineTicStatus');
@@ -18,6 +21,7 @@ const cells = Array.from({ length: 9 }, (_, square) => {
 });
 
 function showRoom() {
+  challenge.hidden = room.ready;
   join.hidden = true;
   match.hidden = false;
   document.getElementById('onlineTicCode').textContent = room.code;
@@ -74,6 +78,19 @@ join.addEventListener('submit', event => {
   event.preventDefault();
   sync('join', { code: join.elements.code.value.trim().toUpperCase() });
 });
+challenge.addEventListener('click', () => {
+  if (!room || room.ready) return;
+  const url = new URL(location.pathname, location.origin);
+  url.searchParams.set('tic', room.code);
+  url.hash = 'onlineTic';
+  draftChat('Join my Tic-Tac-Toe game: ' + url.href);
+});
+const invitedCode = new URLSearchParams(location.search).get('tic');
+if (/^[A-F0-9]{10}$/.test(invitedCode ?? '')) {
+  document.getElementById('onlineTic').open = true;
+  join.elements.code.value = invitedCode;
+  sync('join', { code: invitedCode });
+}
 document.getElementById('onlineTicCreate').addEventListener('click', () => sync('create'));
 document.getElementById('onlineTicLeave').addEventListener('click', () => {
   if (!busy) leave();

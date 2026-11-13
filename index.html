@@ -227,8 +227,9 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
    </div>
 
    <div class="radio-import">
-     <h3>Online picks</h3>
-     <div class="radio-stations" id="onlineRadioPicks" role="group" aria-label="Online picks"></div>
+     <h3>YouTube playlists</h3>
+     <p class="radio-sub" id="onlineRadioStatus" role="status"></p>
+     <div class="radio-stations" id="onlineRadioPicks" role="group" aria-label="YouTube playlists"></div>
      <div class="audio-stage radio-embed" id="radioEmbed" hidden>
        <div id="radioEmbedPlayer"></div>
        <a class="btn" id="openRadioProvider" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL</a>
@@ -351,40 +352,6 @@ const trackList = document.getElementById('trackList');
 const onlineRadioPicks = document.getElementById('onlineRadioPicks');
 const radioEmbed = document.getElementById('radioEmbed');
 const radioEmbedPlayer = document.getElementById('radioEmbedPlayer');
-const onlineTracks = [
-  { title: 'Sajan Sajan Remix', url: 'https://youtu.be/YW7Uc5_ixtM' }
-];
-
-function getPlaylistEmbed(value){
-  let url;
-  try {
-    url = new URL(value.trim());
-  } catch {
-    return null;
-  }
-  if (url.protocol !== 'https:' || url.username || url.password || url.port) return null;
-
-  if (url.hostname === 'open.spotify.com') {
-    const match = url.pathname.match(/^\/(?:intl-[a-z-]+\/)?(?:embed\/)?(album|playlist)\/([a-zA-Z0-9]{22})\/?$/);
-    if (match) {
-      const path = `${match[1]}/${match[2]}`;
-      return { provider: 'Spotify', src: `https://open.spotify.com/embed/${path}`, original: `https://open.spotify.com/${path}` };
-    }
-  }
-
-  const youtubeHosts = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'];
-  const playlistId = url.searchParams.get('list');
-  if (youtubeHosts.includes(url.hostname) && playlistId && /^[\w-]+$/.test(playlistId)) {
-    return { provider: 'YouTube', src: `https://www.youtube.com/embed?listType=playlist&list=${playlistId}`, original: `https://www.youtube.com/playlist?list=${playlistId}` };
-  }
-  if (youtubeHosts.includes(url.hostname)) {
-    const videoId = url.hostname === 'youtu.be' ? url.pathname.slice(1) : url.searchParams.get('v');
-    if (videoId && /^[\w-]{11}$/.test(videoId)) {
-      return { provider: 'YouTube', src: `https://www.youtube.com/embed/${videoId}`, original: `https://www.youtube.com/watch?v=${videoId}` };
-    }
-  }
-  return null;
-}
 
 function closeOnlinePlaylist(){
   radioEmbedPlayer.replaceChildren();
@@ -395,28 +362,25 @@ function closeOnlinePlaylist(){
 function openOnlineTrack(playlist){
   radioAudio.pause();
   const player = document.createElement('iframe');
-  player.title = `${playlist.provider} player`;
-  const embedUrl = new URL(playlist.src);
-  if (playlist.provider === 'YouTube') embedUrl.searchParams.set('autoplay', '1');
-  player.src = embedUrl.href;
+  player.title = `${playlist.title} on YouTube`;
+  const query = new URLSearchParams({ listType: 'playlist', list: playlist.id, autoplay: '1' });
+  player.src = `https://www.youtube.com/embed?${query}`;
   player.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
   player.allowFullscreen = true;
   player.referrerPolicy = 'strict-origin-when-cross-origin';
-  if (playlist.provider === 'YouTube') player.classList.add('youtube');
+  player.classList.add('youtube');
   radioEmbedPlayer.replaceChildren(player);
   const originalLink = document.getElementById('openRadioProvider');
-  originalLink.href = playlist.original;
-  originalLink.textContent = `Open in ${playlist.provider}`;
+  originalLink.href = `https://www.youtube.com/playlist?${new URLSearchParams({ list: playlist.id })}`;
+  originalLink.textContent = 'Open in YouTube';
   radioEmbed.hidden = false;
 }
 
-for (const track of onlineTracks) {
-  const playlist = getPlaylistEmbed(track.url);
-  if (!playlist) continue;
+function addOnlinePlaylist(playlist) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'btn';
-  button.textContent = track.title;
+  button.textContent = playlist.title;
   button.setAttribute('aria-pressed', 'false');
   button.addEventListener('click', () => {
     closeOnlinePlaylist();
@@ -425,6 +389,22 @@ for (const track of onlineTracks) {
   });
   onlineRadioPicks.append(button);
 }
+
+async function loadOnlinePlaylists() {
+  const status = document.getElementById('onlineRadioStatus');
+  status.textContent = 'Loading YouTube playlists…';
+  try {
+    const response = await fetch('/.netlify/functions/radio-playlists');
+    if (!response.ok) throw new Error('Playlist request failed');
+    const { playlists } = await response.json();
+    playlists.forEach(addOnlinePlaylist);
+    status.textContent = playlists.length ? '' : 'No public YouTube playlists yet.';
+  } catch {
+    status.textContent = 'YouTube playlists are currently unavailable.';
+  }
+}
+
+loadOnlinePlaylists();
 
 document.getElementById('closeRadioEmbed').addEventListener('click', () => {
   const activePick = onlineRadioPicks.querySelector('[aria-pressed="true"]');

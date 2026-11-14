@@ -229,6 +229,24 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 .workday-stop .time span{display:block;color:var(--muted)}
 .workday-stop strong{font-size:clamp(16px,2vw,20px)}
 .workday-stop p{margin-top:4px;color:var(--muted);font-size:14px;line-height:1.45}
+@media(prefers-reduced-motion:no-preference){
+ html:not(.office-reduced) :is(#roleWorkday,#customWorkday,#workdayDecision):not([hidden]){
+  animation:workday-enter .28s ease-out both;
+ }
+ html:not(.office-reduced) .workday-stop[aria-current="step"]::before{
+  animation:workday-marker .55s ease-out;
+ }
+ html:not(.office-reduced) .workday-overview progress::-webkit-progress-value{transition:width .32s ease-out}
+ html:not(.office-reduced) .workday-overview progress::-moz-progress-bar{transition:width .32s ease-out}
+}
+@keyframes workday-enter{
+ from{opacity:.65;transform:translateY(7px)}
+ to{opacity:1;transform:translateY(0)}
+}
+@keyframes workday-marker{
+ from{box-shadow:0 0 0 2px var(--acid)}
+ to{box-shadow:0 0 0 9px transparent}
+}
 .workday-modes{margin:0 0 16px}
 .workday-modes [aria-pressed="true"]{border-color:var(--acid);color:var(--acid)}
 #customWorkday[hidden],#customWorkday [hidden],#roleWorkday[hidden]{display:none}

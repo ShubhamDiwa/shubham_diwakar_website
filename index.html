@@ -260,6 +260,13 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
   border-color:var(--acid);
  }
 }
+#role-simulation form[hidden]{display:none}
+#role-simulation form label{display:grid;gap:6px}
+#role-simulation input{width:9ch;padding:10px;color:var(--paper);background:var(--bg);border:1px solid var(--line);border-radius:8px;font:inherit}
+#role-simulation form{align-items:end}
+#roleSimulationPrompt{line-height:1.55}
+#roleSimulationPrompt.binary-console{white-space:pre-line;font-family:ui-monospace,monospace;color:var(--acid);background:#090b0a;border:1px solid var(--line);border-radius:8px;padding:14px}
+#roleSimulationStatus:not(:empty){margin-top:14px;color:var(--acid)}
 .workday-modes{margin:0 0 16px}
 .workday-modes [aria-pressed="true"]{border-color:var(--acid);color:var(--acid)}
 #customWorkday[hidden],#customWorkday [hidden],#roleWorkday[hidden]{display:none}
@@ -327,6 +334,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <a class="btn primary" href="#life">PUNCH IN ↓</a>
    <a class="btn" href="#radio">PLAY CORPORATE RADIO</a>
    <a class="btn" id="plotInvite" href="#corporate-plot-twist" hidden>Take your shift challenge</a>
+   <a class="btn" href="#role-simulation">Play your role</a>
   </div>
   <div class="shift-board">
    <div class="shift-clock">
@@ -537,6 +545,19 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  </div>
 </section>
 
+<section id="role-simulation" aria-labelledby="roleSimulationTitle">
+ <div class="dash">
+  <div class="eyebrow" id="roleSimulationName"></div>
+  <h3 id="roleSimulationTitle">Role simulation</h3>
+  <p id="roleSimulationPrompt"></p>
+  <form class="actions" id="roleSimulationCode" hidden>
+   <label>Binary code <input name="code" type="text" inputmode="numeric" pattern="[01]{4}" maxlength="4" required autocomplete="off"></label>
+   <button class="btn primary" type="submit">Run code</button>
+  </form>
+  <div class="actions" id="roleSimulationActions" role="group" aria-label="Simulation actions"></div>
+  <p id="roleSimulationStatus" role="status"></p>
+ </div>
+</section>
 <section id="office-tools" aria-label="Office tools"></section>
 <section class="games-zone" id="games" aria-labelledby="gamesTitle">
  <div class="sectionhead"><h2 id="gamesTitle">OFFICE GAMES</h2></div>
@@ -1562,6 +1583,7 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/office-games.js"></script>
 <script type="module" src="/assets/snake-xenzia.js"></script>
 <script type="module" src="/assets/workday-simulator.js"></script>
+<script type="module" src="/assets/role-simulation.js"></script>
 <script type="module" src="/assets/shift-report.js"></script>
 <script type="module" src="/assets/office-extras.js"></script>
 <script type="module" src="/assets/shift-challenges.js"></script>

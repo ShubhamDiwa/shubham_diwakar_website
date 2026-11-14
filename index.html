@@ -229,6 +229,16 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 .workday-stop .time span{display:block;color:var(--muted)}
 .workday-stop strong{font-size:clamp(16px,2vw,20px)}
 .workday-stop p{margin-top:4px;color:var(--muted);font-size:14px;line-height:1.45}
+.workday-modes{margin:0 0 16px}
+.workday-modes [aria-pressed="true"]{border-color:var(--acid);color:var(--acid)}
+#customWorkday[hidden],#customWorkday [hidden],#roleWorkday[hidden]{display:none}
+#customWorkday form{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px}
+#customWorkday form label{display:grid;gap:5px;min-width:0}
+#customWorkday form label:nth-child(2){flex:1 1 180px}
+#customWorkday input{width:100%;background:#101413;color:var(--paper);color-scheme:dark;border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit}
+#customWorkday .workday-stop{overflow-wrap:anywhere}
+#customWorkday .workday-stop button{margin-top:8px}
+#customWorkdayEvents:empty,#simulationRecap:empty{display:none}
 @media(max-width:700px){
  .workday-grid{grid-template-columns:minmax(0,1fr)}
  .workday-stop{grid-template-columns:minmax(0,1fr);gap:5px;padding:12px}
@@ -335,7 +345,11 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <section id="timeline">
  <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Your typical workday. Times are in IST.</p></div>
- <div class="workday-grid">
+ <div class="actions workday-modes" role="group" aria-label="Timeline view">
+  <button class="btn" id="showRoleWorkday" type="button" aria-pressed="true">Role timeline</button>
+  <button class="btn" id="showCustomWorkday" type="button" aria-pressed="false">Build my timeline</button>
+ </div>
+ <div class="workday-grid" id="roleWorkday">
   <div class="workday-overview">
    <div class="eyebrow" id="workdayRole">Today's shift</div>
    <h3 id="workdayStatus">Workday preview</h3>
@@ -343,6 +357,31 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <progress id="workdayProgress" max="100" value="0" aria-label="Workday progress"></progress>
   </div>
   <ol class="workday-path" id="workdayTimeline" aria-label="Workday timeline"></ol>
+ </div>
+ <div id="customWorkday" hidden>
+  <div class="workday-grid">
+   <div class="workday-overview">
+    <h3>Shift simulator</h3>
+    <p id="customWorkdayStatus" role="status">Build a schedule, then play it from the first event to the last.</p>
+    <progress id="customWorkdayProgress" max="1" value="0" aria-label="Simulation progress"></progress>
+    <div class="actions">
+     <button class="btn primary" type="button" id="startWorkdaySimulation">Play shift</button>
+     <button class="btn" type="button" id="nextWorkdayEvent" hidden>Next event</button>
+    </div>
+    <div id="workdayDecision" hidden>
+     <p id="workdayDecisionPrompt"></p>
+     <div class="actions" id="workdayDecisionChoices" role="group" aria-label="Respond to the office surprise"></div>
+    </div>
+   </div>
+   <div>
+    <form id="customWorkdayForm">
+     <label>Time <input name="time" type="time" required></label>
+     <label>Event <input name="title" type="text" maxlength="80" required placeholder="Lunch, focus time, log off…"></label>
+     <button class="btn" type="submit">Add event</button>
+    </form>
+    <ol class="workday-path" id="customWorkdayEvents" aria-label="Custom shift events"></ol>
+   </div>
+  </div>
  </div>
 </section>
 
@@ -670,6 +709,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  <div class="dash" id="shiftReport" hidden>
   <h3>Shift Report</h3>
   <p id="shiftSummary"></p>
+  <p id="simulationRecap"></p>
   <button class="btn" id="shareShift" type="button">Share in Break Room</button>
  </div>
 </footer>
@@ -1512,6 +1552,7 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/tic-online.js"></script>
 <script type="module" src="/assets/office-games.js"></script>
 <script type="module" src="/assets/snake-xenzia.js"></script>
+<script type="module" src="/assets/workday-simulator.js"></script>
 <script type="module" src="/assets/shift-report.js"></script>
 <script type="module" src="/assets/office-extras.js"></script>
 <script type="module" src="/assets/shift-challenges.js"></script>

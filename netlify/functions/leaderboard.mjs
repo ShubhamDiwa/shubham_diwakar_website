@@ -4,7 +4,7 @@ import { openSocialStore } from './social-games.mjs';
 
 const games = ['Meeting Dodge', 'Chai Run', 'Deadline Dash', 'Typing Race', 'Local Tic-Tac-Toe',
   'Online Tic-Tac-Toe', 'Corporate Bingo', 'Corporate Wordle', 'Office Detective',
-  'Corporate Plot Twist', 'Friday Half-Day Heist', 'Office Bluff'];
+  'Corporate Plot Twist', 'Friday Half-Day Heist', 'Office Bluff', 'Snake Xenzia'];
 const limits = { 'Typing Race': 300, 'Corporate Wordle': 6, 'Corporate Plot Twist': 20, 'Friday Half-Day Heist': 90001, 'Office Bluff': 7 };
 const roles = ['Developer', 'DevOps', 'Data Analyst', 'Business Analyst', 'Data Scientist', 'Project Manager', 'Sales & Support', 'HR & Admin', 'Finance', 'Operations', 'Marketing & Design', 'Tech & QA'];
 const json = (body, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });

@@ -189,6 +189,9 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-games input{width:9em;padding:10px;border:1px solid var(--line);border-radius:8px;background:#090b0a;color:var(--paper);font:inherit}
 #chaiFloor{display:block;width:min(100%,480px);height:auto;border:1px solid var(--line);border-radius:8px;background:#101510}
 #chaiFloor:focus-visible{outline:2px solid var(--acid)}
+#snakeBoard{display:block;width:min(100%,340px);height:auto;background:#b8c78a;border:8px solid #323d22;border-radius:12px;image-rendering:pixelated}
+#snakeBoard:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+#snakeControls .btn{min-width:48px;min-height:44px}
 #typing-race [hidden]{display:none}
 #typingEntry textarea{width:100%;padding:12px;font:inherit;color:var(--paper);background:#090b0a;border:1px solid var(--line);border-radius:8px}
 section:not(.hero){padding-block:clamp(44px,6vw,88px);scroll-margin-top:78px}
@@ -471,6 +474,20 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 </section>
 
 <section class="office-games" aria-label="Office games">
+ <article class="dash" id="snake-xenzia">
+  <h3>Snake Xenzia</h3>
+  <p>Eat the food, grow longer, and avoid the walls and your own tail. Use arrow keys, WASD, or the buttons below.</p>
+  <p id="snakeScore">Score 0</p>
+  <canvas id="snakeBoard" width="320" height="320" tabindex="0" aria-label="Snake Xenzia playfield"></canvas>
+  <p id="snakeStatus" role="status">Ready to play.</p>
+  <div class="actions" id="snakeControls" role="group" aria-label="Snake controls">
+   <button class="btn primary" id="snakeStart" type="button">Start</button>
+   <button class="btn" type="button" data-snake="left" aria-label="Move left">←</button>
+   <button class="btn" type="button" data-snake="up" aria-label="Move up">↑</button>
+   <button class="btn" type="button" data-snake="down" aria-label="Move down">↓</button>
+   <button class="btn" type="button" data-snake="right" aria-label="Move right">→</button>
+  </div>
+ </article>
  <article class="dash" id="corporate-bingo">
   <h3>Corporate Bingo</h3>
   <p>Mark the phrases you hear at work. First to complete a line calls Bingo in the Break Room.</p>
@@ -584,6 +601,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <option>Local Tic-Tac-Toe</option><option>Online Tic-Tac-Toe</option><option>Corporate Bingo</option>
    <option>Corporate Wordle</option><option>Office Detective</option>
    <option>Corporate Plot Twist</option><option>Friday Half-Day Heist</option><option>Office Bluff</option>
+   <option>Snake Xenzia</option>
   </select></label>
   <ol id="leaderboardEntries" style="padding-left:24px;margin:12px 0"></ol>
   <p id="leaderboardStatus" role="status"></p>
@@ -1444,6 +1462,7 @@ loadPlaylist(goLivePlaylist, 'Go Live', false);
 <script type="module" src="/assets/break-room.js"></script>
 <script type="module" src="/assets/tic-online.js"></script>
 <script type="module" src="/assets/office-games.js"></script>
+<script type="module" src="/assets/snake-xenzia.js"></script>
 <script type="module" src="/assets/shift-report.js"></script>
 <script type="module" src="/assets/office-extras.js"></script>
 <script type="module" src="/assets/shift-challenges.js"></script>

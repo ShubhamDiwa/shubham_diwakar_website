@@ -330,6 +330,7 @@ byId('salaryForm').onsubmit = event => {
     : `Gross ${currency.format(gross)}\nEstimated in-hand ${currency.format(inHand)}\nAfter EMI and chai ${currency.format(inHand - Number(emi) - Number(chai))}`;
 };
 const gameSections = {
+  'Snake Xenzia': 'snake-xenzia',
   'Meeting Dodge': 'meeting-game', 'Chai Run': 'chai-run', 'Deadline Dash': 'deadline-dash',
   'Local Tic-Tac-Toe': 'tic-tac-toe', 'Online Tic-Tac-Toe': 'onlineTic',
   'Corporate Bingo': 'corporate-bingo', 'Corporate Wordle': 'corporate-wordle',

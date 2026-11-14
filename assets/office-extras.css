@@ -31,3 +31,13 @@ html.office-reduced .office-cups{display:none}
  #corporate-bingo #bingoBoard .btn{padding:6px 4px;letter-spacing:0;overflow-wrap:anywhere}
  #typing-race textarea,#half-day-heist input,#office-bluff input{max-width:100%;min-width:0}
 }
+.office-primary{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;margin-top:0}
+.office-group{margin-top:16px;border:1px solid var(--line);border-radius:16px;background:#0e1010;padding:clamp(14px,2vw,22px)}
+.office-group summary{cursor:pointer;font-weight:800;color:var(--paper)}
+.office-group .office-grid{align-items:start;margin-top:16px}
+.office-grid label{line-height:1.5}
+.office-grid form + ul:empty,.office-grid p:empty{display:none}
+#deskTasks{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-block:12px}
+#deskTasks input{flex:1 1 180px;min-width:0}
+#deskNotes,#confessionForm textarea{margin-block:6px 10px}
+@media(max-width:640px){.office-primary{grid-template-columns:1fr}}

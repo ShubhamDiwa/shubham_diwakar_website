@@ -191,6 +191,24 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 #chaiFloor:focus-visible{outline:2px solid var(--acid)}
 #typing-race [hidden]{display:none}
 #typingEntry textarea{width:100%;padding:12px;font:inherit;color:var(--paper);background:#090b0a;border:1px solid var(--line);border-radius:8px}
+section:not(.hero){padding-block:clamp(44px,6vw,88px);scroll-margin-top:78px}
+.sectionhead{margin-bottom:clamp(20px,3vw,36px)}
+.sectionhead .desc{max-width:36ch}
+.games-layout{display:grid;gap:clamp(14px,2vw,24px)}
+.games-layout > section{padding:0;min-width:0}
+.games-layout :is(.meeting-game,.office-tic-tac-toe){margin-top:0}
+#shift-challenges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:inherit}
+.dash{padding:clamp(16px,2vw,26px)}
+.dash h3{font-size:clamp(20px,2.2vw,28px);line-height:1.15;margin-bottom:10px}
+.dash .actions{margin-top:14px}
+.portfolio-actions{margin:22px 0 28px}
+.projects{gap:clamp(12px,2vw,20px)}
+.project{min-height:0;justify-content:flex-start;gap:12px}
+.project > a{margin-top:auto;padding-top:6px;color:var(--acid)}
+.project .num,.project p{color:var(--muted)}
+.portfolio-access{grid-column:1/-1}
+footer{padding-block:clamp(52px,8vw,104px) 135px}
+@media(max-width:640px){#shift-challenges{grid-template-columns:1fr}.sectionhead .desc{margin-top:12px}}
 </style>
 </head>
 <body>
@@ -225,7 +243,7 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 
 <nav>
  <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
- <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#office-tools">Office Tools</a><a href="#meeting-game">Games</a><a href="#portfolio">Portfolio</a></div>
+ <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
  <a class="btn" id="officeToolsLink" href="#office-tools">My Desk</a>
  <a class="btn hire-link" href="portfolio/index.html#contact">Hire me</a>
 </nav>
@@ -406,6 +424,9 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 </section>
 
 <section id="office-tools" aria-label="Office tools"></section>
+<section class="games-zone" id="games" aria-labelledby="gamesTitle">
+ <div class="sectionhead"><h2 id="gamesTitle">OFFICE GAMES</h2></div>
+ <div class="games-layout">
 <section id="meeting-game" aria-labelledby="meetingGameTitle">
  <div class="dash meeting-game">
   <h3 id="meetingGameTitle">Meeting Dodge</h3>
@@ -571,15 +592,17 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
  </div>
 </section>
 
+ </div>
+</section>
 <section class="portfolio" id="portfolio">
  <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
  <p style="max-width:750px;font-size:20px;line-height:1.65;color:#c8cbc5">Hi, I'm <b>Shubham Diwakar</b> — an Android developer working with Kotlin, Android and Flutter. Corporate Mazdoor is the fun side. Engineering is the serious side.</p>
- <div class="actions" style="margin-bottom:40px"><a class="btn primary" href="portfolio/index.html" target="_blank" rel="noopener">OPEN MY PORTFOLIO ↗</a><a class="btn" href="assets/resume_shubham_diwakar.pdf" download="resume_shubham_diwakar.pdf" onclick="event.preventDefault(); downloadResume();">DOWNLOAD CV</a></div><div class="actions" style="margin-top:-24px;margin-bottom:40px"><a class="btn" href="https://www.linkedin.com/in/shubham-android-developer" target="_blank" rel="noopener">LINKEDIN ↗</a><a class="btn" href="https://github.com/ShubhamDiwa" target="_blank" rel="noopener">GITHUB ↗</a></div>
+ <div class="actions portfolio-actions"><a class="btn primary" href="portfolio/index.html" target="_blank" rel="noopener">OPEN MY PORTFOLIO ↗</a><a class="btn" href="assets/resume_shubham_diwakar.pdf" download="resume_shubham_diwakar.pdf" onclick="event.preventDefault(); downloadResume();">DOWNLOAD CV</a><a class="btn" href="https://www.linkedin.com/in/shubham-android-developer" target="_blank" rel="noopener">LINKEDIN ↗</a><a class="btn" href="https://github.com/ShubhamDiwa" target="_blank" rel="noopener">GITHUB ↗</a></div>
  <div class="projects" id="projects">
   <article class="project"><span class="num">Ticket #484</span><h3>Portfolio Maker</h3><p>Turns a form submission into a hosted portfolio site.</p><a href="https://portfolio-maker-sd.web.app/" target="_blank" rel="noopener noreferrer">Visit Portfolio Maker ↗</a></article>
   <article class="project"><span class="num">Ticket #485</span><h3>Testlane Community</h3><p>Find Android apps to try, recruit volunteer testers, and share feedback.</p><a href="https://testlane-community.testlane-community.workers.dev/" target="_blank" rel="noopener noreferrer">Visit Testlane ↗</a></article>
   <article class="project"><span class="num">Ticket #486</span><h3>WordZipp</h3><p>Build your vocabulary with word notifications, quizzes, and proverbs.</p><a href="https://play.google.com/store/apps/details?id=com.diws.wordzip&amp;pcampaignid=web_share" target="_blank" rel="noopener noreferrer">Get it on Google Play ↗</a></article>
-  <article class="project" style="grid-column:1/-1;min-height:220px">
+  <article class="project portfolio-access">
     <span class="num">PORTFOLIO ACCESS</span>
     <div><h3>The serious stuff lives here.</h3>
     <p>Corporate Mazdoor is the life. Your complete developer portfolio opens separately.</p></div>

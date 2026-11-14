@@ -70,14 +70,13 @@ h2{font-size:clamp(50px,8vw,100px);letter-spacing:-.085em;line-height:.78}.desc{
 .scene img,.scene video{position:absolute;width:100%;height:100%;object-fit:cover;filter:brightness(.38) saturate(.8)}
 .scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.25) 70%),linear-gradient(0deg,#070808,transparent 35%)}
 .scenecopy{position:relative;z-index:2;width:min(1180px,calc(100% - 40px));margin:auto;padding-top:80px}.scene-num{font:11px ui-monospace;color:var(--acid)}.scene h3{font-size:clamp(55px,8vw,120px);letter-spacing:-.09em;line-height:.8;max-width:800px;margin-top:15px}.scene p{max-width:500px;color:#bbb;line-height:1.7;margin-top:25px;font-size:16px}
-.timeline{border-top:1px solid var(--line)}.row{display:grid;grid-template-columns:100px 1fr 100px;gap:25px;padding:25px 0;border-bottom:1px solid var(--line);align-items:center}.row .time{font:12px ui-monospace;color:var(--acid)}.row strong{font-size:21px}.row small{color:#777;text-align:right}
 .gallery{display:grid;grid-template-columns:1.25fr .75fr;gap:15px}.photo{border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative;min-height:400px}.photo img{width:100%;height:100%;object-fit:cover}.caption{position:absolute;bottom:14px;left:14px;right:14px;padding:15px;border-radius:12px;background:rgba(0,0,0,.58);backdrop-filter:blur(12px)}.caption b{font-size:20px}.caption small{display:block;color:#aaa;margin-top:4px}
 .radio{border:1px solid var(--line);border-radius:20px;padding:22px;background:linear-gradient(135deg,#111312,#0a0b0b)}.radio-top{display:flex;justify-content:space-between;gap:20px;align-items:center}.radio-title{font-size:28px;font-weight:950}.radio-sub{color:#777;font-size:12px;margin-top:5px}.tracks{display:grid;gap:7px;margin-top:25px}.track{display:grid;grid-template-columns:40px 1fr 110px;align-items:center;padding:14px;border:1px solid transparent;border-radius:10px;cursor:pointer}.track:hover,.track.active{background:rgba(202,255,57,.05);border-color:rgba(202,255,57,.24)}.trackno{color:#666;font:12px ui-monospace}.track small{text-align:right;color:#777}
 .dashboard{display:grid;grid-template-columns:1fr 1fr;gap:20px}.dash{border:1px solid var(--line);border-radius:20px;padding:25px;background:#0e1010}.dash h3{font-size:28px}.meterrow{margin:20px 0}.meterrow header{display:flex;justify-content:space-between;color:#aaa;font-size:12px}.bar{height:8px;border-radius:99px;background:#252725;margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acid)}
 .portfolio{background:#0c0e0d}.projects{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.project{border:1px solid var(--line);border-radius:17px;padding:20px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;background:#111312;transition:.3s}.project:hover{transform:translateY(-6px);border-color:rgba(202,255,57,.35)}.project .num{color:#666;font:11px ui-monospace}.project h3{font-size:29px;letter-spacing:-.05em}.project p{color:#858883;font-size:13px;line-height:1.55}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{border:1px solid var(--line);padding:6px 8px;border-radius:99px;color:#aaa;font-size:9px}
 .player{position:fixed;z-index:600;bottom:15px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 22px));display:grid;grid-template-columns:50px 1fr auto;gap:13px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:15px;background:rgba(9,10,10,.88);backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.5)}.cover{width:50px;height:50px;border-radius:9px;object-fit:cover}.now{font-size:12px;font-weight:800}.now small{display:block;color:#777;margin-top:4px;font-weight:500}.controls{display:flex;gap:5px}.controls button{width:37px;height:37px;border-radius:50%;border:1px solid var(--line);background:#171918;color:white;cursor:pointer}.controls .main{background:var(--acid);color:#111}
 footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--line)}footer h2{font-size:clamp(60px,10vw,140px)}footer p{color:#777;max-width:500px;margin:20px auto 30px;line-height:1.6}
-@media(max-width:800px){.navlinks{display:none}.avail{display:none}.hero-content{padding-top:130px}.hero p{font-size:14px}.sectionhead{display:block}.sectionhead .desc{margin-top:20px}.row{grid-template-columns:70px 1fr}.row small{display:none}.gallery,.dashboard{grid-template-columns:1fr}.photo{min-height:300px}.projects{grid-template-columns:1fr}.scene h3{font-size:60px}.player{grid-template-columns:45px 1fr auto}.cover{width:45px;height:45px}.controls button{width:34px;height:34px}}
+@media(max-width:800px){.navlinks{display:none}.avail{display:none}.hero-content{padding-top:130px}.hero p{font-size:14px}.sectionhead{display:block}.sectionhead .desc{margin-top:20px}.gallery,.dashboard{grid-template-columns:1fr}.photo{min-height:300px}.projects{grid-template-columns:1fr}.scene h3{font-size:60px}.player{grid-template-columns:45px 1fr auto}.cover{width:45px;height:45px}.controls button{width:34px;height:34px}}
 
 /* Corporate Mazdoor audio player */
 .audio-stage{margin-top:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0a0d0d;position:relative;padding:14px}
@@ -146,11 +145,6 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-inbox .inbox-copy{font-size:14px;margin:6px 0}
 .inbox-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 @media(max-width:550px){.shift-board{grid-template-columns:1fr;gap:8px}.hero-content{padding-bottom:100px}}
-#timeline .row{grid-template-columns:clamp(48px,10vw,100px) minmax(0,1fr);gap:14px;padding:19px 12px;border-left:2px solid transparent}
-#timeline .row[aria-current="step"]{border-left-color:var(--acid);background:#151b0d}
-#timeline .row strong{font-size:clamp(16px,3vw,21px)}
-#timeline .row p{color:var(--muted);font-size:14px;margin-top:5px}
-#timeline .time span{display:block;margin-top:5px;font-size:9px}
 .break-room{margin-top:16px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#101211}
 .break-room summary{cursor:pointer;color:var(--acid);font-weight:800}
 .break-room form,.break-room-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
@@ -219,6 +213,27 @@ section:not(.hero){padding-block:clamp(44px,6vw,88px);scroll-margin-top:78px}
 .portfolio-access{grid-column:1/-1}
 footer{padding-block:clamp(52px,8vw,104px) 135px}
 @media(max-width:640px){#shift-challenges{grid-template-columns:1fr}.sectionhead .desc{margin-top:12px}}
+.workday-grid{display:grid;grid-template-columns:minmax(200px,.7fr) minmax(0,1.6fr);gap:clamp(20px,4vw,54px);align-items:start}
+.workday-overview{padding:clamp(16px,2.4vw,28px);border:1px solid var(--line);border-radius:18px;background:#121611}
+.workday-overview .eyebrow{margin-bottom:12px}
+.workday-overview h3{font-size:clamp(22px,3vw,34px);line-height:1.1;overflow-wrap:anywhere}
+.workday-overview p{margin-top:12px;color:var(--muted);line-height:1.5}
+.workday-overview progress{display:block;width:100%;height:8px;margin-top:16px;accent-color:var(--acid)}
+.workday-path{position:relative;display:grid;gap:12px;padding-left:28px;list-style:none}
+.workday-path::before{content:"";position:absolute;left:7px;top:26px;bottom:26px;border-left:1px solid #46503b}
+.workday-stop{position:relative;display:grid;grid-template-columns:minmax(68px,.28fr) minmax(0,1fr);gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#111413}
+.workday-stop::before{content:"";position:absolute;left:-26px;top:22px;width:9px;height:9px;border:1px solid #78866b;border-radius:50%;background:#121611}
+.workday-stop[data-past]::before,.workday-stop[aria-current]::before{background:var(--acid);border-color:var(--acid)}
+.workday-stop[aria-current]{border-color:var(--acid);background:#192110}
+.workday-stop .time{font:12px/1.5 ui-monospace,monospace;color:var(--acid)}
+.workday-stop .time span{display:block;color:var(--muted)}
+.workday-stop strong{font-size:clamp(16px,2vw,20px)}
+.workday-stop p{margin-top:4px;color:var(--muted);font-size:14px;line-height:1.45}
+@media(max-width:700px){
+ .workday-grid{grid-template-columns:minmax(0,1fr)}
+ .workday-stop{grid-template-columns:minmax(0,1fr);gap:5px;padding:12px}
+ .workday-stop .time{display:flex;flex-wrap:wrap;gap:8px}
+}
 </style>
 </head>
 <body>
@@ -320,7 +335,15 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <section id="timeline">
  <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Your typical workday. Times are in IST.</p></div>
- <ol class="timeline" id="workdayTimeline" aria-label="Workday timeline"></ol>
+ <div class="workday-grid">
+  <div class="workday-overview">
+   <div class="eyebrow" id="workdayRole">Today's shift</div>
+   <h3 id="workdayStatus">Workday preview</h3>
+   <p id="workdayDetail">08:30–18:30 IST</p>
+   <progress id="workdayProgress" max="100" value="0" aria-label="Workday progress"></progress>
+  </div>
+  <ol class="workday-path" id="workdayTimeline" aria-label="Workday timeline"></ol>
+ </div>
 </section>
 
 
@@ -858,7 +881,12 @@ const roleDayDetails = {
   "Tech & QA": [["Check the overnight test run","One flaky test is back for another round."],["Reproduce the first bug","It only fails on the oldest test device."],["Chai during regression","The suite is stuck on the login screen."],["Send the test report","The release has one last known issue."]]
 };
 let workdayMinute;
-let activeWorkdayRow = -1;
+const workdayPhases = ['Commute', 'Login', 'Chai break', 'Afternoon', 'Wrap-up', 'Logout'];
+const workdayTimes = workdayMoments.map(([time]) => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+});
+let workdayState = 'preview';
 
 function renderWorkday(team){
   const [commute, login, breakTime, logout] = roleDayDetails[team];
@@ -866,12 +894,14 @@ function renderWorkday(team){
   const rows = workdayMoments.map(([time, title, detail], index) => {
     const scenario = scenarios[index];
     const row = document.createElement('li');
-    row.className = 'row';
+    row.className = 'workday-stop';
     const stamp = document.createElement('div');
     stamp.className = 'time';
     const clock = document.createElement('time');
     clock.dateTime = clock.textContent = time;
-    stamp.append(clock);
+    const phase = document.createElement('span');
+    phase.textContent = workdayPhases[index];
+    stamp.append(clock, phase);
     const copy = document.createElement('div');
     const heading = document.createElement('strong');
     const description = document.createElement('p');
@@ -882,26 +912,33 @@ function renderWorkday(team){
     return row;
   });
   workdayTimeline.replaceChildren(...rows);
-  activeWorkdayRow = -1;
+  document.getElementById('workdayRole').textContent = team;
   highlightWorkday(workdayMinute);
 }
 
 function highlightWorkday(minute){
-  const index = workdayMoments.findLastIndex(([time]) => {
-    const [hour, minutes] = time.split(':').map(Number);
-    return minute >= hour * 60 + minutes;
-  });
-  if (index === activeWorkdayRow) return;
-  const previous = workdayTimeline.children[activeWorkdayRow];
-  previous?.removeAttribute('aria-current');
-  previous?.querySelector('.time span')?.remove();
-  activeWorkdayRow = index;
-  if (index < 0) return;
-  const current = workdayTimeline.children[index];
-  current.setAttribute('aria-current', 'step');
-  const label = document.createElement('span');
-  label.textContent = 'NOW';
-  current.querySelector('.time').append(label);
+  const start = workdayTimes[0];
+  const end = workdayTimes.at(-1);
+  const before = minute < start;
+  const finished = minute >= end;
+  const active = workdayState === 'weekday' && !before && !finished
+    ? workdayTimes.findLastIndex(time => minute >= time)
+    : -1;
+  const progress = workdayState === 'weekday'
+    ? Math.round(100 * Math.min(1, Math.max(0, ((minute ?? start) - start) / (end - start))))
+    : 0;
+  for (const [index, stop] of [...workdayTimeline.children].entries()) {
+    stop.toggleAttribute('data-past', workdayState === 'weekday' && (finished || index < active));
+    if (index === active) stop.setAttribute('aria-current', 'step');
+    else stop.removeAttribute('aria-current');
+  }
+  const current = workdayTimeline.children[active];
+  document.getElementById('workdayStatus').textContent = current?.querySelector('strong').textContent ??
+    (workdayState === 'weekend' ? 'Weekend preview' : finished ? 'Punched out' : 'Shift starts at 08:30');
+  document.getElementById('workdayDetail').textContent = active >= 0
+    ? `Now · ${workdayPhases[active]} / Next at ${workdayMoments[active + 1][0]} IST`
+    : '08:30–18:30 IST';
+  document.getElementById('workdayProgress').value = progress;
 }
 
 const introTeam = document.getElementById('introTeam');
@@ -982,7 +1019,8 @@ function updateOfficeClock(now = new Date()){
   const weekday = today.getUTCDay();
   const weekend = weekday === 0 || weekday === 6;
   const minute = hour * 60 + Number(parts.minute);
-  const timelineMinute = weekend || minute >= 19 * 60 ? -1 : minute;
+  workdayState = weekend ? 'weekend' : 'weekday';
+  const timelineMinute = minute;
   if (workdayMinute !== timelineMinute) {
     workdayMinute = timelineMinute;
     highlightWorkday(workdayMinute);

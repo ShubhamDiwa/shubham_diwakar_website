@@ -869,7 +869,7 @@
     <div class="section-head reveal">
       <span class="section-tag">04 · Personal projects</span>
       <h2>Built end-to-end, backend and all</h2>
-      <p>Two projects where I owned the full stack — API, database, and product. Click either one to see it up close.</p>
+      <p>Explore my projects, from a local marketplace to a portfolio builder and an Android testing community.</p>
     </div>
     <div class="showcase-grid">
       <div class="showcase-card reveal" onclick="openProject('grocmart')">
@@ -889,8 +889,19 @@
         </div>
         <div class="showcase-body">
           <span class="showcase-eyebrow">SaaS website builder</span>
-          <h3>Portfolio Builder</h3>
+          <h3>Portfolio Maker</h3>
           <p>A user fills out a form and gets a complete, hosted portfolio website back — full backend and database behind it.</p>
+          <div class="showcase-open">View project <span class="arrow">→</span></div>
+        </div>
+      </div>
+      <div class="showcase-card reveal" onclick="openProject('testlane')">
+        <div class="showcase-cover" style="background:linear-gradient(135deg,#166534,#0f766e);">
+          <span class="showcase-radius">Android testing</span>
+        </div>
+        <div class="showcase-body">
+          <span class="showcase-eyebrow">Testing community</span>
+          <h3>Testlane Community</h3>
+          <p>Find Android apps to try, recruit volunteer testers, and share feedback for free.</p>
           <div class="showcase-open">View project <span class="arrow">→</span></div>
         </div>
       </div>
@@ -1122,7 +1133,7 @@
     portfolio: {
       cover: 'linear-gradient(135deg,#7F52FF,#3C3489)',
       eyebrow: 'SaaS website builder · Full stack',
-      title: 'Portfolio Builder',
+      title: 'Portfolio Maker',
       desc: "A self-serve tool where a user fills out a short form — name, work, projects, links — and gets back a complete, hosted portfolio website. Built the form flow, the site-generation logic, and the backend and database that store each user's content.",
       list: [
         '<b>Form-driven generation</b> — structured input turns straight into a live, styled site.',
@@ -1130,8 +1141,16 @@
         '<b>Instant hosting</b> — the generated site is live immediately, no manual deployment.'
       ],
       tags: ['Full-stack','Backend','Database','Forms','Hosting'],
-      actions: `<a href="#" class="btn btn-primary">Visit website ↗</a>`,
-      note: 'Add your live portfolio-builder URL here to make this link real.'
+      actions: `<a href="https://portfolio-maker-sd.web.app/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Visit Portfolio Maker ↗</a>`
+    },
+    testlane: {
+      cover: 'linear-gradient(135deg,#166534,#0f766e)',
+      eyebrow: 'Android app testing community',
+      title: 'Testlane Community',
+      desc: 'A free community where Android developers can recruit volunteer testers and people can discover apps to try.',
+      list: ['Discover Android apps that need testers.', 'Recruit volunteers to try your app.', 'Share feedback with developers.'],
+      tags: ['Android','App testing','Community'],
+      actions: `<a href="https://testlane-community.testlane-community.workers.dev/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Visit Testlane ↗</a>`
     }
   };
 

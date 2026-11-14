@@ -247,6 +247,19 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  from{box-shadow:0 0 0 2px var(--acid)}
  to{box-shadow:0 0 0 9px transparent}
 }
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ html:not(.office-reduced) #roleWorkday :is(.workday-overview,.workday-stop){
+  transition:transform .2s ease-out,border-color .2s ease-out,box-shadow .2s ease-out;
+ }
+ html:not(.office-reduced) #roleWorkday :is(.workday-overview,.workday-stop):hover{
+  transform:translateY(-3px);
+  border-color:color-mix(in srgb,var(--acid) 42%,transparent);
+  box-shadow:0 8px 22px #0005;
+ }
+ html:not(.office-reduced) #roleWorkday .workday-stop[aria-current="step"]:hover{
+  border-color:var(--acid);
+ }
+}
 .workday-modes{margin:0 0 16px}
 .workday-modes [aria-pressed="true"]{border-color:var(--acid);color:var(--acid)}
 #customWorkday[hidden],#customWorkday [hidden],#roleWorkday[hidden]{display:none}

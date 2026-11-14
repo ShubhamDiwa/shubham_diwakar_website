@@ -869,7 +869,7 @@
     <div class="section-head reveal">
       <span class="section-tag">04 · Personal projects</span>
       <h2>Built end-to-end, backend and all</h2>
-      <p>Explore my projects, from a local marketplace to a portfolio builder and an Android testing community.</p>
+      <p>Explore my projects across Android and the web.</p>
     </div>
     <div class="showcase-grid">
       <div class="showcase-card reveal" onclick="openProject('grocmart')">
@@ -902,6 +902,17 @@
           <span class="showcase-eyebrow">Testing community</span>
           <h3>Testlane Community</h3>
           <p>Find Android apps to try, recruit volunteer testers, and share feedback for free.</p>
+          <div class="showcase-open">View project <span class="arrow">→</span></div>
+        </div>
+      </div>
+      <div class="showcase-card reveal" onclick="openProject('wordzipp')">
+        <div class="showcase-cover" style="background:linear-gradient(135deg,#174ea6,#0b7285);">
+          <span class="showcase-radius">On Google Play</span>
+        </div>
+        <div class="showcase-body">
+          <span class="showcase-eyebrow">Android vocabulary builder</span>
+          <h3>WordZipp</h3>
+          <p>Learn new words from notifications, test yourself with quizzes, and explore proverbs.</p>
           <div class="showcase-open">View project <span class="arrow">→</span></div>
         </div>
       </div>
@@ -1151,6 +1162,15 @@
       list: ['Discover Android apps that need testers.', 'Recruit volunteers to try your app.', 'Share feedback with developers.'],
       tags: ['Android','App testing','Community'],
       actions: `<a href="https://testlane-community.testlane-community.workers.dev/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Visit Testlane ↗</a>`
+    },
+    wordzipp: {
+      cover: 'linear-gradient(135deg,#174ea6,#0b7285)',
+      eyebrow: 'Android vocabulary builder · On Google Play',
+      title: 'WordZipp',
+      desc: 'An Android app for building your vocabulary one word at a time.',
+      list: ['Learn new words through notifications.', 'Test your vocabulary with quizzes.', 'Explore proverbs.'],
+      tags: ['Android','Vocabulary','Quizzes'],
+      actions: `<a href="https://play.google.com/store/apps/details?id=com.diws.wordzip&amp;pcampaignid=web_share" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Get it on Google Play ↗</a>`
     }
   };
 

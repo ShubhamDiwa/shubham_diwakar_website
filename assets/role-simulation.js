@@ -68,3 +68,36 @@ function showRoleSimulation(focus = false) {
 }
 window.addEventListener('office-punch-in', () => showRoleSimulation());
 showRoleSimulation();
+
+const opening = byId('roleOpening');
+const openingVideo = opening.querySelector('video');
+const openingCaption = byId('roleOpeningCaption');
+let openingTimer;
+
+window.addEventListener('office-role-opening', event => {
+  const role = byId('introTeam').value;
+  const [title, premise, outcome, first] = scenarios[role];
+  const frames = role === 'Developer'
+    ? ['> Booting binary console…', '> 0101 accepted. Sandbox unlocked.']
+    : [premise, first + ' · ' + outcome];
+
+  byId('roleOpeningRole').textContent = role;
+  byId('roleOpeningTitle').textContent = title;
+  openingCaption.textContent = frames[0];
+  opening.showModal();
+  event.preventDefault();
+  openingVideo.src = '/assets/corporate-life-01.mp4';
+  openingVideo.play().catch(() => {});
+  openingTimer = setTimeout(() => {
+    openingCaption.textContent = frames[1];
+    openingCaption.dataset.frame = 'second';
+    openingTimer = setTimeout(() => opening.close(), 2300);
+  }, 2300);
+});
+
+byId('skipRoleOpening').addEventListener('click', () => opening.close());
+opening.addEventListener('close', () => {
+  clearTimeout(openingTimer);
+  openingVideo.pause();
+  window.enterSite();
+});

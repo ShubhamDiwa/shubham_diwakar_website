@@ -267,6 +267,15 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 #roleSimulationPrompt{line-height:1.55}
 #roleSimulationPrompt.binary-console{white-space:pre-line;font-family:ui-monospace,monospace;color:var(--acid);background:#090b0a;border:1px solid var(--line);border-radius:8px;padding:14px}
 #roleSimulationStatus:not(:empty){margin-top:14px;color:var(--acid)}
+.role-opening{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;background:#090c0a url('/assets/corporate-collage.webp') center/cover;color:var(--paper);overflow:auto}
+.role-opening[open]{display:grid;align-items:end}
+.role-opening::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#080b09 8%,#080b09ba 65%,#080b094d);pointer-events:none}
+.role-opening video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.role-opening-copy{position:relative;z-index:1;width:min(100%,850px);padding:clamp(24px,7vw,100px)}
+.role-opening-copy h2{font-size:clamp(38px,8vw,92px);line-height:.95;margin:14px 0 20px;overflow-wrap:anywhere}
+.role-opening-copy p{font-size:clamp(16px,2vw,22px);line-height:1.45;min-height:3em}
+.role-opening-copy .btn{margin-top:22px}
+.role-opening-copy [data-frame]{animation:workday-enter .45s ease-out both}
 .workday-modes{margin:0 0 16px}
 .workday-modes [aria-pressed="true"]{border-color:var(--acid);color:var(--acid)}
 #customWorkday[hidden],#customWorkday [hidden],#roleWorkday[hidden]{display:none}
@@ -315,6 +324,16 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
   <span class="intro-scan-announcement" id="introScanStatus" role="status"></span>
  </div>
 </div>
+
+<dialog class="role-opening" id="roleOpening" aria-labelledby="roleOpeningTitle" aria-describedby="roleOpeningCaption">
+ <video muted loop playsinline aria-hidden="true"></video>
+ <div class="role-opening-copy">
+  <div class="eyebrow" id="roleOpeningRole"></div>
+  <h2 id="roleOpeningTitle"></h2>
+  <p id="roleOpeningCaption" aria-live="polite"></p>
+  <button class="btn" id="skipRoleOpening" type="button" autofocus>Skip intro</button>
+ </div>
+</dialog>
 
 <nav>
  <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
@@ -1182,7 +1201,7 @@ function punchIn(){
     setTimeout(() => {
       progress.value = 100;
       label.textContent = status.textContent = 'Access granted';
-      enterSite();
+      if (window.dispatchEvent(new Event('office-role-opening', { cancelable: true }))) enterSite();
     }, 500);
   }, 800);
 }

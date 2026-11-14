@@ -253,7 +253,9 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 #customWorkday form{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px}
 #customWorkday form label{display:grid;gap:5px;min-width:0}
 #customWorkday form label:nth-child(2){flex:1 1 180px}
-#customWorkday input{width:100%;background:#101413;color:var(--paper);color-scheme:dark;border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit}
+#customWorkday :is(input,select){width:100%;background:#101413;color:var(--paper);color-scheme:dark;border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit}
+.workday-schedules{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.workday-schedules select{display:block;margin:5px 0 12px}
 #customWorkday .workday-stop{overflow-wrap:anywhere}
 #customWorkday .workday-stop button{margin-top:8px}
 #customWorkdayEvents:empty,#simulationRecap:empty{display:none}
@@ -364,12 +366,11 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="timeline">
  <div class="sectionhead"><h2>FROM LOGIN<br>TO LOGOUT.</h2><p class="desc">Your typical workday. Times are in IST.</p></div>
  <div class="actions workday-modes" role="group" aria-label="Timeline view">
-  <button class="btn" id="showRoleWorkday" type="button" aria-pressed="true">Role timeline</button>
+  <button class="btn" id="showRoleWorkday" type="button" aria-pressed="true">Default timeline</button>
   <button class="btn" id="showCustomWorkday" type="button" aria-pressed="false">Build my timeline</button>
  </div>
  <div class="workday-grid" id="roleWorkday">
   <div class="workday-overview">
-   <div class="eyebrow" id="workdayRole">Today's shift</div>
    <h3 id="workdayStatus">Workday preview</h3>
    <p id="workdayDetail">08:30–18:30 IST</p>
    <progress id="workdayProgress" max="100" value="0" aria-label="Workday progress"></progress>
@@ -392,6 +393,13 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
     </div>
    </div>
    <div>
+    <div class="workday-schedules">
+     <label>Saved timeline <select id="workdaySchedule"></select></label>
+     <form id="workdayScheduleForm">
+      <label>New timeline name <input name="name" maxlength="40" required></label>
+      <button class="btn" type="submit">Create timeline</button>
+     </form>
+    </div>
     <form id="customWorkdayForm">
      <label>Time <input name="time" type="time" required></label>
      <label>Event <input name="title" type="text" maxlength="80" required placeholder="Lunch, focus time, log off…"></label>
@@ -909,35 +917,7 @@ const workdayMoments = [
   ['17:30', '“Can we close this today?”', 'It arrived five minutes before you planned to leave.'],
   ['18:30', 'Logging off, allegedly', 'One last look at the inbox.']
 ];
-const teamMoments = {
-  'Developer': [['“It’s a one-line change.”', 'The pull request now touches nine files.'], ['Code review arrives', 'The only comment is about the variable name.']],
-  'DevOps': [['The build is green locally', 'CI has other plans.'], ['“Can we deploy before you leave?”', 'The rollback plan is suddenly the most popular document.']],
-  'Data Analyst': [['“Why are the numbers different?”', 'Two dashboards use two definitions of active.'], ['One last dashboard filter', 'It turns into a new breakdown for every region.']],
-  'Business Analyst': [['Requirements walkthrough', 'Everyone agrees until you ask for an example.'], ['“Just one more use case.”', 'The sign-off meeting gets a sequel.']],
-  'Data Scientist': [['The model looks great', 'Then someone asks to see it on last month’s data.'], ['“Can you explain the prediction?”', 'The explanation gets more slides than the model.']],
-  'Project Manager': [['“Are we still on track?”', 'Three teams are waiting for the same approval.'], ['The status update goes out', 'A new blocker arrives thirty seconds later.']],
-  'Sales & Support': [['“Just following up.”', 'The customer replied to the oldest email in the thread.'], ['“Can you send the revised quote?”', 'The discount still needs approval.']],
-  'HR & Admin': [['Interview rescheduled', 'Finding a slot for four calendars is the real assessment.'], ['“Can you share the policy?”', 'It was in the all-hands email. Twice.']],
-  'Finance': [['“Which version is final?”', 'The sheet says Final_v7_revised.'], ['Month-end close', 'One receipt is holding up the whole sheet.']],
-  'Operations': [['“It was dispatched yesterday.”', 'The tracker still says pending.'], ['One last approval', 'The approver just set their status to Away.']],
-  'Marketing & Design': [['“Can we make it pop?”', 'The brief has four references and they all disagree.'], ['Final creative approved', 'A new logo arrives two minutes later.']],
-  'Tech & QA': [['“Works on my machine.”', 'QA has a screen recording.'], ['“Just deploy it once.”', 'Someone already renamed the release branch.']]
-};
 const workdayTimeline = document.getElementById('workdayTimeline');
-const roleDayDetails = {
-  "Developer": [["Checking the build on the commute","The overnight test run has opinions."],["Open the sprint board","Yesterday’s ticket is back in progress."],["Chai and a failing test","The test passed right before you shared your screen."],["Push the last commit","The commit message is ‘Actually final’."]],
-  "DevOps": [["Check the overnight alerts","The quiet dashboard is suspicious."],["Morning pipeline check","One runner has been pending since dawn."],["Chai during a rollout","The deployment is at 99%. So is your stress."],["Hand off to on-call","The runbook gets one more sticky note."]],
-  "Data Analyst": [["Check yesterday’s refresh","The dashboard still thinks it’s yesterday."],["Open the numbers","A column changed names overnight."],["Chai and a SQL query","The join returned twice as many rows."],["Schedule the refresh","Tomorrow’s first meeting depends on it."]],
-  "Business Analyst": [["Read the meeting notes","There are three versions of the same decision."],["Map the workflow","Every team starts at a different step."],["Chai with a stakeholder","A five-minute chat reveals a missing requirement."],["Send the updated requirements","The sign-off is pencilled in."]],
-  "Data Scientist": [["Check the training run","It finished five minutes before your alarm."],["Review the experiment","The baseline is still annoyingly good."],["Chai while the notebook runs","Someone forgot to set the seed."],["Save the experiment","Future you deserves better than untitled.ipynb."]],
-  "Project Manager": [["Scan the project chat","Two blockers and a thumbs-up."],["Run the stand-up","The parking lot needs its own meeting."],["Chai between calls","You found a gap. Someone booked it."],["Send the handover","The next owner has been tagged twice."]],
-  "Sales & Support": [["Check the customer queue","The first reply came in before breakfast."],["Triage follow-ups","Every lead says ‘circle back next week.’"],["Chai between calls","The callback comes as you take the first sip."],["Update the CRM","The last call finally has notes."]],
-  "HR & Admin": [["Check today’s interviews","One candidate has a new time request."],["Open the onboarding checklist","A new joiner still needs a badge."],["Chai with a policy question","It starts with ‘asking for a friend.’"],["Send tomorrow’s invites","One calendar finally has a free slot."]],
-  "Finance": [["Check the overnight transactions","One line item already looks familiar."],["Open the reconciliation sheet","The difference is exactly one rupee."],["Chai while the sheet recalculates","The formulas are taking a break too."],["Save the reconciled workbook","It finally earns the word ‘final.’"]],
-  "Operations": [["Check the morning handover","One delivery moved overnight."],["Open the dispatch tracker","Three ETAs need confirming."],["Chai by the dashboard","A vendor calls just as the kettle clicks."],["Send the shift handover","Tomorrow’s first pickup is confirmed."]],
-  "Marketing & Design": [["Check the campaign feed","The comments have their own creative direction."],["Open the brief","The target audience is apparently everyone."],["Chai while exports run","The fourth format needs a different crop."],["Schedule the campaign","The final preview finally matches the brief."]],
-  "Tech & QA": [["Check the overnight test run","One flaky test is back for another round."],["Reproduce the first bug","It only fails on the oldest test device."],["Chai during regression","The suite is stuck on the login screen."],["Send the test report","The release has one last known issue."]]
-};
 let workdayMinute;
 const workdayPhases = ['Commute', 'Login', 'Chai break', 'Afternoon', 'Wrap-up', 'Logout'];
 const workdayTimes = workdayMoments.map(([time]) => {
@@ -946,11 +926,8 @@ const workdayTimes = workdayMoments.map(([time]) => {
 });
 let workdayState = 'preview';
 
-function renderWorkday(team){
-  const [commute, login, breakTime, logout] = roleDayDetails[team];
-  const scenarios = [commute, login, breakTime, ...teamMoments[team], logout];
+function renderWorkday(){
   const rows = workdayMoments.map(([time, title, detail], index) => {
-    const scenario = scenarios[index];
     const row = document.createElement('li');
     row.className = 'workday-stop';
     const stamp = document.createElement('div');
@@ -963,14 +940,13 @@ function renderWorkday(team){
     const copy = document.createElement('div');
     const heading = document.createElement('strong');
     const description = document.createElement('p');
-    heading.textContent = scenario?.[0] ?? title;
-    description.textContent = scenario?.[1] ?? detail;
+    heading.textContent = title;
+    description.textContent = detail;
     copy.append(heading, description);
     row.append(stamp, copy);
     return row;
   });
   workdayTimeline.replaceChildren(...rows);
-  document.getElementById('workdayRole').textContent = team;
   highlightWorkday(workdayMinute);
 }
 
@@ -1000,12 +976,12 @@ function highlightWorkday(minute){
 }
 
 const introTeam = document.getElementById('introTeam');
-for (const team of Object.keys(teamMoments)) {
+for (const team of ['Developer', 'DevOps', 'Data Analyst', 'Business Analyst', 'Data Scientist', 'Project Manager', 'Sales & Support', 'HR & Admin', 'Finance', 'Operations', 'Marketing & Design', 'Tech & QA']) {
   const option = document.createElement('option');
   option.textContent = team;
   introTeam.append(option);
 }
-renderWorkday(introTeam.value);
+renderWorkday();
 const officeDate = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short'
 });
@@ -1142,7 +1118,6 @@ function punchIn(){
   const name = document.getElementById('introName');
   name.value = name.value.trim();
   if (!name.reportValidity()) return;
-  renderWorkday(introTeam.value);
   stopIntroDiagnostics();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('office-reduced')) {
     enterSite();

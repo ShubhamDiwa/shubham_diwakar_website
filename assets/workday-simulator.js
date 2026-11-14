@@ -7,15 +7,25 @@ const play = byId('startWorkdaySimulation');
 const next = byId('nextWorkdayEvent');
 const decision = byId('workdayDecision');
 const choices = byId('workdayDecisionChoices');
-const storageKey = 'office-custom-workday';
+const selector = byId('workdaySchedule');
+const scheduleForm = byId('workdayScheduleForm');
+const storageKey = 'office-workday-schedules';
 const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
-let events = [];
+const validEvents = items => Array.isArray(items) ? items.filter(item =>
+  typeof item?.time === 'string' && timePattern.test(item.time) &&
+  typeof item.title === 'string' && Boolean(item.title.trim()) && item.title.length <= 80) : [];
+let schedules = [{ name: 'My timeline', events: [] }];
+let selected = 0;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
-  if (Array.isArray(saved)) events = saved.filter(item =>
-    typeof item?.time === 'string' && timePattern.test(item.time) &&
-    typeof item.title === 'string' && Boolean(item.title.trim()) && item.title.length <= 80);
+  if (Array.isArray(saved?.schedules) && saved.schedules.length) {
+    schedules = saved.schedules.map(item => ({ name: item.name, events: validEvents(item.events) }));
+    if (Number.isInteger(saved.selected) && schedules[saved.selected]) selected = saved.selected;
+  } else {
+    schedules[0].events = validEvents(JSON.parse(localStorage.getItem('office-custom-workday')));
+  }
 } catch {}
+let events = schedules[selected].events;
 
 let step = -1;
 let playing = false;
@@ -43,7 +53,7 @@ byId('showCustomWorkday').onclick = () => selectView(true);
 
 function save() {
   status.textContent = events.length ? 'Schedule ready. Press Play shift to simulate it.' : 'Add an event to build your schedule.';
-  try { localStorage.setItem(storageKey, JSON.stringify(events)); }
+  try { localStorage.setItem(storageKey, JSON.stringify({ schedules, selected })); }
   catch { status.textContent += ' Browser storage is unavailable.'; }
 }
 
@@ -55,6 +65,8 @@ function render() {
   next.disabled = !decision.hidden;
   next.textContent = step === events.length - 1 ? 'Finish shift' : 'Next event';
   for (const field of form.elements) field.disabled = playing;
+  for (const field of scheduleForm.elements) field.disabled = playing;
+  selector.disabled = playing;
   list.replaceChildren(...events.map((event, index) => {
     const row = document.createElement('li');
     row.className = 'workday-stop';
@@ -87,6 +99,28 @@ function render() {
     return row;
   }));
 }
+
+function chooseSchedule(index) {
+  selected = index;
+  events = schedules[selected].events;
+  selector.replaceChildren(...schedules.map(({ name }, value) => new Option(name, value)));
+  selector.value = String(selected);
+  step = -1;
+  play.textContent = 'Play shift';
+  save();
+  render();
+}
+selector.onchange = () => chooseSchedule(Number(selector.value));
+scheduleForm.onsubmit = event => {
+  event.preventDefault();
+  const input = scheduleForm.elements.name;
+  const name = input.value.trim();
+  if (!name || playing) return;
+  schedules.push({ name, events: [] });
+  input.value = '';
+  chooseSchedule(schedules.length - 1);
+  form.elements.time.focus();
+};
 
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -144,7 +178,7 @@ next.onclick = () => {
     return;
   }
   playing = false;
-  completedRecap = `Simulated shift complete · ${events.length} ${events.length === 1 ? 'event' : 'events'}. ${consequence}`;
+  completedRecap = `${schedules[selected].name} complete · ${events.length} ${events.length === 1 ? 'event' : 'events'}. ${consequence}`;
   status.textContent = completedRecap;
   play.textContent = 'Replay shift';
   render();
@@ -153,4 +187,4 @@ next.onclick = () => {
 byId('punchOut').addEventListener('click', () => {
   byId('simulationRecap').textContent = completedRecap;
 });
-render();
+chooseSchedule(selected);

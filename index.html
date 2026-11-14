@@ -189,9 +189,16 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .office-games input{width:9em;padding:10px;border:1px solid var(--line);border-radius:8px;background:#090b0a;color:var(--paper);font:inherit}
 #chaiFloor{display:block;width:min(100%,480px);height:auto;border:1px solid var(--line);border-radius:8px;background:#101510}
 #chaiFloor:focus-visible{outline:2px solid var(--acid)}
-#snakeBoard{display:block;width:min(100%,340px);height:auto;background:#b8c78a;border:8px solid #323d22;border-radius:12px;image-rendering:pixelated}
+.snake-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,340px);align-items:start;gap:clamp(14px,3vw,36px)}
+#snakeBoard{display:block;width:100%;height:auto;background:#b8c78a;border:8px solid #323d22;border-radius:12px;image-rendering:pixelated}
 #snakeBoard:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+#snakeControls{gap:6px}
 #snakeControls .btn{min-width:48px;min-height:44px}
+@media(max-width:640px){
+ .snake-layout{grid-template-columns:minmax(0,1fr);justify-items:start}
+ #snakeBoard{width:min(100%,260px);justify-self:center}
+ #snakeControls .btn{padding-inline:10px}
+}
 #typing-race [hidden]{display:none}
 #typingEntry textarea{width:100%;padding:12px;font:inherit;color:var(--paper);background:#090b0a;border:1px solid var(--line);border-radius:8px}
 section:not(.hero){padding-block:clamp(44px,6vw,88px);scroll-margin-top:78px}
@@ -475,10 +482,11 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <section class="office-games" aria-label="Office games">
  <article class="dash" id="snake-xenzia">
+  <div class="snake-layout">
+  <div>
   <h3>Snake Xenzia</h3>
-  <p>Eat the food, grow longer, and avoid the walls and your own tail. Use arrow keys, WASD, or the buttons below.</p>
+  <p>Eat food and avoid the walls and your tail. Steer with arrow keys, WASD, or the on-screen arrows.</p>
   <p id="snakeScore">Score 0</p>
-  <canvas id="snakeBoard" width="320" height="320" tabindex="0" aria-label="Snake Xenzia playfield"></canvas>
   <p id="snakeStatus" role="status">Ready to play.</p>
   <div class="actions" id="snakeControls" role="group" aria-label="Snake controls">
    <button class="btn primary" id="snakeStart" type="button">Start</button>
@@ -486,6 +494,9 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <button class="btn" type="button" data-snake="up" aria-label="Move up">↑</button>
    <button class="btn" type="button" data-snake="down" aria-label="Move down">↓</button>
    <button class="btn" type="button" data-snake="right" aria-label="Move right">→</button>
+  </div>
+  </div>
+  <canvas id="snakeBoard" width="320" height="320" tabindex="0" aria-label="Snake Xenzia playfield"></canvas>
   </div>
  </article>
  <article class="dash" id="corporate-bingo">

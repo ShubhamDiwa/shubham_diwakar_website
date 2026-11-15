@@ -1,5 +1,4 @@
 const endpoint = '/.netlify/functions/break-room';
-const room = document.getElementById('breakRoom');
 const joinForm = document.getElementById('breakRoomJoin');
 const sendForm = document.getElementById('breakRoomSend');
 const session = document.getElementById('breakRoomSession');
@@ -19,6 +18,7 @@ let timer;
 let revision = 0;
 let displayedMessages = '';
 let pendingMessage;
+const clock = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' });
 
 async function request(action, fields = {}) {
   const response = await fetch(endpoint, {
@@ -33,16 +33,27 @@ async function request(action, fields = {}) {
 }
 
 function render({ messages, online, moderator }) {
-  count.textContent = `· ${online} online`;
+  count.textContent = `${online} online`;
   const signature = JSON.stringify([messages, moderator]);
   if (signature === displayedMessages) return;
   displayedMessages = signature;
   const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 32;
-  log.replaceChildren(...messages.map(message => {
+  const rows = messages.map(message => {
     const row = document.createElement('li');
+    row.toggleAttribute('data-own', message.own);
+    const meta = document.createElement('div');
+    meta.className = 'chat-message-meta';
     const name = document.createElement('strong');
-    name.textContent = message.nickname;
-    row.append(name, ' · ');
+    name.textContent = message.own ? 'You' : message.nickname;
+    meta.append(name);
+    const timestamp = new Date(message.at);
+    if (Number.isFinite(timestamp.getTime())) {
+      const time = document.createElement('time');
+      time.dateTime = timestamp.toISOString();
+      time.textContent = clock.format(timestamp);
+      meta.append(time);
+    }
+    row.append(meta);
     const invite = message.text.match(/^Join my (Corporate Bingo board|Tic-Tac-Toe game|Typing Race|Friday Half-Day Heist|Office Bluff): (\S+)$/);
     const inviteUrl = invite ? URL.parse(invite[2]) : null;
     const destinations = { 'Corporate Bingo board': '#corporate-bingo', 'Tic-Tac-Toe game': '#onlineTic', 'Typing Race': '#typing-race',
@@ -69,7 +80,14 @@ function render({ messages, online, moderator }) {
       }
     }
     return row;
-  }));
+  });
+  if (!rows.length) {
+    const empty = document.createElement('li');
+    empty.className = 'chat-empty';
+    empty.textContent = 'No messages yet. Say hello!';
+    rows.push(empty);
+  }
+  log.replaceChildren(...rows);
   if (atBottom) log.scrollTop = log.scrollHeight;
 }
 
@@ -87,7 +105,7 @@ async function update(action = 'poll', fields) {
     if (requestRevision === revision) status.textContent = error.message || 'Could not connect.';
     return false;
   } finally {
-    if (requestRevision === revision && nickname) timer = setTimeout(update, room.open && !document.hidden ? 4000 : 15000);
+    if (requestRevision === revision && nickname) timer = setTimeout(update, document.hidden ? 15000 : 4000);
   }
 }
 
@@ -99,6 +117,7 @@ joinForm.addEventListener('submit', async event => {
   if (await update()) {
     joinForm.hidden = true;
     session.hidden = false;
+    log.scrollTop = log.scrollHeight;
     sendForm.elements.message.focus();
   } else {
     nickname = '';
@@ -115,6 +134,7 @@ sendForm.addEventListener('submit', async event => {
   if (pendingMessage?.text !== text) pendingMessage = { text, messageId: crypto.randomUUID() };
   button.disabled = true;
   if (await update('send', pendingMessage)) {
+    log.scrollTop = log.scrollHeight;
     if (input.value.trim() === text) input.value = '';
     pendingMessage = undefined;
   }

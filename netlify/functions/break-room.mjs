@@ -85,7 +85,7 @@ export function createBreakRoomHandler(openStore) {
         }
         return response({
           online: Object.keys(room.members).length,
-          messages: room.messages.map(({ sender, ...message }) => message),
+          messages: room.messages.map(({ sender, ...message }) => ({ ...message, own: sender === id })),
           moderator
         });
       }

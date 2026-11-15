@@ -153,6 +153,19 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .break-room-log li{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere;white-space:pre-wrap}
 .break-room-log strong{color:var(--acid)}
 .break-room-log button{margin-left:8px;padding:6px}
+#breakRoom{margin:0;padding:clamp(14px,3vw,26px)}
+.chat-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.chat-header h3{font-size:clamp(22px,4vw,32px)}
+#breakRoomCount{color:var(--acid);font-size:13px}
+#breakRoom .chat-invites{margin-top:14px}
+#breakRoom .chat-invites .btn{padding:8px 10px}
+#breakRoomLog{height:clamp(210px,35vh,340px);max-height:none;padding:12px;background:#090b0a;border:1px solid var(--line);border-radius:12px;overscroll-behavior:contain}
+#breakRoomLog li{width:fit-content;max-width:min(90%,560px);margin-bottom:8px;padding:9px 12px;border:1px solid var(--line);border-radius:12px 12px 12px 3px;background:#171b18}
+#breakRoomLog li[data-own]{margin-left:auto;border-radius:12px 12px 3px 12px;background:#20291a}
+#breakRoomLog li.chat-empty{margin:0 auto;background:none;border:0;color:var(--muted)}
+.chat-message-meta{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:4px;font-size:12px}
+.chat-message-meta time{color:var(--muted)}
+#breakRoomSend input{min-width:0}
 .meterrow .meter-slider{width:100%;height:28px;margin:2px 0 0;accent-color:var(--acid);cursor:ew-resize}
 .meterrow .meter-slider:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
 .meeting-game{margin-top:20px;scroll-margin-top:90px}
@@ -337,7 +350,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <nav>
  <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
- <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
+ <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#break-room">Break Room</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
  <a class="btn" id="officeToolsLink" href="#office-tools">My Desk</a>
  <a class="btn hire-link" href="portfolio/index.html#contact">Hire me</a>
 </nav>
@@ -354,6 +367,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <a class="btn" href="#radio">PLAY CORPORATE RADIO</a>
    <a class="btn" id="plotInvite" href="#corporate-plot-twist" hidden>Take your shift challenge</a>
    <a class="btn" href="#role-simulation">Play your role</a>
+   <a class="btn" href="#break-room">Break Room chat</a>
   </div>
   <div class="shift-board">
    <div class="shift-clock">
@@ -515,10 +529,11 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
      </div>
    </div>
  </div>
- <details class="break-room" id="breakRoom" open>
-   <summary>Break Room <span id="breakRoomCount"></span></summary>
-   <div class="actions"><a class="btn" href="#half-day-heist">Half-Day Heist</a><a class="btn" href="#office-bluff">Office Bluff</a></div>
-   <p class="radio-sub">Public chat. Messages expire one hour after sending.</p>
+</section>
+<section id="break-room" aria-labelledby="breakRoomTitle">
+ <div class="break-room" id="breakRoom">
+   <div class="chat-header"><h3 id="breakRoomTitle">Break Room</h3><span id="breakRoomCount"></span></div>
+   <p class="radio-sub">Public chat with coworkers. Messages expire after one hour.</p>
    <form id="breakRoomJoin">
      <input name="nickname" aria-label="Nickname" placeholder="Nickname" maxlength="24" required>
      <button class="btn primary" type="submit">Join Break Room</button>
@@ -534,8 +549,9 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
        <button class="btn" id="breakRoomModerate" type="button">Moderator</button>
      </div>
    </div>
+   <div class="actions chat-invites" aria-label="Multiplayer games"><a class="btn" href="#half-day-heist">Half-Day Heist</a><a class="btn" href="#office-bluff">Office Bluff</a></div>
    <p class="radio-sub" id="breakRoomStatus" role="status"></p>
- </details>
+ </div>
 </section>
 
 

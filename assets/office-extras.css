@@ -41,3 +41,13 @@ html.office-reduced .office-cups{display:none}
 #deskTasks input{flex:1 1 180px;min-width:0}
 #deskNotes,#confessionForm textarea{margin-block:6px 10px}
 @media(max-width:640px){.office-primary{grid-template-columns:1fr}}
+#confessionForm{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.confession-controls{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:8px}
+.office-grid .confession-controls .btn{margin:0;padding:6px 10px;min-height:36px;letter-spacing:0;text-transform:none;font-size:12px;font-weight:650}
+.office-grid .confession-controls .confession-utility{border-color:transparent;background:transparent;color:var(--muted)}
+.office-grid .confession-controls .confession-utility:hover:not(:disabled){color:var(--paper);background:#ffffff0d}
+.office-grid .confession-reaction{border-radius:999px}
+.office-grid .confession-reaction[aria-pressed="true"]{color:var(--acid);border-color:var(--acid)}
+.office-grid #confessionList{list-style:none;padding:0}
+#confessionList li{padding:10px 0;border-top:1px solid var(--line)}
+#confessionForm button:disabled{opacity:.65;cursor:wait}

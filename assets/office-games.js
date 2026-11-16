@@ -89,7 +89,7 @@ function renderBingo(indices) {
       else marked.add(position);
       cell.setAttribute('aria-pressed', String(marked.has(position)));
       const bingo = lines.some(line => line.every(i => marked.has(i)));
-      byId('bingoStatus').textContent = bingo ? 'Bingo! Call it in the Break Room.' : '';
+      byId('bingoStatus').textContent = bingo ? 'Bingo! Call it in the Chat Room.' : '';
       if (bingo && !reported) {
         reported = true;
         window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Corporate Bingo', score: 1 } }));

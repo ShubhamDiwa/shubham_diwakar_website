@@ -60,7 +60,7 @@ export function createBreakRoomHandler(openStore) {
           delete room.members[id];
         } else {
           if (!room.members[id] && Object.keys(room.members).length >= 100) {
-            return response({ error: 'The Break Room is full. Try again shortly.' }, 429);
+            return response({ error: 'The Chat Room is full. Try again shortly.' }, 429);
           }
           if (refresh) room.members[id] = now;
         }
@@ -91,7 +91,7 @@ export function createBreakRoomHandler(openStore) {
       }
       return response({ error: 'The room is busy. Try again.' }, 503);
     } catch {
-      return response({ error: 'The Break Room is temporarily unavailable.' }, 503);
+      return response({ error: 'The Chat Room is temporarily unavailable.' }, 503);
     }
   };
 }

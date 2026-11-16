@@ -10,7 +10,7 @@ function mount(root, game, title, hash) {
     <div data-room hidden>
       <p data-summary></p>
       <div class="actions">
-        <button class="btn" data-share>Share in Break Room</button>
+        <button class="btn" data-share>Share in Chat Room</button>
         <button class="btn" data-leave>Leave room</button>
       </div>
       <p data-instructions></p>

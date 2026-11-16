@@ -4,7 +4,7 @@ const root = byId('office-tools');
 const card = (title, content) => `<article class="dash"><h3>${title}</h3>${content}</article>`;
 root.innerHTML = `<div class="sectionhead"><h2>OFFICE TOOLS</h2></div><div class="office-grid office-primary">
 ${card('My Desk', '<p id="deskIdentity"></p><p id="deskStatus"></p><p id="deskVisits"></p><form id="deskTasks"><input name="task" maxlength="160" required aria-label="New task" placeholder="What needs doing today?"><button class="btn">Add task</button></form><ul id="deskList"></ul><label>Shift notes<textarea id="deskNotes" maxlength="4000"></textarea></label><p>Tasks and notes stay in this browser.</p>')}
-${card('Corporate Confessions', '<form id="confessionForm"><label>Anonymous confession<textarea name="text" required maxlength="280" placeholder="Leave out names and private details"></textarea></label><button class="btn">Post anonymously</button></form><button class="btn" id="confessionRefresh">Refresh</button><button class="btn" id="confessionModerate">Moderator</button><p id="confessionStatus" role="status"></p><ul id="confessionList"></ul>')}
+${card('Corporate Confessions', '<form id="confessionForm"><label>Anonymous confession<textarea name="text" required maxlength="280" placeholder="Leave out names and private details"></textarea></label><button class="btn primary" type="submit">Post anonymously</button></form><div class="confession-controls"><button class="btn confession-utility" id="confessionRefresh">Refresh</button><button class="btn confession-utility" id="confessionModerate">Moderator</button></div><p id="confessionStatus" role="status"></p><ul id="confessionList"></ul>')}
 </div>
 <details class="office-group"><summary>Fun tools</summary><div class="office-grid">
 ${card('Why I’m Late', '<p id="excuseText"></p><button class="btn" id="excuseGenerate">New excuse</button><button class="btn" id="excuseShare">Share card</button>')}
@@ -380,9 +380,10 @@ async function confessions(action, data = {}) {
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error);
-    const control = (label, activate) => {
+    const control = (label, activate, style = 'confession-utility') => {
       const button = document.createElement('button');
-      button.className = 'btn';
+      button.type = 'button';
+      button.classList.add('btn', style);
       button.textContent = label;
       button.onclick = activate;
       return button;
@@ -391,16 +392,18 @@ async function confessions(action, data = {}) {
       const row = document.createElement('li');
       const text = document.createElement('p');
       text.textContent = post.text;
-      row.append(text);
+      const controls = document.createElement('div');
+      controls.className = 'confession-controls';
+      row.append(text, controls);
       for (const [reaction, count] of post.reactions) {
-        const button = control(`${reaction} · ${count}`, () => confessions('react', { target: post.id, reaction }));
+        const button = control(`${reaction} · ${count}`, () => confessions('react', { target: post.id, reaction }), 'confession-reaction');
         button.setAttribute('aria-pressed', String(post.yourReaction === reaction));
-        row.append(button);
+        controls.append(button);
       }
       const report = control(post.reported ? 'Reported' : 'Report', () => confessions('report', { target: post.id }));
       report.disabled = post.reported;
-      row.append(report);
-      if (result.moderator) row.append(control(`Remove · ${post.reports} reports`, () => confessions('remove', { target: post.id })));
+      controls.append(report);
+      if (result.moderator) controls.append(control(`Remove · ${post.reports} reports`, () => confessions('remove', { target: post.id })));
       return row;
     }));
     status.textContent = action === 'post' ? 'Posted anonymously.' : action === 'report' ? 'Report submitted.' : result.posts.length ? '' : 'No confessions yet.';
@@ -419,10 +422,15 @@ byId('confessionForm').onsubmit = async event => {
   const text = input.value.trim();
   if (!text) return;
   if (confessionDraft?.text !== text) confessionDraft = { text, postId: crypto.randomUUID() };
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  button.disabled = true;
+  button.textContent = 'Posting…';
   if (await confessions('post', confessionDraft)) {
     if (input.value.trim() === text) input.value = '';
     confessionDraft = undefined;
   }
+  button.disabled = false;
+  button.textContent = 'Post anonymously';
 };
 byId('confessionRefresh').onclick = () => confessions('list');
 byId('confessionModerate').onclick = async () => {

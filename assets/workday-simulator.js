@@ -39,7 +39,7 @@ const scenarios = {
 const replies = [
   ['Join', 'The five-minute call booked its own follow-up.'],
   ['Ask for an agenda', 'It turned out the whole thing could be an email.'],
-  ['After chai', 'You defended your chai break. The call moved to tomorrow.']
+  ['After my break', 'You kept your break. The call moved to tomorrow.']
 ];
 
 function selectView(custom) {

@@ -117,7 +117,7 @@ function showDaily() {
     earned = true;
     try { localStorage.setItem('office-chai-regular', 'yes'); } catch {}
   }
-  byId('chaiStreakStatus').textContent = `${completed.includes(day) ? 'Completed today · ' : ''}${streak} day streak${earned ? ' · Chai Regular' : ''}`;
+  byId('chaiStreakStatus').textContent = `${completed.includes(day) ? 'Completed today · ' : ''}${streak} day streak${earned ? ' · Daily Regular' : ''}`;
 }
 window.addEventListener('office-result', ({ detail: { game } }) => {
   const day = today();

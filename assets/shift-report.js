@@ -81,7 +81,7 @@ async function loadScores() {
       const value = games.value === 'Friday Half-Day Heist'
         ? `${((90001 - score) / 1000).toFixed(2)}s`
         : `${score}${units[games.value] ?? ''}`;
-      row.textContent = `${name}${badge ? ' ☕ Chai Regular' : ''} · ${role} · ${value}`;
+      row.textContent = `${name}${badge ? ' · Daily Regular' : ''} · ${role} · ${value}`;
       return row;
     }));
     status.textContent = scores.length ? '' : 'No scores yet.';

@@ -7,7 +7,7 @@
 <title>Corporate Mazdoor™ — Office Life, Unfiltered</title>
 <meta name="description" content="Corporate Mazdoor — a cinematic, funny archive of Indian corporate life with a developer portfolio hidden inside.">
 <meta property="og:title" content="Corporate Mazdoor — Office Life, Unfiltered">
-<meta property="og:description" content="Punch in for chai, office stories and games.">
+<meta property="og:description" content="Punch in for office stories, games and role simulations.">
 <meta property="og:image" content="https://corporatemazdoor.netlify.app/assets/corporate-preview.jpg">
 <meta property="og:url" content="https://corporatemazdoor.netlify.app/">
 <link rel="stylesheet" href="/assets/office-extras.css">
@@ -361,7 +361,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  <div class="hero-content">
   <div class="eyebrow">An Indian corporate survival archive</div>
   <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
-  <p>Office. Chai. Meetings. Bugs. “One small change.” Repeat. A cinematic, slightly unhinged archive of corporate life — with a developer portfolio hiding inside.</p>
+  <p>Commutes, meeting invites, release-day panic and the Friday sign-off. Play through Indian office life, tune into Corporate Radio, or jump into the Chat Room.</p>
   <div class="actions">
    <a class="btn primary" href="#life">PUNCH IN ↓</a>
    <a class="btn" href="#radio">PLAY CORPORATE RADIO</a>
@@ -407,7 +407,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  <div class="sectionhead"><div><div class="eyebrow">01 / Corporate Life</div><h2>THE DAILY<br>MAZDOORI.</h2></div></div>
  <div class="gallery">
   <div class="photo"><video autoplay muted loop playsinline preload="auto"><source src="assets/corporate-life-01.mp4" type="video/mp4"></video></div>
-  <div class="photo"><img src="assets/corporate-collage.webp" alt="Corporate Mazdoor visual archive" loading="lazy" decoding="async"><div class="caption"><b>Corporate Lore</b><small>Chai. Bugs. Metro. Repeat.</small></div></div>
+  <div class="photo"><img src="assets/corporate-collage.webp" alt="Corporate Mazdoor visual archive" loading="lazy" decoding="async"><div class="caption"><b>Corporate Lore</b><small>Metro delays. Inbox overload. Friday releases.</small></div></div>
  </div>
 </section>
 
@@ -561,7 +561,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
   <div class="dash"><h3>EMPLOYEE STATUS</h3><p style="color:#777;margin-top:10px;line-height:1.6">No employees were harmed in the making of this dashboard. Productivity remains under investigation.</p><div style="margin-top:30px;font:13px ui-monospace;color:var(--acid)">STATUS: STILL ONLINE_</div></div>
   <div class="dash">
    <div class="meterrow">
-    <header><label for="meter-chai">☕ Chai Dependency</label><output for="meter-chai">94%</output></header>
+    <header><label for="meter-chai">📥 Inbox Overload</label><output for="meter-chai">94%</output></header>
     <input class="meter-slider" id="meter-chai" type="range" min="0" max="100" value="94" aria-valuetext="94%">
    </div>
    <div class="meterrow">
@@ -600,7 +600,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="meeting-game" aria-labelledby="meetingGameTitle">
  <div class="dash meeting-game">
   <h3 id="meetingGameTitle">Meeting Dodge</h3>
-  <p>Dodge falling meeting invites 📅 and catch chai ☕. Three hits end your shift.</p>
+  <p>Press Start Shift. Dodge meeting invites 📅 and catch bonus stars ⭐ for 3 points. Three hits end your shift.</p>
   <p id="meetingScore">Score 0 · Lives 3</p>
   <div class="game-arena" id="gameArena" tabindex="0" role="group" aria-label="Meeting Dodge playfield">
    <span class="game-piece game-player" id="gameEmployee" aria-hidden="true">🧑‍💻</span>
@@ -617,12 +617,13 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="tic-tac-toe" aria-labelledby="ticTitle">
 <div class="dash office-tic-tac-toe">
  <h3 id="ticTitle">Tic-Tac-Toe</h3>
- <p>Two players · Same screen</p>
+ <p>Take turns placing X or O. Get three in a row, column or diagonal to win.</p>
  <p id="ticStatus" role="status">Player X’s turn</p>
  <div class="tic-board" id="ticBoard" role="group" aria-label="Tic-Tac-Toe board"></div>
  <button class="btn" id="ticReset" type="button">New game</button>
  <details class="break-room" id="onlineTic">
   <summary>Play online with a friend</summary>
+  <p>Create a room and share its code with a friend, or enter their code to join.</p>
   <form id="onlineTicJoin">
    <input name="code" placeholder="Room code" aria-label="Room code" maxlength="10" autocomplete="off">
    <button class="btn" type="submit">Join room</button>
@@ -661,14 +662,14 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  </article>
  <article class="dash" id="corporate-bingo">
   <h3>Corporate Bingo</h3>
-  <p>Mark the phrases you hear at work. First to complete a line calls Bingo in the Chat Room.</p>
+  <p>Tap a square when you hear its phrase. Complete a row, column or diagonal, then call Bingo in the Chat Room. Use Share Board to give friends the same card.</p>
   <div class="bingo-board" id="bingoBoard"></div>
   <p id="bingoStatus" role="status"></p>
   <div class="actions"><button class="btn" id="bingoShare">Share board in chat</button><button class="btn" id="bingoNew">Shuffle board</button><button class="btn" id="bingoLanguage" type="button" aria-pressed="false">Hindi board</button></div>
  </article>
  <article class="dash" id="chai-run">
   <h3>Chai Run</h3>
-  <p>Deliver chai to the green desk. Dodge moving coworkers and go around chairs.</p>
+  <p>Press Start Delivery and reach the green desk to score a delivery. Go around chairs and avoid coworkers. Each collision costs a tray, and losing all three ends the run.</p>
   <p>Move with WASD, arrow keys, or the buttons below.</p>
   <canvas id="chaiFloor" width="480" height="288" tabindex="0" aria-label="Chai Run playfield. Use WASD or arrow keys to move."></canvas>
   <p id="chaiStatus" role="status">Deliveries 0 · Trays 3</p>
@@ -692,7 +693,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  </article>
  <article class="dash" id="office-detective">
   <h3>Office Detective</h3>
-  <p>Three clues. One culprit. Can you solve the case before the next stand-up?</p>
+  <p>Open a case, read the three clues, and pick the cause that explains all of them.</p>
   <p id="detectiveCase"></p>
   <ul id="detectiveClues" style="padding-left:22px"></ul>
   <div class="actions" id="detectiveChoices" role="group" aria-label="What caused the incident?"></div>
@@ -701,7 +702,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  </article>
  <article class="dash" id="corporate-wordle">
   <h3>Corporate Wordle</h3>
-  <p>Guess today’s five-letter office word in six tries. Green means right spot, amber means wrong spot.</p>
+  <p>Guess today’s five-letter office word in six tries. Green means right letter and position, amber means right letter in a different position, and gray means the letter is absent from the remaining positions.</p>
   <div class="word-board" id="wordBoard" aria-label="Guess history"></div>
   <form class="actions" id="wordForm"><input name="guess" aria-label="Five-letter guess" minlength="5" maxlength="5" pattern="[A-Za-z]{5}" required autocomplete="off"><button class="btn primary">Guess</button></form>
   <p id="wordStatus" role="status"></p>
@@ -712,6 +713,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="typing-race" aria-labelledby="typingRaceTitle">
  <div class="dash office-games">
   <h3 id="typingRaceTitle">Office Typing Race</h3>
+  <p>Choose Solo Practice or share a room code with a friend. Type the prompt and press Finish to see your words per minute.</p>
   <form class="actions" id="typingJoin">
    <button class="btn primary" id="typingSolo" type="button">Solo practice</button>
    <button class="btn" id="typingCreate" type="button">Create room</button>
@@ -735,13 +737,15 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <section id="shift-challenges" aria-label="Shift challenges">
  <div class="dash" id="chai-streak">
-  <h3>Chai Break Streak</h3>
+  <h3>Daily Challenge Streak</h3>
+  <p>Finish the featured game each day to build your streak.</p>
   <p id="chaiChallenge"></p>
   <p id="chaiStreakStatus" role="status"></p>
   <a class="btn" id="chaiPlay">Play today’s challenge</a>
  </div>
  <div class="dash" id="corporate-plot-twist">
   <h3>Corporate Plot Twist</h3>
+  <p>Start the challenge and decide how to handle the office situation before the timer runs out.</p>
   <p id="plotPrompt"></p>
   <p id="plotClock"></p>
   <div class="actions" id="plotChoices"></div>
@@ -752,14 +756,14 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="half-day-heist" aria-label="Friday Half-Day Heist">
  <div class="dash">
   <h3>Friday Half-Day Heist</h3>
-  <p>Two players, 90 seconds. One gets the calendar and the other gets the manager’s messages. Compare clues and pick the same safe exit time.</p>
+  <p>Create a room and share its code with one friend. You have 90 seconds to compare the calendar and the manager’s messages, then both pick the same safe exit time.</p>
   <div id="heistRoom"></div>
  </div>
 </section>
 <section id="office-bluff" aria-label="Office Bluff">
  <div class="dash">
   <h3>Office Bluff</h3>
-  <p>Get 3–8 coworkers together. Write your best excuse, then vote anonymously.</p>
+  <p>Create a room for 3–8 players and share its code. Write an excuse for the prompt, then anonymously vote for another player’s excuse.</p>
   <div id="bluffRoom"></div>
  </div>
 </section>
@@ -842,7 +846,7 @@ const ticCells = ticMarks.map((_, index) => {
     if (winningLine || ticMarks.every(Boolean)) {
       ticFinished = true;
       window.dispatchEvent(new CustomEvent('office-result', { detail: { game: 'Local Tic-Tac-Toe', score: 1, won: Boolean(winningLine) } }));
-      ticStatus.textContent = winningLine ? `Player ${ticTurn} wins!` : 'Draw. Time for a chai break.';
+      ticStatus.textContent = winningLine ? `Player ${ticTurn} wins!` : 'Draw. Start a new game for a rematch.';
       winningLine?.forEach(square => ticCells[square].classList.add('winning-cell'));
       ticCells.forEach(square => square.setAttribute('aria-disabled', 'true'));
       return;
@@ -905,25 +909,25 @@ function gameFrame(now){
   if (spawnIn <= 0) {
     spawnIn = Math.max(.45, 1.05 - elapsed / 100);
     const column = Math.floor(Math.random() * 4);
-    const chai = Math.random() < .24;
+    const bonus = Math.random() < .24;
     const element = document.createElement('span');
     element.className = 'game-piece';
     element.setAttribute('aria-hidden', 'true');
-    element.textContent = chai ? '☕' : '📅';
+    element.textContent = bonus ? '⭐' : '📅';
     arena.append(element);
-    pieces.push({ column, chai, element, y: -38 });
+    pieces.push({ column, bonus, element, y: -38 });
   }
 
   for (const piece of pieces) {
     piece.y += delta * Math.min(310, 125 + elapsed * 3);
     placePiece(piece.element, piece.column, piece.y);
     if (piece.column === lane && piece.y >= employeeY - 26 && piece.y <= employeeY + 22) {
-      if (piece.chai) score += 3;
+      if (piece.bonus) score += 3;
       else lives = Math.max(0, lives - 1);
       piece.element.remove();
       updateGameScore();
     } else if (piece.y > 320) {
-      if (!piece.chai) score++;
+      if (!piece.bonus) score++;
       piece.element.remove();
       updateGameScore();
     }
@@ -950,7 +954,7 @@ gameStart.addEventListener('click', () => {
   lives = 3;
   running = true;
   gameStart.disabled = true;
-  gameStatus.textContent = 'Dodge invites. Catch chai for 3 points.';
+  gameStatus.textContent = 'Dodge invites. Catch stars for 3 points.';
   updateGameScore();
   placePiece(employee, lane, employeeY);
   arena.focus({ preventScroll: true });
@@ -984,14 +988,14 @@ const officeTime = new Intl.DateTimeFormat('en-GB', {
 const workdayMoments = [
   ['08:30', 'The commute begins', 'Metro, traffic, or the walk from bed to laptop.'],
   ['09:00', '“Good morning, team.”', 'Say it in three chats before opening your inbox.'],
-  ['11:30', 'Chai break', 'The only meeting everyone joins on time.'],
+  ['11:30', 'A gap in the calendar', 'Ten minutes before the next invite lands.'],
   ['14:00', '“Quick call?”', 'No agenda. Somehow six attendees.'],
   ['17:30', '“Can we close this today?”', 'It arrived five minutes before you planned to leave.'],
   ['18:30', 'Logging off, allegedly', 'One last look at the inbox.']
 ];
 const workdayTimeline = document.getElementById('workdayTimeline');
 let workdayMinute;
-const workdayPhases = ['Commute', 'Login', 'Chai break', 'Afternoon', 'Wrap-up', 'Logout'];
+const workdayPhases = ['Commute', 'Login', 'Mid-morning', 'Afternoon', 'Wrap-up', 'Logout'];
 const workdayTimes = workdayMoments.map(([time]) => {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;

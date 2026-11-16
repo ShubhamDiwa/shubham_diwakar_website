@@ -3,15 +3,15 @@ const byId = id => document.getElementById(id);
 const root = byId('office-tools');
 const card = (title, content) => `<article class="dash"><h3>${title}</h3>${content}</article>`;
 root.innerHTML = `<div class="sectionhead"><h2>OFFICE TOOLS</h2></div><div class="office-grid office-primary">
-${card('My Desk', '<p id="deskIdentity"></p><p id="deskStatus"></p><p id="deskVisits"></p><form id="deskTasks"><input name="task" maxlength="160" required aria-label="New task" placeholder="What needs doing today?"><button class="btn">Add task</button></form><ul id="deskList"></ul><label>Shift notes<textarea id="deskNotes" maxlength="4000"></textarea></label><p>Tasks and notes stay in this browser.</p>')}
-${card('Corporate Confessions', '<form id="confessionForm"><label>Anonymous confession<textarea name="text" required maxlength="280" placeholder="Leave out names and private details"></textarea></label><button class="btn primary" type="submit">Post anonymously</button></form><div class="confession-controls"><button class="btn confession-utility" id="confessionRefresh">Refresh</button><button class="btn confession-utility" id="confessionModerate">Moderator</button></div><p id="confessionStatus" role="status"></p><ul id="confessionList"></ul>')}
+${card('My Desk', '<p>Add tasks below, tick them off as you go, and jot down shift notes.</p><p id="deskIdentity"></p><p id="deskStatus"></p><p id="deskVisits"></p><form id="deskTasks"><input name="task" maxlength="160" required aria-label="New task" placeholder="What needs doing today?"><button class="btn">Add task</button></form><ul id="deskList"></ul><label>Shift notes<textarea id="deskNotes" maxlength="4000"></textarea></label><p>Tasks and notes stay in this browser.</p>')}
+${card('Corporate Confessions', '<p>Post without your name, or react to a confession below.</p><form id="confessionForm"><label>Anonymous confession<textarea name="text" required maxlength="280" placeholder="Leave out names and private details"></textarea></label><button class="btn primary" type="submit">Post anonymously</button></form><div class="confession-controls"><button class="btn confession-utility" id="confessionRefresh">Refresh</button><button class="btn confession-utility" id="confessionModerate">Moderator</button></div><p id="confessionStatus" role="status"></p><ul id="confessionList"></ul>')}
 </div>
 <details class="office-group"><summary>Fun tools</summary><div class="office-grid">
-${card('Why I’m Late', '<p id="excuseText"></p><button class="btn" id="excuseGenerate">New excuse</button><button class="btn" id="excuseShare">Share card</button>')}
+${card('Why I’m Late', '<p>Generate a fictional late excuse, then share it as a card.</p><p id="excuseText"></p><button class="btn" id="excuseGenerate">New excuse</button><button class="btn" id="excuseShare">Share card</button>')}
 ${card('Appraisal Simulator', '<p id="appraisalText" role="status">How much of a hike are you asking for?</p><form id="appraisalForm"><label>Hike (%) <input name="hike" type="number" min="1" max="100" required></label><button class="btn">Negotiate</button></form>')}
-${card('Which Corporate Mazdoor Are You?', '<form id="mazdoorQuiz"></form><p id="quizResult" role="status"></p><button class="btn" id="quizShare" hidden>Share result card</button>')}
-${card('Resignation Letter Generator', '<form id="resignForm"><label>Manager <input name="manager" maxlength="40" placeholder="Manager"></label><button class="btn">Draft letter</button></form><textarea id="resignText" aria-label="Resignation draft"></textarea><button class="btn" id="resignCopy">Copy draft</button><p id="resignStatus" role="status"></p>')}
-${card('Salary Slip Decoder', '<form id="salaryForm"><label>Monthly gross (₹) <input name="gross" type="number" required min="0" step=".01"></label><label>Total deductions (₹) <input name="deduct" type="number" required min="0" step=".01"></label><label>EMIs (₹) <input name="emi" type="number" min="0" step=".01"></label><label>Chai budget (₹) <input name="chai" type="number" min="0" step=".01"></label><button class="btn">Decode</button></form><p id="salaryResult" role="status"></p>')}
+${card('Which Corporate Mazdoor Are You?', '<p>Choose one answer per question, then select Get Result.</p><form id="mazdoorQuiz"></form><p id="quizResult" role="status"></p><button class="btn" id="quizShare" hidden>Share result card</button>')}
+${card('Resignation Letter Generator', '<p>Enter a manager name if you like, draft the letter, then edit or copy it.</p><form id="resignForm"><label>Manager <input name="manager" maxlength="40" placeholder="Manager"></label><button class="btn">Draft letter</button></form><textarea id="resignText" aria-label="Resignation draft"></textarea><button class="btn" id="resignCopy">Copy draft</button><p id="resignStatus" role="status"></p>')}
+${card('Salary Slip Decoder', '<p>Enter monthly gross pay and deductions. Add optional expenses to estimate what is left.</p><form id="salaryForm"><label>Monthly gross (₹) <input name="gross" type="number" required min="0" step=".01"></label><label>Total deductions (₹) <input name="deduct" type="number" required min="0" step=".01"></label><label>EMIs (₹) <input name="emi" type="number" min="0" step=".01"></label><label>Other monthly expenses (₹) <input name="expenses" type="number" min="0" step=".01"></label><button class="btn">Decode</button></form><p id="salaryResult" role="status"></p>')}
 ${card('Mazdoor of the Day', '<p id="officeMeme"></p><p id="officeBadges"></p>')}
 </div></details>
 <details class="office-group office-settings"><summary>Office settings</summary><div class="office-grid">
@@ -76,7 +76,7 @@ function updateDesk() {
   const hour = Number(istTime.format(new Date()));
   const weekday = new Date(day + 'T00:00:00Z').getUTCDay();
   byId('deskStatus').textContent = hour >= 21 || hour < 5 ? 'Still online. Why?'
-    : hour >= 12 && hour < 14 ? 'Out for chai.'
+    : hour >= 12 && hour < 14 ? 'Out for lunch.'
     : weekday === 1 ? 'Monday shift. Inbox backlog detected.'
     : weekday === 5 ? 'Friday shift. Half-day approval pending.' : 'On shift.';
   if (punchedAt) {
@@ -276,7 +276,7 @@ async function shareCard(title, message) {
 const excuses = [
   'Metro ne dhoka diya. The next train also needed manager approval.',
   'Society lift was doing a production deployment between floors.',
-  'The chai tapri had a P0 incident. I volunteered for triage.',
+  'The building lift stopped on every floor. I attended all thirteen stand-ups.',
   'Auto bhaiya took a shortcut that needed three sprint cycles.',
   'My laptop updated at 99% for exactly one stand-up.'
 ];
@@ -287,7 +287,7 @@ byId('excuseGenerate').onclick = () => {
 byId('excuseGenerate').click();
 byId('excuseShare').onclick = () => shareCard('Why I’m Late', byId('excuseText').textContent);
 const appraisalStarts = ['Budget nahi hai.', 'Finance froze the numbers.', 'Your rating is great on paper.', 'The market is unpredictable.', 'The approval is with leadership.', 'This quarter is already closed.', 'We’re calibrating your band.', 'Your manager is on leave.', 'The spreadsheet says no.', 'We can revisit this in Q4.'];
-const appraisalEnds = ['Can we circle back after lunch?', 'How about a certificate?', 'Let’s book another quick call.', 'There is chai in the pantry.', 'I’ll add it to the tracker.'];
+const appraisalEnds = ['Can we circle back after lunch?', 'How about a certificate?', 'Let’s book another quick call.', 'We can offer a better desk chair.', 'I’ll add it to the tracker.'];
 const appraisalReplies = appraisalStarts.flatMap(first => appraisalEnds.map(last => first + ' ' + last));
 let appraisalIndex = Math.floor(Math.random() * appraisalReplies.length);
 byId('appraisalForm').onsubmit = event => {
@@ -295,9 +295,9 @@ byId('appraisalForm').onsubmit = event => {
   byId('appraisalText').textContent = `You asked for ${event.currentTarget.elements.hike.value}%. Boss: ${appraisalReplies[appraisalIndex++ % appraisalReplies.length]}`;
 };
 const questions = [
-  ['Your calendar clears. You…', 'Get chai', 'Turn off notifications', 'Plan the Friday exit'],
-  ['A meeting runs over. You…', 'Bring another chai', 'Disappear from the participant list', 'Ask what can wait until Monday'],
-  ['Your ideal work perk?', 'Unlimited cutting chai', 'Meeting-free afternoons', 'Guaranteed half-day Fridays']
+  ['Your calendar clears. You…', 'Take a real break', 'Turn off notifications', 'Plan the Friday exit'],
+  ['A meeting runs over. You…', 'Ask for a stretch break', 'Disappear from the participant list', 'Ask what can wait until Monday'],
+  ['Your ideal work perk?', 'Uninterrupted lunch breaks', 'Meeting-free afternoons', 'Guaranteed half-day Fridays']
 ];
 byId('mazdoorQuiz').innerHTML = questions.map(([label, ...options], index) =>
   `<p><label>${label} <select name="q${index}" required><option value="">Choose</option>${options.map((option, value) => `<option value="${value}">${option}</option>`).join('')}</select></label></p>`
@@ -306,7 +306,7 @@ byId('mazdoorQuiz').onsubmit = event => {
   event.preventDefault();
   const scores = [0, 0, 0];
   for (const value of new FormData(event.currentTarget).values()) scores[Number(value)]++;
-  byId('quizResult').textContent = ['Chai Addict', 'Meeting Ghost', 'Friday Hero'][scores.indexOf(Math.max(...scores))];
+  byId('quizResult').textContent = ['Break Defender', 'Meeting Ghost', 'Friday Hero'][scores.indexOf(Math.max(...scores))];
   byId('quizShare').hidden = false;
 };
 byId('quizShare').onclick = () => shareCard('Which Corporate Mazdoor Are You?', 'I got ' + byId('quizResult').textContent + '.');
@@ -324,10 +324,10 @@ byId('resignCopy').onclick = async () => {
 const currency = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
 byId('salaryForm').onsubmit = event => {
   event.preventDefault();
-  const { gross, deduct, emi, chai } = Object.fromEntries(new FormData(event.currentTarget));
+  const { gross, deduct, emi, expenses } = Object.fromEntries(new FormData(event.currentTarget));
   const inHand = Number(gross) - Number(deduct);
   byId('salaryResult').textContent = inHand < 0 ? 'Deductions cannot exceed gross pay.'
-    : `Gross ${currency.format(gross)}\nEstimated in-hand ${currency.format(inHand)}\nAfter EMI and chai ${currency.format(inHand - Number(emi) - Number(chai))}`;
+    : `Gross ${currency.format(gross)}\nEstimated in-hand ${currency.format(inHand)}\nAfter EMIs and expenses ${currency.format(inHand - Number(emi) - Number(expenses))}`;
 };
 const gameSections = {
   'Snake Xenzia': 'snake-xenzia',

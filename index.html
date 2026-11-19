@@ -1352,6 +1352,7 @@ function closeOnlinePlaylist(){
 }
 
 function openOnlineTrack(playlist){
+  document.dispatchEvent(new Event('radio:online-play'));
   radioAudio.pause();
   const player = document.createElement('iframe');
   player.title = `${playlist.title} on YouTube`;

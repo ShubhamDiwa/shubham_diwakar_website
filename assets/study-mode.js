@@ -9,7 +9,10 @@ root.innerHTML = `
    <p id="studyStatus" role="status">Plant a seed. Give yourself 30 quiet minutes.</p>
    <div class="actions"><button class="btn primary" id="studyStart">Start focus</button><button class="btn" id="studyStop" disabled>End session</button></div>
    <p class="study-help">Keep this tab visible for 30 uninterrupted minutes to grow a tree. Switching tabs or ending early resets the session. Your tasks stay saved.</p>
-   <a class="btn" href="#radio">Choose calm music in Radio ↗</a>
+   <label><input type="checkbox" id="studyMusicEnabled" checked> Play study & calm music with focus</label>
+   <p id="studyMusicStatus" role="status">Finding your study playlist…</p>
+   <div id="studyMusicPlayer"></div>
+   <a class="btn" href="#radio">Browse other music in Radio ↗</a>
   </div>
   <div class="study-plan">
    <h3>What are we learning?</h3>
@@ -20,6 +23,32 @@ root.innerHTML = `
   </div>
  </div>`;
 const get = id => document.getElementById(id);
+let studyPlaylist;
+fetch('/.netlify/functions/radio-playlists').then(response=>{
+ if(!response.ok)throw new Error('Playlist unavailable');
+ return response.json();
+}).then(({playlists})=>{
+ studyPlaylist=playlists.find(p=>p.title.toLowerCase().replace(/[^a-z0-9]/g,'')==='studycalm');
+ get('studyMusicStatus').textContent=studyPlaylist ? `Default music · ${studyPlaylist.title}` : 'Study playlist unavailable. You can still focus without music.';
+}).catch(()=>{get('studyMusicStatus').textContent='Music could not load. Refresh to try again, or focus without music.';});
+function stopStudyMusic(){get('studyMusicPlayer').replaceChildren();}
+function playStudyMusic(){
+ if(!get('studyMusicEnabled').checked || !studyPlaylist)return;
+ window.closeOnlinePlaylist?.();
+ document.getElementById('radioAudio')?.pause();
+ const player=document.createElement('iframe');
+ player.title=studyPlaylist.title+' on YouTube';
+ player.src='https://www.youtube.com/embed?'+new URLSearchParams({listType:'playlist',list:studyPlaylist.id,autoplay:'1'});
+ player.allow='autoplay; encrypted-media; fullscreen; picture-in-picture';
+ player.allowFullscreen=true;
+ player.referrerPolicy='strict-origin-when-cross-origin';
+ player.style.cssText='width:100%;aspect-ratio:16/9;min-height:200px;border:0;border-radius:16px;margin-top:16px';
+ get('studyMusicPlayer').replaceChildren(player);
+ get('studyMusicStatus').textContent='Study & calm · If playback is paused, press play in the player.';
+}
+get('studyMusicEnabled').onchange=()=>{if(get('studyMusicEnabled').checked && timer)playStudyMusic();else stopStudyMusic();};
+document.addEventListener('radio:online-play',stopStudyMusic);
+document.getElementById('radioAudio')?.addEventListener('play',stopStudyMusic);
 const storageKey = 'corporate-study-mode';
 const dateFormat = new Intl.DateTimeFormat('en-CA', {year:'numeric',month:'2-digit',day:'2-digit'});
 const day = () => Math.floor(Date.parse(dateFormat.format(new Date()) + 'T00:00:00Z') / 86400000);
@@ -67,6 +96,7 @@ function render() {
  }));
 }
 function end(message) {
+ stopStudyMusic();
  clearInterval(timer);
  timer=undefined;
  get('studyStart').disabled=false;
@@ -95,6 +125,7 @@ get('studyStart').onclick=()=>{
  get('studyStatus').textContent='Focus time. One small step at a time.';
  tick();
  timer=setInterval(tick,250);
+ playStudyMusic();
 };
 function interrupt() {
  if(!timer)return;

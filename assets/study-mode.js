@@ -8,7 +8,7 @@ root.innerHTML = `
    <h3 id="studyClock">30:00</h3>
    <p id="studyStatus" role="status">Plant a seed. Give yourself 30 quiet minutes.</p>
    <div class="actions"><button class="btn primary" id="studyStart">Start focus</button><button class="btn" id="studyStop" disabled>End session</button></div>
-   <p class="study-help">Keep this tab visible for 30 uninterrupted minutes to grow a tree. Switching tabs or ending early resets the session. Your tasks stay saved.</p>
+   <p class="study-help">Focus for 30 minutes to grow a tree. Switch tabs or apps freely—the timer keeps counting. Keep this page open. Ending early or leaving this page resets the session. Your tasks stay saved.</p>
    <label><input type="checkbox" id="studyMusicEnabled" checked> Play study & calm music with focus</label>
    <p id="studyMusicStatus" role="status">Finding your study playlist…</p>
    <div id="studyMusicPlayer"></div>
@@ -134,7 +134,7 @@ function interrupt() {
  root.style.setProperty('--tree-growth','.15');
 }
 get('studyStop').onclick=interrupt;
-document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden && timer)tick();});
 window.addEventListener('pagehide',interrupt);
 get('studyTaskForm').onsubmit=event=>{
  event.preventDefault();

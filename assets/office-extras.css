@@ -52,7 +52,8 @@ html.office-reduced .office-cups{display:none}
 #confessionList li{padding:10px 0;border-top:1px solid var(--line)}
 #confessionForm button:disabled{opacity:.65;cursor:wait}
 #study-mode{--tree-growth:.15}
-.study-space{display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid #425449;border-radius:24px;background:#121c18}
+.study-space{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;border:1px solid #425449;border-radius:24px;background:#121c18}
+.study-space>div{min-width:0}
 .study-garden{padding:clamp(20px,4vw,44px);text-align:center;background:radial-gradient(ellipse at 50% 40%,#314b36,#17231c 70%)}
 .study-plan{padding:clamp(20px,4vw,44px)}
 .study-plan h3{font-size:26px;margin-bottom:20px}
@@ -65,6 +66,14 @@ html.office-reduced .office-cups{display:none}
 #studyStatus{margin-top:14px;line-height:1.5;min-height:3em}
 .study-garden .actions{justify-content:center;margin-top:18px}
 .study-help,#studyStorage,#studyTrees{font-size:13px;line-height:1.6;color:#b4c1b5;margin:16px 0}
+#study-mode .study-music{display:grid;gap:14px;margin-top:24px;padding:18px;border:1px solid #ffffff18;border-radius:16px;background:#10191380;text-align:left;min-width:0}
+#study-mode .study-music-toggle{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5;cursor:pointer}
+#studyMusicEnabled{flex:none;width:17px;height:17px;margin-top:2px;accent-color:#caff39}
+#studyMusicStatus{margin:0;font-size:12px;line-height:1.6;color:#b4c1b5;overflow-wrap:anywhere}
+#studyMusicPlayer:empty{display:none}
+#studyMusicPlayer{min-width:0}
+#studyMusicPlayer iframe{display:block;width:100%;aspect-ratio:16/9;min-height:200px;border:0;border-radius:12px}
+#study-mode .study-browse{display:flex;justify-content:center;align-items:center;min-height:44px;line-height:1.6;text-align:center;white-space:normal;overflow-wrap:anywhere}
 #studyTaskForm{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
 #studyTaskForm label{display:grid;gap:8px;flex:1 1 180px;min-width:0}
 #studyTaskForm input{padding:12px;border:1px solid #596d5e;border-radius:10px;background:#101913;color:var(--paper);font:inherit;width:100%}
@@ -73,5 +82,5 @@ html.office-reduced .office-cups{display:none}
 #studyTasks label{overflow-wrap:anywhere;min-width:0}
 #studyTasks .btn{font-size:10px;padding:7px;flex-shrink:0}
 #study-mode button:disabled{opacity:.45;cursor:default}
-@media(max-width:700px){.study-space{grid-template-columns:1fr}.study-tree{height:180px}}
+@media(max-width:900px){.study-space{grid-template-columns:minmax(0,1fr)}.study-tree{height:180px}}
 @media(prefers-reduced-motion:no-preference){html:not(.office-reduced) .study-tree>div{transition:transform 1s linear}}

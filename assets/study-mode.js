@@ -9,10 +9,12 @@ root.innerHTML = `
    <p id="studyStatus" role="status">Plant a seed. Give yourself 30 quiet minutes.</p>
    <div class="actions"><button class="btn primary" id="studyStart">Start focus</button><button class="btn" id="studyStop" disabled>End session</button></div>
    <p class="study-help">Focus for 30 minutes to grow a tree. Switch tabs or apps freely—the timer keeps counting. Keep this page open. Ending early or leaving this page resets the session. Your tasks stay saved.</p>
-   <label><input type="checkbox" id="studyMusicEnabled" checked> Play study & calm music with focus</label>
+   <div class="study-music">
+   <label class="study-music-toggle"><input type="checkbox" id="studyMusicEnabled" checked> <span>Play study & calm music with focus</span></label>
    <p id="studyMusicStatus" role="status">Finding your study playlist…</p>
    <div id="studyMusicPlayer"></div>
-   <a class="btn" href="#radio">Browse other music in Radio ↗</a>
+   <a class="btn study-browse" href="#radio">Browse music in Radio ↗</a>
+   </div>
   </div>
   <div class="study-plan">
    <h3>What are we learning?</h3>
@@ -42,7 +44,6 @@ function playStudyMusic(){
  player.allow='autoplay; encrypted-media; fullscreen; picture-in-picture';
  player.allowFullscreen=true;
  player.referrerPolicy='strict-origin-when-cross-origin';
- player.style.cssText='width:100%;aspect-ratio:16/9;min-height:200px;border:0;border-radius:16px;margin-top:16px';
  get('studyMusicPlayer').replaceChildren(player);
  get('studyMusicStatus').textContent='Study & calm · If playback is paused, press play in the player.';
 }

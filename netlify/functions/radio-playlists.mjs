@@ -40,7 +40,33 @@ export default async function radioPlaylists(request) {
       pageToken = page.nextPageToken;
     } while (pageToken);
 
-    return Response.json({ playlists }, { headers: {
+    const playlistId = new URL(request.url).searchParams.get('playlist');
+    let tracks;
+    if (playlistId) {
+      if (!playlists.some(playlist => playlist.id === playlistId)) {
+        return Response.json({ error: 'Playlist not found.' }, { status: 404 });
+      }
+      tracks = [];
+      let nextPage;
+      do {
+        const page = await youtube('playlistItems', {
+          part: 'snippet,status', playlistId, maxResults: '50',
+          ...(nextPage ? { pageToken: nextPage } : {})
+        }, apiKey, signal);
+        for (const item of page.items ?? []) {
+          const snippet = item.snippet;
+          if (item.status?.privacyStatus !== 'public' || !/^[\w-]+$/.test(snippet?.resourceId?.videoId ?? '')) continue;
+          tracks.push({
+            videoId: snippet.resourceId.videoId,
+            title: snippet.title,
+            artist: snippet.videoOwnerChannelTitle || '',
+            position: snippet.position
+          });
+        }
+        nextPage = page.nextPageToken;
+      } while (nextPage);
+    }
+    return Response.json(tracks ? { tracks } : { playlists }, { headers: {
       'Cache-Control': 'public, max-age=60',
       'Netlify-CDN-Cache-Control': 'public, s-maxage=300'
     } });

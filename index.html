@@ -98,7 +98,19 @@ footer{padding:130px 20px 160px;text-align:center;border-top:1px solid var(--lin
 .player .now:hover span,.player .now:focus-visible span{color:var(--acid)}
 .player .controls[hidden],.player .mini-youtube[hidden]{display:none}
 .player .mini-youtube{font-size:11px;padding:10px}
-.radio-embed{max-width:510px;overflow-x:auto;scroll-margin-top:90px;scroll-margin-bottom:95px}
+.radio-embed{max-width:none;scroll-margin-top:90px;scroll-margin-bottom:95px}
+.radio-online-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+.radio-online-layout>div{min-width:0}
+.radio-queue{border:1px solid var(--line);border-radius:14px;padding:16px}
+.radio-queue h4{font-size:18px;margin-bottom:8px}
+#radioQueueStatus{font-size:13px;color:var(--muted);line-height:1.5}
+#radioQueueList{list-style:none;max-height:380px;overflow-y:auto;margin-top:12px;display:grid;gap:6px}
+.radio-queue-track{display:flex;align-items:center;gap:12px;width:100%;padding:10px;background:transparent;border:1px solid transparent;border-radius:10px;color:var(--paper);text-align:left;cursor:pointer}
+.radio-queue-track:hover,.radio-queue-track:focus-visible,.radio-queue-track[aria-pressed="true"]{background:#caff3910;border-color:#caff3955}
+.radio-queue-track img{width:72px;height:48px;object-fit:cover;border-radius:6px;flex:none}
+.radio-queue-track span{min-width:0;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
+.radio-queue-track small{display:block;color:var(--muted);margin-top:3px}
+@media(max-width:760px){.radio-online-layout{grid-template-columns:minmax(0,1fr)}#radioQueueList{max-height:300px}}
 .radio-embed iframe{display:block;width:100%;min-width:200px;min-height:200px;aspect-ratio:16/9;border:0}
 .radio-embed .btn{margin-top:12px}
 .radio-progress{height:5px;border-radius:99px;background:#242625;overflow:hidden;margin-top:14px}
@@ -532,9 +544,11 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
      <p class="radio-sub" id="onlineRadioStatus" role="status"></p>
      <div class="radio-stations" id="onlineRadioPicks" role="group" aria-label="YouTube playlists"></div>
      <div class="audio-stage radio-embed" id="radioEmbed" hidden>
+      <div class="radio-online-layout"><div>
        <div id="radioEmbedPlayer"></div>
        <a class="btn" id="openRadioProvider" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL</a>
        <button class="btn" id="closeRadioEmbed" type="button">CLOSE PLAYER</button>
+      </div><div class="radio-queue" aria-label="Playlist tracks"><h4 id="radioQueueTitle">Playlist tracks</h4><p id="radioQueueStatus" role="status"></p><ol id="radioQueueList"></ol></div></div>
      </div>
    </div>
  </div>
@@ -1340,8 +1354,53 @@ const miniLocalControls = document.getElementById('miniLocalControls');
 const miniYouTubeLink = document.getElementById('miniYouTubeLink');
 const miniRadioLink = document.getElementById('miniRadioLink');
 const miniPlayButton = document.getElementById('playBtn');
+let radioQueueRequest = 0;
+const radioQueueCache = new Map();
+async function loadRadioQueue(playlist) {
+  const request = ++radioQueueRequest;
+  const list = document.getElementById('radioQueueList');
+  const status = document.getElementById('radioQueueStatus');
+  document.getElementById('radioQueueTitle').textContent = playlist.title;
+  list.replaceChildren();
+  status.textContent = 'Loading tracks…';
+  try {
+    let tracks = radioQueueCache.get(playlist.id);
+    if (!tracks) {
+      const response = await fetch('/.netlify/functions/radio-playlists?'+new URLSearchParams({playlist:playlist.id}));
+      if (!response.ok) throw new Error('Tracks unavailable');
+      ({tracks} = await response.json());
+      radioQueueCache.set(playlist.id, tracks);
+    }
+    if (request !== radioQueueRequest) return;
+    status.textContent = tracks.length ? `${tracks.length} tracks · Choose a song to play` : 'No public tracks available.';
+    for (const track of tracks) {
+      const row = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'radio-queue-track';
+      button.setAttribute('aria-pressed','false');
+      const thumbnail = document.createElement('img');
+      thumbnail.src = `https://i.ytimg.com/vi/${encodeURIComponent(track.videoId)}/default.jpg`;
+      thumbnail.alt = ''; thumbnail.loading = 'lazy';
+      const title = document.createElement('span'); title.textContent = track.title;
+      const artist = document.createElement('small'); artist.textContent = track.artist;
+      title.append(artist); button.append(thumbnail,title);
+      button.onclick = () => {
+        const player = radioEmbedPlayer.querySelector('iframe');
+        if (!player) return;
+        player.src = `https://www.youtube.com/embed/${encodeURIComponent(track.videoId)}?`+new URLSearchParams({list:playlist.id,index:String(track.position),autoplay:'1'});
+        player.title = track.title+' on YouTube';
+        list.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        document.getElementById('nowTitle').textContent = track.title;
+      };
+      row.append(button); list.append(row);
+    }
+  } catch {
+    if (request === radioQueueRequest) status.textContent = 'Could not load tracks. Select the playlist again to retry, or use the YouTube player.';
+  }
+}
 
 function closeOnlinePlaylist(){
+  radioQueueRequest++;
   radioEmbedPlayer.replaceChildren();
   radioEmbed.hidden = true;
   miniLocalControls.hidden = false;
@@ -1352,6 +1411,7 @@ function closeOnlinePlaylist(){
 }
 
 function openOnlineTrack(playlist){
+  loadRadioQueue(playlist);
   document.dispatchEvent(new Event('radio:online-play'));
   radioAudio.pause();
   const player = document.createElement('iframe');

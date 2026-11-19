@@ -51,3 +51,27 @@ html.office-reduced .office-cups{display:none}
 .office-grid #confessionList{list-style:none;padding:0}
 #confessionList li{padding:10px 0;border-top:1px solid var(--line)}
 #confessionForm button:disabled{opacity:.65;cursor:wait}
+#study-mode{--tree-growth:.15}
+.study-space{display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border:1px solid #425449;border-radius:24px;background:#121c18}
+.study-garden{padding:clamp(20px,4vw,44px);text-align:center;background:radial-gradient(ellipse at 50% 40%,#314b36,#17231c 70%)}
+.study-plan{padding:clamp(20px,4vw,44px)}
+.study-plan h3{font-size:26px;margin-bottom:20px}
+#studyStreak{font-size:13px;color:#cbdcb9}
+.study-tree{height:210px;position:relative;width:200px;margin:20px auto}
+.study-trunk{position:absolute;bottom:22px;left:94px;width:13px;height:130px;background:#b39772;border-radius:8px;transform:scaleY(var(--tree-growth));transform-origin:bottom}
+.study-canopy{position:absolute;z-index:1;bottom:95px;left:28px;width:145px;height:115px;background:#87b581;border-radius:55% 45% 48% 52%;transform:scale(var(--tree-growth));transform-origin:50% 100%;box-shadow:inset -20px -10px 0 #658d62}
+.study-ground{position:absolute;bottom:14px;left:15px;width:170px;height:18px;border-radius:50%;background:#64845b}
+#studyClock{font:500 48px ui-monospace,monospace;letter-spacing:-.04em}
+#studyStatus{margin-top:14px;line-height:1.5;min-height:3em}
+.study-garden .actions{justify-content:center;margin-top:18px}
+.study-help,#studyStorage,#studyTrees{font-size:13px;line-height:1.6;color:#b4c1b5;margin:16px 0}
+#studyTaskForm{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+#studyTaskForm label{display:grid;gap:8px;flex:1 1 180px;min-width:0}
+#studyTaskForm input{padding:12px;border:1px solid #596d5e;border-radius:10px;background:#101913;color:var(--paper);font:inherit;width:100%}
+#studyTasks{list-style:none;margin-top:20px}
+#studyTasks li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff18}
+#studyTasks label{overflow-wrap:anywhere;min-width:0}
+#studyTasks .btn{font-size:10px;padding:7px;flex-shrink:0}
+#study-mode button:disabled{opacity:.45;cursor:default}
+@media(max-width:700px){.study-space{grid-template-columns:1fr}.study-tree{height:180px}}
+@media(prefers-reduced-motion:no-preference){html:not(.office-reduced) .study-tree>div{transition:transform 1s linear}}

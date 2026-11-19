@@ -306,6 +306,13 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  .workday-stop{grid-template-columns:minmax(0,1fr);gap:5px;padding:12px}
  .workday-stop .time{display:flex;flex-wrap:wrap;gap:8px}
 }
+#mobileStudyLink{display:none}
+@media(min-width:801px){.navlinks{gap:clamp(9px,1.5vw,20px)}}
+@media(max-width:800px){
+ nav{flex-wrap:wrap;gap:8px}
+ #mobileStudyLink{display:inline-flex}
+ nav .logo{flex-basis:100%}
+}
 </style>
 </head>
 <body>
@@ -350,7 +357,8 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 
 <nav>
  <a class="logo" href="#home">CORPORATE<span>MAZDOOR</span>™</a>
- <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#break-room">Chat Room</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
+ <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#break-room">Chat Room</a><a href="#study-mode">Study Mode</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
+ <a class="btn" id="mobileStudyLink" href="#study-mode">Study Mode</a>
  <a class="btn" id="officeToolsLink" href="#office-tools">My Desk</a>
  <a class="btn hire-link" href="portfolio/index.html#contact">Hire me</a>
 </nav>

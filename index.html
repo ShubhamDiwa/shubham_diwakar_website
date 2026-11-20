@@ -329,7 +329,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 </head>
 <body>
 
-<div id="intro">
+<div id="intro" class="hide" hidden>
  <div class="introbox">
   <div class="introbrand">CORPORATE<br><span>MAZDOOR™</span></div>
   <div class="terminal">
@@ -340,8 +340,8 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <div>&gt; system status... <span class="green">READY TO GRIND</span><span class="cursor">_</span></div>
   </div>
   <form id="introForm">
-  <label class="intro-role">Display name
-   <input id="introName" autocomplete="nickname" required maxlength="24" pattern=".*\S.*" aria-describedby="introNameHint">
+  <label class="intro-role">Display name (optional)
+   <input id="introName" autocomplete="nickname" maxlength="24" aria-describedby="introNameHint" placeholder="Leave blank to play as a guest">
    <span id="introNameHint">Your display name and role appear on public game leaderboards.</span>
   </label>
   <label class="intro-role">What is your role?
@@ -352,6 +352,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
    <span id="introPunchLabel">PUNCH IN →</span>
   </button>
   </form>
+  <button class="btn" id="skipPunchIn" type="button">Keep browsing</button>
   <progress id="introProgress" max="100" value="0" aria-label="Office check-in" hidden></progress>
   <span class="intro-scan-announcement" id="introScanStatus" role="status"></span>
  </div>
@@ -372,6 +373,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  <div class="navlinks"><a href="#life">Life</a><a href="#timeline">Day</a><a href="#radio">Radio</a><a href="#break-room">Chat Room</a><a href="#study-mode">Study Mode</a><a href="#office-tools">Office Tools</a><a href="#games">Games</a><a href="#portfolio">Portfolio</a></div>
  <a class="btn" id="mobileStudyLink" href="#study-mode">Study Mode</a>
  <a class="btn" id="officeToolsLink" href="#office-tools">My Desk</a>
+ <button class="btn" id="optionalPunchIn" type="button">Punch in</button>
  <a class="btn hire-link" href="portfolio/index.html#contact">Hire me</a>
 </nav>
 
@@ -379,16 +381,12 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
  <video autoplay muted loop playsinline poster="assets/corporate-collage.webp"><source src="assets/corporate-life-01.mp4" type="video/mp4"></video>
  <div class="rain"></div>
  <div class="hero-content">
-  <div class="eyebrow">An Indian corporate survival archive</div>
+  <div class="eyebrow">Your after-meeting escape</div>
   <h1>WELCOME TO<br><span>THE GRIND.</span></h1>
-  <p>Commutes, meeting invites, release-day panic and the Friday sign-off. Play through Indian office life, tune into Corporate Radio, or jump into the Chat Room.</p>
+  <p>Office humour, quick games and focus tools to make the corporate grind a little lighter.</p>
   <div class="actions">
-   <a class="btn primary" href="#life">PUNCH IN ↓</a>
-   <a class="btn" href="#radio">PLAY CORPORATE RADIO</a>
-   <a class="btn" id="plotInvite" href="#corporate-plot-twist" hidden>Take your shift challenge</a>
-   <a class="btn" href="#study-mode">Study Mode</a>
-   <a class="btn" href="#role-simulation">Play your role</a>
-   <a class="btn" href="#break-room">Chat Room</a>
+   <a class="btn primary" href="#games">Play a quick game ↓</a>
+   <a class="btn" href="portfolio/index.html">Explore my work ↗</a>
   </div>
   <div class="shift-board">
    <div class="shift-clock">
@@ -619,7 +617,14 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 <section id="study-mode" aria-label="Study mode"></section>
 <section id="office-tools" aria-label="Office tools"></section>
 <section class="games-zone" id="games" aria-labelledby="gamesTitle">
- <div class="sectionhead"><h2 id="gamesTitle">OFFICE GAMES</h2></div>
+ <div class="sectionhead"><div><div class="eyebrow">A quick break</div><h2 id="gamesTitle">FEATURED GAMES</h2></div></div>
+ <div class="featured-games">
+  <a class="featured-game" href="#meeting-game"><span>01 / Quick reflexes</span><h3>Meeting Dodge</h3><p>Dodge the invites. Survive the shift.</p><b>Play Meeting Dodge →</b></a>
+  <a class="featured-game" href="#snake-xenzia"><span>02 / Retro favourite</span><h3>Snake Xenzia</h3><p>A familiar classic for your next break.</p><b>Play Snake →</b></a>
+  <a class="featured-game" href="#tic-tac-toe"><span>03 / Bring a friend</span><h3>Tic-Tac-Toe</h3><p>Play locally or share an online room.</p><b>Play Tic-Tac-Toe →</b></a>
+ </div>
+ <details id="gameLibrary"><summary>Browse all games & leaderboards</summary>
+ <a id="plotInvite" href="#corporate-plot-twist" hidden>Take your shift challenge →</a>
  <div class="games-layout">
 <section id="meeting-game" aria-labelledby="meetingGameTitle">
  <div class="dash meeting-game">
@@ -810,6 +815,7 @@ footer{padding-block:clamp(52px,8vw,104px) 135px}
 </section>
 
  </div>
+</details>
 </section>
 <section class="portfolio" id="portfolio">
  <div class="sectionhead"><div><div class="eyebrow">05 / Plot Twist</div><h2>WHO IS<br>THE MAZDOOR?</h2></div><p class="desc">Behind the memes is a developer who actually builds things.</p></div>
@@ -1251,9 +1257,11 @@ function punchIn(){
 }
 
 function enterSite(){
+  if (!document.getElementById('introName').value.trim()) document.getElementById('introName').value = 'Guest';
   window.dispatchEvent(new Event('office-punch-in'));
   stopIntroDiagnostics();
   document.getElementById('intro').classList.add('hide');
+  document.getElementById('intro').hidden = true;
   document.body.style.overflow='auto';
 }
 
@@ -1291,7 +1299,33 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     }
   }, 350);
 }
-document.body.style.overflow='hidden';
+document.body.style.overflow='auto';
+document.addEventListener('DOMContentLoaded', () => enterSite());
+document.getElementById('optionalPunchIn').onclick = () => {
+  const intro = document.getElementById('intro');
+  intro.hidden = false;
+  intro.classList.remove('hide');
+  document.getElementById('introName').disabled = false;
+  introTeam.disabled = false;
+  document.getElementById('introPunch').disabled = false;
+  document.getElementById('introPunchLabel').textContent = 'PUNCH IN →';
+  document.getElementById('introName').focus();
+};
+document.getElementById('skipPunchIn').onclick = () => {
+  document.getElementById('intro').classList.add('hide');
+  document.getElementById('intro').hidden = true;
+  document.getElementById('optionalPunchIn').focus();
+};
+function revealGameFromHash(){
+  const target = document.getElementById(location.hash.slice(1));
+  const library = document.getElementById('gameLibrary');
+  if (target && library.contains(target)) {
+    library.open = true;
+    requestAnimationFrame(() => target.scrollIntoView());
+  }
+}
+window.addEventListener('hashchange', revealGameFromHash);
+document.addEventListener('DOMContentLoaded', revealGameFromHash);
 
 const scenes=[...document.querySelectorAll('.scene')];
 const scrolly=document.querySelector('.scrolly');

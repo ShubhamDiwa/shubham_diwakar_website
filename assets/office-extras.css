@@ -51,6 +51,20 @@ html.office-reduced .office-cups{display:none}
 .office-grid #confessionList{list-style:none;padding:0}
 #confessionList li{padding:10px 0;border-top:1px solid var(--line)}
 #confessionForm button:disabled{opacity:.65;cursor:wait}
+#intro[hidden]{display:none}
+#skipPunchIn{margin-top:12px}
+.featured-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.featured-game{display:flex;flex-direction:column;gap:16px;min-width:0;padding:26px;border:1px solid var(--line);border-radius:18px;background:#111512;transition:transform .2s,border-color .2s}
+.featured-game:hover,.featured-game:focus-visible{transform:translateY(-4px);border-color:var(--acid)}
+.featured-game>span{font-size:11px;color:var(--muted)}
+.featured-game h3{font-size:26px;line-height:1.2}
+.featured-game p{font-size:14px;line-height:1.6;color:var(--muted)}
+.featured-game b{margin-top:auto;font-size:13px;color:var(--acid)}
+#gameLibrary{margin-top:24px;border-top:1px solid var(--line);padding-top:20px}
+#gameLibrary>summary{cursor:pointer;padding:12px 0;font-size:15px;color:var(--paper)}
+#gameLibrary>.games-layout{margin-top:20px}
+@media(max-width:760px){.featured-games{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.featured-game{transition:none}.featured-game:hover{transform:none}}
 #study-mode{--tree-growth:.15}
 .study-space{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);overflow:hidden;border:1px solid #425449;border-radius:24px;background:#121c18}
 .study-space>div{min-width:0}
